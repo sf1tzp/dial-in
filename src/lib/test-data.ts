@@ -1,6 +1,6 @@
 import type { CoffeeBag, CoffeeBrew } from "./storage/interfaces";
 
-export const testCoffeeBag: CoffeeBag = {
+export const testCoffeeBags: CoffeeBag[] = [{
   id: "test-bag-1",
   name: "Ethiopian Yirgacheffe",
   roasterName: "Counter Culture",
@@ -10,7 +10,17 @@ export const testCoffeeBag: CoffeeBag = {
   notes: "Bright and fruity with blueberry notes",
   createdAt: new Date("2025-11-25T10:30:00"),
   updatedAt: new Date("2025-11-25T10:30:00"),
-};
+}, {
+  id: "test-bag-2",
+  name: "Colombian Supremo",
+  roasterName: "Onyx Coffee Lab",
+  style: "Single Origin",
+  dateRoasted: new Date("2025-11-22"),
+  dateOpened: new Date("2025-11-27"),
+  notes: "Chocolatey and nutty with caramel sweetness",
+  createdAt: new Date("2025-11-27T09:00:00"),
+  updatedAt: new Date("2025-11-27T09:00:00"),
+}];
 
 // Simulating the "dialing in" process over 5 brews
 // Starting with a coarser grind and adjusting based on extraction results
@@ -81,5 +91,45 @@ export const testCoffeeBrews: CoffeeBrew[] = [
       "Perfect! Sweet, balanced, blueberry notes coming through. This is the recipe.",
     createdAt: new Date("2025-11-28T08:00:00"),
     updatedAt: new Date("2025-11-28T08:00:00"),
+  },
+  // Bag 2 brews - Colombian Supremo
+  {
+    // Brew 1: Initial attempt - a bit coarse
+    id: "test-brew-6",
+    coffeeBagId: "test-bag-2",
+    grinderCoarseness: 12,
+    grinderTime: 8.5,
+    dryWeight: 18,
+    brewTime: 25,
+    pressureReading: 8,
+    notes: "Running fast, under-extracted. Tastes a bit sour and thin.",
+    createdAt: new Date("2025-11-27T09:30:00"),
+    updatedAt: new Date("2025-11-27T09:30:00"),
+  },
+  {
+    // Brew 2: Adjusted finer
+    id: "test-brew-7",
+    coffeeBagId: "test-bag-2",
+    grinderCoarseness: 10,
+    grinderTime: 9.0,
+    dryWeight: 18,
+    brewTime: 31,
+    pressureReading: 9,
+    notes: "Better extraction, chocolate notes coming through. Slightly bitter finish.",
+    createdAt: new Date("2025-11-27T15:00:00"),
+    updatedAt: new Date("2025-11-27T15:00:00"),
+  },
+  {
+    // Brew 3: Dialed in
+    id: "test-brew-8",
+    coffeeBagId: "test-bag-2",
+    grinderCoarseness: 11,
+    grinderTime: 8.8,
+    dryWeight: 18,
+    brewTime: 28,
+    pressureReading: 9,
+    notes: "Sweet and balanced! Caramel and chocolate notes, smooth finish.",
+    createdAt: new Date("2025-11-28T07:30:00"),
+    updatedAt: new Date("2025-11-28T07:30:00"),
   },
 ];

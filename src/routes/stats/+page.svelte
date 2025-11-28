@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
-	import { testCoffeeBrews } from '$lib/test-data';
+	import { testCoffeeBags, testCoffeeBrews } from '$lib/test-data';
 
 	// Transform CoffeeBrew data into chart-compatible format
 	const brewChartData: TimeSeriesDataPoint[] = testCoffeeBrews.map(brew => ({
@@ -33,7 +33,7 @@
 				<Card.Description>All time brewing sessions</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<p class="text-4xl font-bold">0</p>
+				<p class="text-4xl font-bold">{testCoffeeBrews.length}</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -43,7 +43,7 @@
 				<Card.Description>Bags tracked</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<p class="text-4xl font-bold">0</p>
+				<p class="text-4xl font-bold">{testCoffeeBags.length}</p>
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -57,6 +57,4 @@
 			<GradientChart data={brewChartData} series={brewSeries} />
 		</Card.Content>
 	</Card.Root>
-
-
 </div>

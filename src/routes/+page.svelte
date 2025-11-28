@@ -9,7 +9,7 @@
     import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
-    import { testCoffeeBag, testCoffeeBrews } from '$lib/test-data';
+    import { testCoffeeBags, testCoffeeBrews } from '$lib/test-data';
     import { buttonVariants } from "$lib/components/ui/button";
     import Coffee from "@lucide/svelte/icons/coffee";
     import ClipboardList from "@lucide/svelte/icons/clipboard-list";
@@ -18,7 +18,7 @@
     const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
 
     // State for storing entries
-    let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
+    let coffeeBags = $state<CoffeeBag[]>([...testCoffeeBags]);
     let coffeeBrews = $state<CoffeeBrew[]>([...testCoffeeBrews]);
     // let coffeeBags = $state<CoffeeBag[]>([]);
     // let coffeeBrews = $state<CoffeeBrew[]>([]);
