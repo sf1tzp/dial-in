@@ -91,7 +91,7 @@
     </Dialog.Root>
 
     <Dialog.Root bind:open={coffeeBrewDialogOpen}>
-        <Dialog.Trigger class={buttonVariants({ variant: "default" })}>
+        <Dialog.Trigger class={buttonVariants({ variant: "default" })} disabled={coffeeBagStore.items.length === 0}>
             <Coffee class="size-4"/>
             Start a Brew
         </Dialog.Trigger>

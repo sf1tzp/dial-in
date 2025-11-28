@@ -52,7 +52,7 @@
 		<div class="text-muted-foreground flex flex-col items-center justify-center py-12 text-center">
             <BookOpen class="size-4"/>
 			<p class="text-lg font-medium">No entries yet</p>
-			<p class="text-sm">Add a coffee bag or log an espresso shot to get started</p>
+			<p class="text-sm">Add a coffee bag to get started</p>
 		</div>
 	{:else}
 		<div class="relative">
