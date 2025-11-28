@@ -2,6 +2,11 @@ import { browser } from "$app/environment";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { CoffeeBag, CoffeeBrew } from "./interfaces";
 
+// NOTE: idb cannot guarantee that data will not be evicted
+// We should think about adding an export feature or implement
+// serverside persistence
+// https://github.com/jakearchibald/idb/issues/299
+
 // Database schema definition
 interface DialInDB extends DBSchema {
   coffeeBags: {
