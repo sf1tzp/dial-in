@@ -70,8 +70,8 @@
     }
 </script>
 
-<div class="pt-32 text-center">
-    <Greeting />
+<div class="mt-32 text-center">
+    <Greeting showWelcomeMessage={coffeeBagStore.items.length === 0} />
 </div>
 
 <div class="mt-32 sm:mt-48 flex justify-around">
