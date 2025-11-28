@@ -56,25 +56,15 @@
 		</div>
 	{:else}
 		<div class="relative">
-			<!-- Timeline line -->
+			<!-- Timeline line - centered and behind content -->
 			<div
-				class="bg-border absolute top-0 bottom-0 left-4 w-0.5 md:left-6"
+				class="bg-border absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2"
 				aria-hidden="true"
 			></div>
 
-			<ul class="space-y-6">
+			<ul class="relative z-10 space-y-4 m-4">
 				{#each sortedEntries as entry (entry.data.id)}
-					<li class="relative pl-10 md:pl-14">
-						<!-- Timeline dot -->
-						<div
-							class="absolute left-2.5 top-1 flex h-3 w-3 items-center justify-center rounded-full md:left-4.5 {entry.type ===
-							'coffee-bag'
-								? 'bg-amber-500'
-								: 'bg-emerald-500'}"
-						>
-							<div class="h-1.5 w-1.5 rounded-full bg-white"></div>
-						</div>
-
+					<li>
 						{#if entry.type === 'coffee-bag'}
 							<BagEntry bag={entry.data} relativeTime={formatRelativeTime(entry.data.createdAt)} />
 						{:else}

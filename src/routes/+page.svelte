@@ -130,9 +130,5 @@
     </Dialog.Root>
 </div>
 
-<div>
-    <Card class="m-4 h-screen">
-        <CoffeeTimeline entries={timelineEntries} />
-    </Card>
-</div>
+<CoffeeTimeline entries={timelineEntries} />
 
