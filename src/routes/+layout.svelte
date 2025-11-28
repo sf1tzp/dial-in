@@ -17,4 +17,6 @@
 
 <Menu currentPath={page.url.pathname}/>
 
-{@render children?.()}
+<main class="container mx-auto px-4 py-4 lg:max-w-7xl">
+	{@render children?.()}
+</main>

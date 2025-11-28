@@ -37,11 +37,6 @@
 					extraction. Over time, you'll build a library of brewing data that helps you understand
 					what works best for different coffees.
 				</p>
-				<p>
-					Start by adding a coffee bag to track. Then, each time you brew, log the details of your
-					extraction. Over time, you'll build a library of brewing data that helps you understand
-					what works best for different coffees.
-				</p>
 			</Card.Content>
 		</Card.Root>
 	</div>

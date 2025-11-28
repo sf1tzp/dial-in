@@ -111,7 +111,7 @@
     </Dialog.Root>
 </div>
 
-<div class="mt-14 pb-2">
+<div class="mt-14">
     <CoffeeTimeline entries={timelineEntries} />
 </div>
 
