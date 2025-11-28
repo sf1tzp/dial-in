@@ -18,9 +18,10 @@
 
 	const form = superForm(data, {
 		validators: zod4(coffeeBagSchema),
-		onResult: ({ result }) => {
-			if (result.type === 'success' && onSubmit) {
-				onSubmit($formData as CoffeeBagFormData);
+		SPA: true,
+		onUpdate: ({ form }) => {
+			if (form.valid && onSubmit) {
+				onSubmit(form.data as CoffeeBagFormData);
 			}
 		},
 	});
