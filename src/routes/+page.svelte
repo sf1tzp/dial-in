@@ -75,11 +75,11 @@
     }
 </script>
 
-<div class="pt-8 text-center">
+<div class="pt-48 text-center">
     <h1 class="text-4xl">Greetings Component Placeholder</h1>
 </div>
 
-<div class="mt-8 flex justify-around">
+<div class="mt-48 flex justify-around">
     <Dialog.Root bind:open={coffeeBagDialogOpen}>
         <Dialog.Trigger class={buttonVariants({ variant: "default" })}>
             <ClipboardList class="size-4"/>
@@ -111,7 +111,7 @@
     </Dialog.Root>
 </div>
 
-<div class="mt-8 pb-2">
+<div class="mt-14 pb-2">
     <CoffeeTimeline entries={timelineEntries} />
 </div>
 
