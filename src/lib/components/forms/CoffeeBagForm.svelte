@@ -6,6 +6,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
+  	import { DateInput } from '$lib/components/ui/date-input';
 
 	interface Props {
 		data: SuperValidated<CoffeeBagFormData>;
@@ -82,13 +83,14 @@
 	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
 			<Field.Label for="dateRoasted">Date Roasted</Field.Label>
-			<Input
+			<DateInput
 				id="dateRoasted"
-				name="dateRoasted"
-				type="date"
-				value={formatDateForInput($formData.dateRoasted)}
-				onchange={(e) => {
-					$formData.dateRoasted = parseDateFromInput(e.currentTarget.value)!;
+				value={$formData.dateRoasted}
+				placeholder="Roasted On"
+				onchange={(date) => {
+					if (date) {
+						$formData.dateRoasted = date;
+					}
 				}}
 				aria-invalid={$errors.dateRoasted ? 'true' : undefined}
 			/>
@@ -97,13 +99,14 @@
 
 		<Field.Field>
 			<Field.Label for="dateOpened">Date Opened</Field.Label>
-			<Input
+			<DateInput
 				id="dateOpened"
-				name="dateOpened"
-				type="date"
-				value={formatDateForInput($formData.dateOpened)}
-				onchange={(e) => {
-					$formData.dateOpened = parseDateFromInput(e.currentTarget.value)!;
+				value={$formData.dateOpened}
+				placeholder="Opened On"
+				onchange={(date) => {
+					if (date) {
+						$formData.dateOpened = date;
+					}
 				}}
 				aria-invalid={$errors.dateOpened ? 'true' : undefined}
 			/>
