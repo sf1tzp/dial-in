@@ -50,12 +50,9 @@ It would be cool to support multiple translations of the app, because espresso i
 
 ## Storage
 
-Additionally, we will offer two options for data storage
-
-- On device / browser storage (potentially limited in terms of size?)
-- Opt in integration with backend API & Database
-
 We are targeting a PWA-style experience for mobile web. Users should be able to use local offline storage compeltely free.
+
+There are some durability concerns with browser local storage. [jakearchibald/idb/issues/299](https://github.com/jakearchibald/idb/issues/299)
 
 We may later implement online features and offer these optional benefits:
 
@@ -63,8 +60,3 @@ We may later implement online features and offer these optional benefits:
 - Sharable Profile
 - Special CSS elements
 - Graph and Statistics views
-
-### Limitations with LocalStorage
-
-Currently the app uses a simple key value local storage system. This was simple to implement, but doesn't provide much durability. We don't want the user's data to be deleted prematurely, so we should look at adopting IndexedDB before publishing.
-

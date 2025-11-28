@@ -18,21 +18,31 @@
 
 	let { currentPath }: Props = $props();
 
-	let testDataLoaded = $state(false);
-
 	function toggleTestData() {
-		if (testDataLoaded) {
-			// Remove test data
-			testCoffeeBags.forEach(bag => coffeeBrewStore.remove(bag.id));
-			testCoffeeBrews.forEach(brew => coffeeBrewStore.remove(brew.id));
-			testCoffeeBags.forEach(bag => coffeeBagStore.remove(bag.id));
-		} else {
-			// Add test data
-			testCoffeeBags.forEach(bag => coffeeBagStore.add(bag));
-			testCoffeeBrews.forEach(brew => coffeeBrewStore.add(brew));
-		}
-		testDataLoaded = !testDataLoaded;
+		// Toggle each bag: remove if exists, add if not
+		testCoffeeBags.forEach(bag => {
+			if (coffeeBagStore.getById(bag.id)) {
+				coffeeBagStore.remove(bag.id);
+			} else {
+				coffeeBagStore.add(bag);
+			}
+		});
+
+		// Toggle each brew: remove if exists, add if not
+		testCoffeeBrews.forEach(brew => {
+			if (coffeeBrewStore.getById(brew.id)) {
+				coffeeBrewStore.remove(brew.id);
+			} else {
+				coffeeBrewStore.add(brew);
+			}
+		});
 	}
+
+	// Check if any test data is currently loaded
+	let testDataLoaded = $derived(
+		testCoffeeBags.some(bag => coffeeBagStore.getById(bag.id)) ||
+		testCoffeeBrews.some(brew => coffeeBrewStore.getById(brew.id))
+	);
 
 	const navItems = [
 		{ href: '/', label: 'Dial-in' },
