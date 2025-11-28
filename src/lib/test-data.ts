@@ -1,26 +1,29 @@
 import type { CoffeeBag, CoffeeBrew } from "./storage/interfaces";
 
-export const testCoffeeBags: CoffeeBag[] = [{
-  id: "test-bag-1",
-  name: "Ethiopian Yirgacheffe",
-  roasterName: "Counter Culture",
-  style: "Single Origin",
-  dateRoasted: new Date("2025-11-20"),
-  dateOpened: new Date("2025-11-25"),
-  notes: "Bright and fruity with blueberry notes",
-  createdAt: new Date("2025-11-25T10:30:00"),
-  updatedAt: new Date("2025-11-25T10:30:00"),
-}, {
-  id: "test-bag-2",
-  name: "Colombian Supremo",
-  roasterName: "Onyx Coffee Lab",
-  style: "Single Origin",
-  dateRoasted: new Date("2025-11-22"),
-  dateOpened: new Date("2025-11-27"),
-  notes: "Chocolatey and nutty with caramel sweetness",
-  createdAt: new Date("2025-11-27T09:00:00"),
-  updatedAt: new Date("2025-11-27T09:00:00"),
-}];
+export const testCoffeeBags: CoffeeBag[] = [
+  {
+    id: "test-bag-1",
+    name: "Ethiopian Yirgacheffe",
+    roasterName: "Counter Culture",
+    style: "Single Origin",
+    dateRoasted: new Date("2025-11-20"),
+    dateOpened: new Date("2025-11-25"),
+    notes: "Bright and fruity with blueberry notes",
+    createdAt: new Date("2025-11-25T10:30:00"),
+    updatedAt: new Date("2025-11-25T10:30:00"),
+  },
+  {
+    id: "test-bag-2",
+    name: "Colombian Supremo",
+    roasterName: "Onyx Coffee Lab",
+    style: "Single Origin",
+    dateRoasted: new Date("2025-11-22"),
+    dateOpened: new Date("2025-11-27"),
+    notes: "Chocolatey and nutty with caramel sweetness",
+    createdAt: new Date("2025-11-27T09:00:00"),
+    updatedAt: new Date("2025-11-27T09:00:00"),
+  },
+];
 
 // Simulating the "dialing in" process over 5 brews
 // Starting with a coarser grind and adjusting based on extraction results
@@ -115,7 +118,8 @@ export const testCoffeeBrews: CoffeeBrew[] = [
     dryWeight: 18,
     brewTime: 31,
     pressureReading: 9,
-    notes: "Better extraction, chocolate notes coming through. Slightly bitter finish.",
+    notes:
+      "Better extraction, chocolate notes coming through. Slightly bitter finish.",
     createdAt: new Date("2025-11-27T15:00:00"),
     updatedAt: new Date("2025-11-27T15:00:00"),
   },
