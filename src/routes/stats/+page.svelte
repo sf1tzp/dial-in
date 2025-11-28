@@ -3,8 +3,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
 	import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
-	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import CoffeeIcon from '@lucide/svelte/icons/coffee';
+	import * as Select from '$lib/components/ui/select';
 
 	const hasData = $derived(coffeeBagStore.items.length > 0 || coffeeBrewStore.items.length > 0);
 
@@ -29,6 +29,7 @@
 		{ key: 'grinderCoarseness', label: 'Grind Setting:', color: 'var(--chart-1)' },
 		{ key: 'brewTime', label: 'Brew Time (s):', color: 'var(--chart-2)' },
 		{ key: 'dryWeight', label: 'Dry Weight (g):', color: 'var(--chart-3)' },
+		{ key: 'pressureReading', label: 'Pressure Reading (%):', color: 'var(--chart-4)' },
 	];
 </script>
 
@@ -78,25 +79,21 @@
 	</div>
 
 	<Card.Root class="mt-4">
-		<Card.Header class="flex flex-row items-center justify-between space-y-0">
-			<div>
-				<Card.Title>Brewing Insights</Card.Title>
-				<Card.Description>Your coffee journey at a glance</Card.Description>
-			</div>
-			<div class="relative">
-				<select
-					bind:value={selectedBagId}
-					class="border-input bg-background ring-offset-background focus:ring-ring h-9 appearance-none rounded-md border py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
-				>
+		<Card.Header class="flex flex-row justify-between">
+			<Card.Title class="sm:my-2">Brewing Insights</Card.Title>
+			<Select.Root type="single" bind:value={selectedBagId}>
+				<Select.Trigger id="bag-select">
+					{coffeeBagStore.items.find(bag => bag.id === selectedBagId)?.name ?? 'Select a bag'}
+				</Select.Trigger>
+				<Select.Content>
 					{#each coffeeBagStore.items as bag (bag.id)}
-						<option value={bag.id}>{bag.name}</option>
+						<Select.Item value={bag.id} label={bag.name} />
 					{/each}
 					{#if coffeeBagStore.items.length === 0}
-						<option value="none">No bags available</option>
+						<Select.Item value="none" label="No bags available" disabled />
 					{/if}
-				</select>
-				<ChevronDownIcon class="text-muted-foreground pointer-events-none absolute right-2 top-1/2 size-4 -translate-y-1/2" />
-			</div>
+				</Select.Content>
+			</Select.Root>
 		</Card.Header>
 		<Card.Content>
 			<GradientChart data={brewChartData} series={brewSeries} />

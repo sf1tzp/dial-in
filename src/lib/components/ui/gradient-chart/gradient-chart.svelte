@@ -71,7 +71,6 @@
 
 <Chart.Container config={chartConfig}>
   <AreaChart
-    legend
     data={data}
     x="date"
     xScale={scaleUtc()}
