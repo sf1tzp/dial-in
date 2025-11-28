@@ -1,6 +1,22 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-  import { GradientChart } from '$lib/components/ui/gradient-chart';
+	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
+	import { testCoffeeBrews } from '$lib/test-data';
+
+	// Transform CoffeeBrew data into chart-compatible format
+	const brewChartData: TimeSeriesDataPoint[] = testCoffeeBrews.map(brew => ({
+		date: brew.createdAt,
+		grinderCoarseness: brew.grinderCoarseness,
+		brewTime: brew.brewTime,
+		pressureReading: brew.pressureReading,
+		dryWeight: brew.dryWeight,
+	}));
+
+	// Define which series to display
+	const brewSeries: TimeSeriesConfig[] = [
+		{ key: 'grinderCoarseness', label: 'Grinder Coarseness', color: 'var(--chart-1)' },
+		{ key: 'brewTime', label: 'Brew Time (s)', color: 'var(--chart-2)' },
+	];
 </script>
 
 <svelte:head>
@@ -38,7 +54,7 @@
 			<Card.Description>Your coffee journey at a glance</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<GradientChart />
+			<GradientChart data={brewChartData} series={brewSeries} />
 		</Card.Content>
 	</Card.Root>
 
