@@ -1,6 +1,7 @@
 # Implementation Roadmap
 
 ## Phase 1: Core Local Storage (MVP)
+
 1. **Setup PWA Infrastructure**
    - [ ] Configure SvelteKit for PWA
    - [ ] Add service worker and manifest
@@ -23,6 +24,7 @@
    - [ ] Image capture/upload functionality
 
 ## Phase 2: Enhanced Local Experience
+
 5. **Add Data Validation & Error Handling**
    - [ ] Form validation for required fields
    - [ ] Handle storage quota exceeded scenarios
@@ -39,6 +41,7 @@
    - [ ] Export data functionality (JSON/CSV)
 
 ## Phase 3: Backend Infrastructure
+
 8. **Setup gRPC Schema Definition**
    - [ ] Define `.proto` files for `CoffeeBag` and `EspressoShot`
    - [ ] Generate TypeScript types for frontend
@@ -57,6 +60,7 @@
     - [ ] Authentication token management
 
 ## Phase 4: Account System & Sync
+
 11. **User Authentication Flow**
     - [ ] Registration/login UI components
     - [ ] JWT token handling
@@ -75,6 +79,7 @@
     - [ ] Custom CSS themes/elements
 
 ## Phase 5: Advanced Features
+
 14. **Enhanced Analytics & Insights**
     - [ ] Advanced statistics and trends
     - [ ] Coffee bag lifecycle tracking
@@ -93,6 +98,7 @@
     - [ ] A11y improvements
 
 ## Technical Debt & Maintenance
+
 17. **Testing & Quality Assurance**
     - [ ] Unit tests for storage adapters
     - [ ] Integration tests for sync functionality
@@ -106,6 +112,7 @@
     - [ ] Monitoring and error tracking
 
 ## Success Criteria by Phase
+
 - [ ] **Phase 1**: Users can track coffee and shots offline
 - [ ] **Phase 2**: Smooth UX with basic insights
 - [ ] **Phase 3**: Backend ready for account users

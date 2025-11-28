@@ -9,5 +9,3 @@ See [mockup](./UI-MOCKUP.jpg)
 ## Accessibility
 
 We will offer a drop down language selection menu, and attempt translations for the major european and asian langauges
-
-

@@ -7,6 +7,7 @@
 The app should be completely usable in PWA, local storage mode, without requiring any user data be sent upstream.
 
 We aim to minimize the amount of personal data collected when the user opts in:
+
 - email
 - username
 - their coffee records
@@ -20,6 +21,5 @@ By limiting our exposure to user data, we aim to provide a passwordless, email b
 ## Content moderation
 
 We will utilize automated content moderation tools for all user uploaded strings and images.
-
 
 ## GDPR considerations
