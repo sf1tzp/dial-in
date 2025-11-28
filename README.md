@@ -3,13 +3,17 @@
 Track brewing parameters and dial in the perfect brew.
 
 ## Screenshots
+
 ### Homepage
+
 ![Homepage screenshot](https://i.imgur.com/t9U9kKw.png)
 
 ### Statistics View
+
 ![Statistics view screenshot](https://i.imgur.com/Abw2oWp.png)
 
 ### Timeline View
+
 ![Timeline view screenshot](https://i.imgur.com/25YVc5h.png)
 
 ## Design Document
@@ -38,6 +42,14 @@ We will provide a simple web UI, offering the user to record either a new bag or
 
 In our UI, we will use intentional iconography to distinguish various concepts, including morning/day/night icons, and potentially weather iconography to add a sense of personality to our design.
 
+### a11y and i18n
+
+We will strive to follow modern A11y practices in our components.
+
+It would be cool to support multiple translations of the app, because espresso is enjoyed all around the world.
+
+## Storage
+
 Additionally, we will offer two options for data storage
 
 - On device / browser storage (potentially limited in terms of size?)
@@ -51,3 +63,8 @@ We may later implement online features and offer these optional benefits:
 - Sharable Profile
 - Special CSS elements
 - Graph and Statistics views
+
+### Limitations with LocalStorage
+
+Currently the app uses a simple key value local storage system. This was simple to implement, but doesn't provide much durability. We don't want the user's data to be deleted prematurely, so we should look at adopting IndexedDB before publishing.
+
