@@ -82,11 +82,12 @@
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>Add Coffee Bag</Dialog.Title>
+                <Dialog.Title class="flex justify-center">
+                    <span class="mt-2 ">Open a Bag</span>
+                    <ClipboardList class="size-8 pt-1 pl-2"/>
+                </Dialog.Title>
             </Dialog.Header>
-            <ScrollArea class="h-100">
-                <CoffeeBagForm data={coffeeBagFormData} onSubmit={handleCoffeeBagSubmit} />
-            </ScrollArea>
+            <CoffeeBagForm data={coffeeBagFormData} onSubmit={handleCoffeeBagSubmit} />
         </Dialog.Content>
     </Dialog.Root>
 
@@ -97,7 +98,10 @@
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>Log Coffee Brew</Dialog.Title>
+                <Dialog.Title class="flex justify-center">
+                    <span class="mt-2">Start a Brew</span>
+                    <Coffee class="pl-2 size-8"/>
+                </Dialog.Title>
             </Dialog.Header>
             <ScrollArea class="h-120">
                 <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBagStore.items} onSubmit={handleCoffeeBrewSubmit} />

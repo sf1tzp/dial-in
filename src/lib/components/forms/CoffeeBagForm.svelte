@@ -10,6 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { DateInput } from '$lib/components/ui/date-input';
 	import CameraIcon from '@lucide/svelte/icons/camera';
+    import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	interface Props {
 		data: SuperValidated<CoffeeBagFormData>;
@@ -61,44 +62,30 @@
 		<Carousel.Content>
 			<!-- Slide 1: Essential Fields -->
 			<Carousel.Item>
-				<div class="space-y-4 px-1">
-					<div class="flex gap-4">
-						<div class="flex-1 space-y-4 ">
-							<Field.Field class="border-2 border-dashed rounded-lg">
-								<Field.Label for="name">Name</Field.Label>
-								<Input
-									id="name"
-									name="name"
-									type="text"
-									placeholder="Enter coffee name"
-									bind:value={$formData.name}
-									aria-invalid={$errors.name ? 'true' : undefined}
-								/>
-								<Field.Error>{$errors.name}</Field.Error>
-							</Field.Field>
+				<div class="space-y-4">
+					<!-- Name and Picture on same row -->
+					<div class="flex gap-4 items-start">
+						<Field.Field class="w-2/3 flex-1">
+							<Field.Label for="name">Name</Field.Label>
+							<Input
+								id="name"
+								name="name"
+								type="text"
+								placeholder="Enter coffee name"
+								bind:value={$formData.name}
+								aria-invalid={$errors.name ? 'true' : undefined}
+							/>
+							<Field.Error>{$errors.name}</Field.Error>
+						</Field.Field>
 
-							<Field.Field class="border-2 border-dashed rounded-lg">
-								<Field.Label for="roasterName">Roaster</Field.Label>
-								<Input
-									id="roasterName"
-									name="roasterName"
-									type="text"
-									placeholder="Enter roaster name"
-									bind:value={$formData.roasterName}
-									aria-invalid={$errors.roasterName ? 'true' : undefined}
-								/>
-								<Field.Error>{$errors.roasterName}</Field.Error>
-							</Field.Field>
-						</div>
-
-						<Field.Field class="flex flex-col items-center border-2 border-dashed rounded-lg">
+						<Field.Field class="w-1/3 flex-1 flex-col items-center">
 							<Field.Label for="picture" class="sr-only">Picture</Field.Label>
 							<label
 								for="picture"
-								class="flex flex-col items-end justify-right"
+								class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
 							>
-								<CameraIcon class="size-8 mr-4"/>
-								<span class="mt-1 text-xs text-muted-foreground">Add Picture</span>
+								<CameraIcon class="size-6" />
+								<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
 							</label>
 							<Input
 								id="picture"
@@ -116,25 +103,27 @@
 						</Field.Field>
 					</div>
 
-					<button
-						type="button"
+					<!-- Roaster full width -->
+					<Field.Field>
+						<Field.Label for="roasterName">Roaster</Field.Label>
+						<Input
+							id="roasterName"
+							name="roasterName"
+							type="text"
+							placeholder="Enter roaster name"
+							bind:value={$formData.roasterName}
+							aria-invalid={$errors.roasterName ? 'true' : undefined}
+						/>
+						<Field.Error>{$errors.roasterName}</Field.Error>
+					</Field.Field>
+
+					<Button
+						variant="ghost"
 						onclick={goToDetails}
-						class="flex w-full items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+						class="w-full"
 					>
 						Add details...
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-4 w-4"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-						</svg>
-					</button>
-
-					<Button type="submit" class="w-full">
-						{submitLabel}
+						<ChevronRight/>
 					</Button>
 				</div>
 			</Carousel.Item>
@@ -175,9 +164,21 @@
 						<Field.Error>{$errors.style}</Field.Error>
 					</Field.Field>
 
-					<div class="grid gap-4 sm:grid-cols-2">
+					<Field.Field>
+						<Field.Label for="notes">Notes</Field.Label>
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Tasting notes, brewing tips, etc."
+							bind:value={$formData.notes}
+							aria-invalid={$errors.notes ? 'true' : undefined}
+						/>
+						<Field.Error>{$errors.notes}</Field.Error>
+					</Field.Field>
+
+					<div class="grid gap-4 grid-cols-2">
 						<Field.Field>
-							<Field.Label for="dateRoasted">Roasted On</Field.Label>
+							<!-- <Field.Label for="dateRoasted">Roasted On</Field.Label> -->
 							<DateInput
 								id="dateRoasted"
 								value={$formData.dateRoasted}
@@ -193,7 +194,7 @@
 						</Field.Field>
 
 						<Field.Field>
-							<Field.Label for="dateOpened">Opened On</Field.Label>
+							<!-- <Field.Label for="dateOpened">Opened On</Field.Label> -->
 							<DateInput
 								id="dateOpened"
 								value={$formData.dateOpened}
@@ -209,23 +210,11 @@
 						</Field.Field>
 					</div>
 
-					<Field.Field>
-						<Field.Label for="notes">Notes</Field.Label>
-						<Textarea
-							id="notes"
-							name="notes"
-							placeholder="Tasting notes, brewing tips, etc."
-							bind:value={$formData.notes}
-							aria-invalid={$errors.notes ? 'true' : undefined}
-						/>
-						<Field.Error>{$errors.notes}</Field.Error>
-					</Field.Field>
-
-					<Button type="submit" class="w-full">
-						{submitLabel}
-					</Button>
 				</div>
 			</Carousel.Item>
 		</Carousel.Content>
 	</Carousel.Root>
+	<Button type="submit" class="mt-8 w-full">
+		{submitLabel}
+	</Button>
 </form>
