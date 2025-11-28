@@ -11,7 +11,7 @@ export const coffeeBagSchema = z.object({
   picture: z.union([z.instanceof(Blob), z.string().url()]).optional(),
 });
 
-export const espressoShotSchema = z.object({
+export const coffeeBrewSchema = z.object({
   id: z.string().optional(),
   coffeeBagId: z.string().min(1, "Coffee bag is required"),
   grinderCoarseness: z
@@ -30,4 +30,4 @@ export const espressoShotSchema = z.object({
 });
 
 export type CoffeeBagFormData = z.infer<typeof coffeeBagSchema>;
-export type EspressoShotFormData = z.infer<typeof espressoShotSchema>;
+export type CoffeeBrewFormData = z.infer<typeof coffeeBrewSchema>;

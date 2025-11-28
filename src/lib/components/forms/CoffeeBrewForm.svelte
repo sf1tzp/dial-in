@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zod4 } from 'sveltekit-superforms/adapters';
-	import { espressoShotSchema, type EspressoShotFormData } from '$lib/schemas/coffee';
+	import { coffeeBrewSchema, type CoffeeBrewFormData } from '$lib/schemas/coffee';
 	import * as Field from '$lib/components/ui/field';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -9,20 +9,20 @@
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 
 	interface Props {
-		data: SuperValidated<EspressoShotFormData>;
+		data: SuperValidated<CoffeeBrewFormData>;
 		coffeeBags?: CoffeeBag[];
-		onSubmit?: (data: EspressoShotFormData) => void;
+		onSubmit?: (data: CoffeeBrewFormData) => void;
 		submitLabel?: string;
 	}
 
 	let { data, coffeeBags = [], onSubmit, submitLabel = 'Log Shot' }: Props = $props();
 
 	const form = superForm(data, {
-		validators: zod4(espressoShotSchema),
+		validators: zod4(coffeeBrewSchema),
 		SPA: true,
 		onUpdate: ({ form }) => {
 			if (form.valid && onSubmit) {
-				onSubmit(form.data as EspressoShotFormData);
+				onSubmit(form.data as CoffeeBrewFormData);
 			}
 		},
 	});

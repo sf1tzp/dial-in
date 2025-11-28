@@ -11,7 +11,7 @@ export interface CoffeeBag {
   updatedAt: Date;
 }
 
-export interface EspressoShot {
+export interface CoffeeBrew {
   id: string;
   coffeeBagId: string;
   grinderCoarseness: number;

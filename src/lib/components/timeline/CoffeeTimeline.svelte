@@ -1,12 +1,12 @@
 <script lang="ts">
 	import BookOpen from '@lucide/svelte/icons/book-open';
-	import type { CoffeeBag, EspressoShot } from '$lib/storage/interfaces';
+	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import BagEntry from './BagEntry.svelte';
 	import BrewEntry from './BrewEntry.svelte';
 
 	type TimelineEntry =
 		| { type: 'coffee-bag'; data: CoffeeBag }
-		| { type: 'espresso-shot'; data: EspressoShot; coffeeBag?: CoffeeBag };
+		| { type: 'coffee-brew'; data: CoffeeBrew; coffeeBag?: CoffeeBag };
 
 	interface Props {
 		entries: TimelineEntry[];
@@ -79,7 +79,7 @@
 							<BagEntry bag={entry.data} relativeTime={formatRelativeTime(entry.data.createdAt)} />
 						{:else}
 							<BrewEntry
-								shot={entry.data}
+								brew={entry.data}
 								coffeeBag={entry.coffeeBag}
 								relativeTime={formatRelativeTime(entry.data.createdAt)}
 							/>

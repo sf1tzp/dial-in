@@ -1,18 +1,18 @@
 <script lang="ts">
     import CoffeeBagForm from "$lib/components/forms/CoffeeBagForm.svelte";
-    import EspressoShotForm from "$lib/components/forms/EspressoShotForm.svelte";
+    import CoffeeBrewForm from "$lib/components/forms/CoffeeBrewForm.svelte";
     import CoffeeTimeline from "$lib/components/timeline/CoffeeTimeline.svelte";
     import { uuidv7 } from "uuidv7";
     import * as Dialog from "$lib/components/ui/dialog";
     import { defaults } from 'sveltekit-superforms';
     import { zod4 } from 'sveltekit-superforms/adapters';
-    import { coffeeBagSchema, espressoShotSchema, type CoffeeBagFormData, type EspressoShotFormData } from '$lib/schemas/coffee';
+    import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
-    import type { CoffeeBag, EspressoShot } from '$lib/storage/interfaces';
+    import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
     import { Card } from "$lib/components/ui/card";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
-    const espressoShotFormData = defaults(zod4(espressoShotSchema));
+    const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
 
     // State for storing entries
     const testCoffeeBag: CoffeeBag = {
@@ -27,7 +27,7 @@
         updatedAt: new Date('2025-11-25T10:30:00'),
     };
 
-    const testEspressoShot: EspressoShot = {
+    const testCoffeeBrew: CoffeeBrew = {
         id: 'test-shot-1',
         coffeeBagId: 'test-bag-1',
         grinderCoarseness: 12,
@@ -40,20 +40,20 @@
         updatedAt: new Date('2025-11-27T08:15:00'),
     };
 
-    // let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
-    // let espressoShots = $state<EspressoShot[]>([testEspressoShot]);
-    let coffeeBags = $state<CoffeeBag[]>([]);
-    let espressoShots = $state<EspressoShot[]>([]);
+    let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
+    let coffeeBrews = $state<CoffeeBrew[]>([testCoffeeBrew]);
+    // let coffeeBags = $state<CoffeeBag[]>([]);
+    // let coffeeBrews = $state<CoffeeBrew[]>([]);
 
     // Dialog open states
     let coffeeBagDialogOpen = $state(false);
-    let espressoShotDialogOpen = $state(false);
+    let coffeeBrewDialogOpen = $state(false);
 
     // Timeline entries derived from coffee bags and espresso shots
     const timelineEntries = $derived([
         ...coffeeBags.map((bag) => ({ type: 'coffee-bag' as const, data: bag })),
-        ...espressoShots.map((shot) => ({
-            type: 'espresso-shot' as const,
+        ...coffeeBrews.map((shot) => ({
+            type: 'coffee-brew' as const,
             data: shot,
             coffeeBag: coffeeBags.find((bag) => bag.id === shot.coffeeBagId),
         })),
@@ -77,9 +77,9 @@
         coffeeBagDialogOpen = false;
     }
 
-    function handleEspressoShotSubmit(formData: EspressoShotFormData) {
+    function handleCoffeeBrewSubmit(formData: CoffeeBrewFormData) {
         const now = new Date();
-        const newShot: EspressoShot = {
+        const newShot: CoffeeBrew = {
             id: uuidv7(),
             coffeeBagId: formData.coffeeBagId,
             grinderCoarseness: formData.grinderCoarseness,
@@ -92,8 +92,8 @@
             createdAt: now,
             updatedAt: now,
         };
-        espressoShots = [newShot, ...espressoShots];
-        espressoShotDialogOpen = false;
+        coffeeBrews = [newShot, ...coffeeBrews];
+        coffeeBrewDialogOpen = false;
     }
 </script>
 
@@ -115,16 +115,16 @@
         </Dialog.Content>
     </Dialog.Root>
 
-    <Dialog.Root bind:open={espressoShotDialogOpen}>
+    <Dialog.Root bind:open={coffeeBrewDialogOpen}>
         <Dialog.Trigger>
             Shot
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>Log Espresso Shot</Dialog.Title>
+                <Dialog.Title>Log Coffee Brew</Dialog.Title>
             </Dialog.Header>
-            <ScrollArea class="h-100">
-                <EspressoShotForm data={espressoShotFormData} coffeeBags={coffeeBags} onSubmit={handleEspressoShotSubmit} />
+            <ScrollArea class="h-120">
+                <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBags} onSubmit={handleCoffeeBrewSubmit} />
             </ScrollArea>
         </Dialog.Content>
     </Dialog.Root>

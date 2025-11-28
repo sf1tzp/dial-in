@@ -1,16 +1,16 @@
 <script lang="ts">
 	import Coffee from '@lucide/svelte/icons/coffee';
-	import type { CoffeeBag, EspressoShot } from '$lib/storage/interfaces';
+	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 
 	interface Props {
-		shot: EspressoShot;
+		brew: CoffeeBrew;
 		coffeeBag?: CoffeeBag;
 		relativeTime: string;
 	}
 
-	let { shot, coffeeBag, relativeTime }: Props = $props();
+	let { brew: shot, coffeeBag, relativeTime }: Props = $props();
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
