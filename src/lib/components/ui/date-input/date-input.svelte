@@ -64,7 +64,9 @@
         {...props}
       >
         {calendarValue ? df.format(calendarValue.toDate(getLocalTimeZone())) : placeholder}
-        <CalendarPlus class="ml-2 size-4" />
+        {#if !calendarValue}
+          <CalendarPlus class="ml-2 size-4" />
+        {/if}
       </Button>
     {/snippet}
   </Popover.Trigger>
