@@ -39,38 +39,5 @@ We are targeting a PWA-style experience for mobile web. Users should be able to 
 - Special CSS elements
 - Graph and Statistics views
 
-## Repository and Service Design
-
-We will implement this project as a monorepo.
-
-```
-ui/ # svelte-kit, tailwind, shadcn
-server/ # golang, no orm
-...
-```
-
-Our initial target state deployments will consist of three containerized services:
-- nginx serving ui
-- our server
-- postgres
-
-## User Data and Monetization
-
-We aim to minimize the amount of personal data collected when the user opts in:
-- email
-- username
-- their coffee records
-
-We will only authorize payments through apple or google pay, hopefully avoiding the need to retain name & address information
-
-## Authentication
-
-By limiting our exposure to user data, we aim to provide a passwordless, email based authentication mechanism.
-
-## Content moderation
-
-We will utilize automated content moderation tools for all user uploaded strings and images.
-
-
 
 
