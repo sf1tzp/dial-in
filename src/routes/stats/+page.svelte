@@ -28,6 +28,7 @@
 	const brewSeries: TimeSeriesConfig[] = [
 		{ key: 'grinderCoarseness', label: 'Grind Setting:', color: 'var(--chart-1)' },
 		{ key: 'brewTime', label: 'Brew Time (s):', color: 'var(--chart-2)' },
+		{ key: 'dryWeight', label: 'Dry Weight (g):', color: 'var(--chart-3)' },
 	];
 </script>
 
