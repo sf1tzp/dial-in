@@ -60,3 +60,16 @@ We may later implement online features and offer these optional benefits:
 - Sharable Profile
 - Special CSS elements
 - Graph and Statistics views
+
+## Feature Planning & Enhancements:
+
+### Feature: Provide a way to edit or remove entries from the timeline
+
+We should be able to implement nice swipe guestures using this pure CSS method:
+https://www.youtube.com/watch?v=WjuqAGpj6DM
+
+### Feature: When scrolling down the timeline, we should hover some filter options at the top of the page, eg Bag Selector
+
+### Feature: When the same Bag Type is added more than once, we need to use Opened-On date as a differentiator in Selector components
+
+### Feature: Use a virtual list to display the timeline
