@@ -1,0 +1,85 @@
+import type { CoffeeBag, CoffeeBrew } from "./storage/interfaces";
+
+export const testCoffeeBag: CoffeeBag = {
+  id: "test-bag-1",
+  name: "Ethiopian Yirgacheffe",
+  roasterName: "Counter Culture",
+  style: "Single Origin",
+  dateRoasted: new Date("2025-11-20"),
+  dateOpened: new Date("2025-11-25"),
+  notes: "Bright and fruity with blueberry notes",
+  createdAt: new Date("2025-11-25T10:30:00"),
+  updatedAt: new Date("2025-11-25T10:30:00"),
+};
+
+// Simulating the "dialing in" process over 5 brews
+// Starting with a coarser grind and adjusting based on extraction results
+export const testCoffeeBrews: CoffeeBrew[] = [
+  {
+    // Brew 1: Initial attempt - too coarse, fast extraction, sour/under-extracted
+    id: "test-brew-1",
+    coffeeBagId: "test-bag-1",
+    grinderCoarseness: 15,
+    grinderTime: 8.0,
+    dryWeight: 18,
+    brewTime: 22,
+    pressureReading: 7,
+    notes: "Way too fast, sour and thin. Need to go much finer.",
+    createdAt: new Date("2025-11-25T11:00:00"),
+    updatedAt: new Date("2025-11-25T11:00:00"),
+  },
+  {
+    // Brew 2: Adjusted finer - still a bit fast, slightly better
+    id: "test-brew-2",
+    coffeeBagId: "test-bag-1",
+    grinderCoarseness: 12,
+    grinderTime: 8.5,
+    dryWeight: 18,
+    brewTime: 28,
+    pressureReading: 9,
+    notes: "Slightly under-extracted, some sourness remains. Try finer grind.",
+    createdAt: new Date("2025-11-26T08:15:00"),
+    updatedAt: new Date("2025-11-26T08:15:00"),
+  },
+  {
+    // Brew 3: Went finer - now a bit slow, touching bitter territory
+    id: "test-brew-3",
+    coffeeBagId: "test-bag-1",
+    grinderCoarseness: 9,
+    grinderTime: 9.0,
+    dryWeight: 18,
+    brewTime: 38,
+    pressureReading: 11,
+    notes: "Too slow, starting to taste bitter and ashy. Back off a bit.",
+    createdAt: new Date("2025-11-26T14:30:00"),
+    updatedAt: new Date("2025-11-26T14:30:00"),
+  },
+  {
+    // Brew 4: Split the difference - getting closer
+    id: "test-brew-4",
+    coffeeBagId: "test-bag-1",
+    grinderCoarseness: 10,
+    grinderTime: 8.8,
+    dryWeight: 18,
+    brewTime: 32,
+    pressureReading: 9.5,
+    notes:
+      "Much better balance! Slight hint of sourness, could go just a touch finer.",
+    createdAt: new Date("2025-11-27T07:45:00"),
+    updatedAt: new Date("2025-11-27T07:45:00"),
+  },
+  {
+    // Brew 5: Dialed in! Perfect extraction
+    id: "test-brew-5",
+    coffeeBagId: "test-bag-1",
+    grinderCoarseness: 10,
+    grinderTime: 9.0,
+    dryWeight: 18,
+    brewTime: 30,
+    pressureReading: 9,
+    notes:
+      "Perfect! Sweet, balanced, blueberry notes coming through. This is the recipe.",
+    createdAt: new Date("2025-11-28T08:00:00"),
+    updatedAt: new Date("2025-11-28T08:00:00"),
+  },
+];

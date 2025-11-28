@@ -9,39 +9,14 @@
     import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
-    import { Card } from "$lib/components/ui/card";
+    import { testCoffeeBag, testCoffeeBrews } from '$lib/test-data';
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
 
     // State for storing entries
-    const testCoffeeBag: CoffeeBag = {
-        id: 'test-bag-1',
-        name: 'Ethiopian Yirgacheffe',
-        roasterName: 'Counter Culture',
-        style: 'Single Origin',
-        dateRoasted: new Date('2025-11-20'),
-        dateOpened: new Date('2025-11-25'),
-        notes: 'Bright and fruity with blueberry notes',
-        createdAt: new Date('2025-11-25T10:30:00'),
-        updatedAt: new Date('2025-11-25T10:30:00'),
-    };
-
-    const testCoffeeBrew: CoffeeBrew = {
-        id: 'test-shot-1',
-        coffeeBagId: 'test-bag-1',
-        grinderCoarseness: 12,
-        grinderTime: 8.5,
-        dryWeight: 18,
-        brewTime: 28,
-        pressureReading: 9,
-        notes: 'Slightly under-extracted, try finer grind',
-        createdAt: new Date('2025-11-27T08:15:00'),
-        updatedAt: new Date('2025-11-27T08:15:00'),
-    };
-
     let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
-    let coffeeBrews = $state<CoffeeBrew[]>([testCoffeeBrew]);
+    let coffeeBrews = $state<CoffeeBrew[]>([...testCoffeeBrews]);
     // let coffeeBags = $state<CoffeeBag[]>([]);
     // let coffeeBrews = $state<CoffeeBrew[]>([]);
 
