@@ -68,16 +68,16 @@
 				</div>
 				<div class="grid grid-cols-4 gap-2 text-center text-sm text-muted-foreground">
 					<div>Varies</div>
-					<div>13-17g</div>
+					<div>13-17 g</div>
 					<div>9-15 kg</div>
-					<div>25-45 sec</div>
+					<div>25-45 s</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="space-y-4">
 			<h2 class="text-lg font-semibold">Troubleshooting Parameters</h2>
-			<p class="text-sm">If you find yourselve outside of the idal extraction zone, consider these possible culprits and adjust as necessary:</p>
+			<p class="text-sm">If you find yourself outside of the idal extraction zone, consider these possible culprits and adjust as necessary:</p>
 			<div class="">
 				<table class="w-full text-sm">
 					<thead>

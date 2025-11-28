@@ -62,11 +62,11 @@
 		<Carousel.Content>
 			<!-- Slide 1: Essential Fields -->
 			<Carousel.Item>
-				<div class="space-y-4">
+				<div class="space-y-4 px-1">
 					<!-- Name and Picture on same row -->
-					<div class="flex gap-4 items-start">
-						<Field.Field class="w-2/3 flex-1">
-							<Field.Label for="name">Name</Field.Label>
+					<div class="flex items-start">
+						<Field.Field class="w-2/3">
+							<Field.Label for="name">Coffee</Field.Label>
 							<Input
 								id="name"
 								name="name"
