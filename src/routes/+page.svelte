@@ -10,6 +10,9 @@
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
     import { testCoffeeBag, testCoffeeBrews } from '$lib/test-data';
+    import { buttonVariants } from "$lib/components/ui/button";
+    import Coffee from "@lucide/svelte/icons/coffee";
+    import ClipboardList from "@lucide/svelte/icons/clipboard-list";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
@@ -72,13 +75,15 @@
     }
 </script>
 
-<h1>Dial In</h1>
+<div class="pt-8 text-center">
+    <h1 class="text-4xl">Greetings Component Placeholder</h1>
+</div>
 
-<div>
-    <h2>Add entry</h2>
+<div class="mt-8 flex justify-around">
     <Dialog.Root bind:open={coffeeBagDialogOpen}>
-        <Dialog.Trigger>
-            Coffee
+        <Dialog.Trigger class={buttonVariants({ variant: "default" })}>
+            <ClipboardList class="size-4"/>
+            Open a Bag
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
@@ -91,8 +96,9 @@
     </Dialog.Root>
 
     <Dialog.Root bind:open={coffeeBrewDialogOpen}>
-        <Dialog.Trigger>
-            Shot
+        <Dialog.Trigger class={buttonVariants({ variant: "default" })}>
+            <Coffee class="size-4"/>
+            Start a Brew
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
@@ -105,5 +111,7 @@
     </Dialog.Root>
 </div>
 
-<CoffeeTimeline entries={timelineEntries} />
+<div class="mt-8">
+    <CoffeeTimeline entries={timelineEntries} />
+</div>
 
