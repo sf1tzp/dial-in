@@ -9,6 +9,7 @@
     import { coffeeBagSchema, espressoShotSchema, type CoffeeBagFormData, type EspressoShotFormData } from '$lib/schemas/coffee';
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, EspressoShot } from '$lib/storage/interfaces';
+    import { Card } from "$lib/components/ui/card";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const espressoShotFormData = defaults(zod4(espressoShotSchema));
@@ -39,8 +40,10 @@
         updatedAt: new Date('2025-11-27T08:15:00'),
     };
 
-    let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
-    let espressoShots = $state<EspressoShot[]>([testEspressoShot]);
+    // let coffeeBags = $state<CoffeeBag[]>([testCoffeeBag]);
+    // let espressoShots = $state<EspressoShot[]>([testEspressoShot]);
+    let coffeeBags = $state<CoffeeBag[]>([]);
+    let espressoShots = $state<EspressoShot[]>([]);
 
     // Dialog open states
     let coffeeBagDialogOpen = $state(false);
@@ -128,6 +131,8 @@
 </div>
 
 <div>
-    <CoffeeTimeline entries={timelineEntries} />
+    <Card class="m-4 h-screen">
+        <CoffeeTimeline entries={timelineEntries} />
+    </Card>
 </div>
 
