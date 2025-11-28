@@ -37,9 +37,7 @@
 	const navItems = [
 		{ href: '/', label: 'Dial-in' },
 		{ href: '/stats', label: 'Stats' },
-		{ href: '/about', label: 'About' }
-		// { href: '/filings', label: 'Filings' },
-		// { href: '/analysis', label: 'Analysis' }
+		{ href: '/how-to', label: 'How-To' }
 	];
 
 	function isCurrentPath(href: string): boolean {
