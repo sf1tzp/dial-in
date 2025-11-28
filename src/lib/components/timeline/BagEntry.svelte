@@ -53,11 +53,11 @@
 		</div>
 		<div>
 			<span class="font-medium">Roasted:</span>
-			{formatDate(bag.dateRoasted)}
+			{bag.dateRoasted ? formatDate(bag.dateRoasted) : "N/A"}
 		</div>
 		<div>
 			<span class="font-medium">Opened:</span>
-			{formatDate(bag.dateOpened)}
+			{bag.dateOpened ? formatDate(bag.dateOpened) : "N/A"}
 		</div>
 	</div>
 
