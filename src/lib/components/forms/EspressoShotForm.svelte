@@ -29,7 +29,7 @@
 	const { form: formData, errors, enhance } = form;
 </script>
 
-<form method="POST" use:enhance class="space-y-4">
+<form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
 	<Field.Field>
 		<Field.Label for="coffeeBagId">Coffee Bag</Field.Label>
 		<select

@@ -40,7 +40,7 @@
 	}
 </script>
 
-<form method="POST" use:enhance class="space-y-4">
+<form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
 	<Field.Field>
 		<Field.Label for="name">Coffee Name</Field.Label>
 		<Input
