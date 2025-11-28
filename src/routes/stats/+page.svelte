@@ -1,14 +1,14 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
-	import { testCoffeeBags, testCoffeeBrews } from '$lib/test-data';
+	import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
-	let selectedBagId = $state<string>(testCoffeeBags[0]?.id ?? 'none');
+	let selectedBagId = $state<string>(coffeeBagStore.items[0]?.id ?? 'none');
 
 	// Filter brews based on selected bag
 	const filteredBrews = $derived(
-			testCoffeeBrews.filter(brew => brew.coffeeBagId === selectedBagId)
+			coffeeBrewStore.items.filter(brew => brew.coffeeBagId === selectedBagId)
 	);
 
 	// Transform CoffeeBrew data into chart-compatible format
@@ -41,7 +41,7 @@
 				<Card.Description>All time brewing sessions</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<p class="text-4xl font-bold">{testCoffeeBrews.length}</p>
+				<p class="text-4xl font-bold">{coffeeBrewStore.items.length}</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -51,7 +51,7 @@
 				<Card.Description>Bags tracked</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<p class="text-4xl font-bold">{testCoffeeBags.length}</p>
+				<p class="text-4xl font-bold">{coffeeBagStore.items.length}</p>
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -67,10 +67,10 @@
 					bind:value={selectedBagId}
 					class="border-input bg-background ring-offset-background focus:ring-ring h-9 appearance-none rounded-md border py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
 				>
-					{#each testCoffeeBags as bag (bag.id)}
+					{#each coffeeBagStore.items as bag (bag.id)}
 						<option value={bag.id}>{bag.name}</option>
 					{/each}
-					{#if testCoffeeBags.length === 0}
+					{#if coffeeBagStore.items.length === 0}
 						<option value="none">No bags available</option>
 					{/if}
 				</select>

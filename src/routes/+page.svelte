@@ -9,7 +9,7 @@
     import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
     import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
-    import { testCoffeeBags, testCoffeeBrews } from '$lib/test-data';
+    import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
     import { buttonVariants } from "$lib/components/ui/button";
     import Coffee from "@lucide/svelte/icons/coffee";
     import ClipboardList from "@lucide/svelte/icons/clipboard-list";
@@ -17,23 +17,17 @@
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
 
-    // State for storing entries
-    let coffeeBags = $state<CoffeeBag[]>([...testCoffeeBags]);
-    let coffeeBrews = $state<CoffeeBrew[]>([...testCoffeeBrews]);
-    // let coffeeBags = $state<CoffeeBag[]>([]);
-    // let coffeeBrews = $state<CoffeeBrew[]>([]);
-
     // Dialog open states
     let coffeeBagDialogOpen = $state(false);
     let coffeeBrewDialogOpen = $state(false);
 
     // Timeline entries derived from coffee bags and espresso shots
     const timelineEntries = $derived([
-        ...coffeeBags.map((bag) => ({ type: 'coffee-bag' as const, data: bag })),
-        ...coffeeBrews.map((shot) => ({
+        ...coffeeBagStore.items.map((bag) => ({ type: 'coffee-bag' as const, data: bag })),
+        ...coffeeBrewStore.items.map((shot) => ({
             type: 'coffee-brew' as const,
             data: shot,
-            coffeeBag: coffeeBags.find((bag) => bag.id === shot.coffeeBagId),
+            coffeeBag: coffeeBagStore.items.find((bag) => bag.id === shot.coffeeBagId),
         })),
     ]);
 
@@ -51,7 +45,7 @@
             createdAt: now,
             updatedAt: now,
         };
-        coffeeBags = [newBag, ...coffeeBags];
+        coffeeBagStore.add(newBag);
         coffeeBagDialogOpen = false;
     }
 
@@ -70,7 +64,7 @@
             createdAt: now,
             updatedAt: now,
         };
-        coffeeBrews = [newShot, ...coffeeBrews];
+        coffeeBrewStore.add(newShot);
         coffeeBrewDialogOpen = false;
     }
 </script>
@@ -105,7 +99,7 @@
                 <Dialog.Title>Log Coffee Brew</Dialog.Title>
             </Dialog.Header>
             <ScrollArea class="h-120">
-                <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBags} onSubmit={handleCoffeeBrewSubmit} />
+                <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBagStore.items} onSubmit={handleCoffeeBrewSubmit} />
             </ScrollArea>
         </Dialog.Content>
     </Dialog.Root>
