@@ -74,7 +74,7 @@
     <Greeting />
 </div>
 
-<div class="mt-48 flex justify-around">
+<div class="mt-32 sm:mt-48 flex justify-around">
     <Dialog.Root bind:open={coffeeBagDialogOpen}>
         <Dialog.Trigger class={buttonVariants({ variant: "default" })}>
             <ClipboardList class="size-4"/>

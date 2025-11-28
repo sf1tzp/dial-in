@@ -42,7 +42,7 @@
 				</div>
 				<div class="rounded-lg border p-3 text-center bg-muted/50">
 					<img src={idealExtractedImg} alt="Ideal extraction pressure gauge" class="mx-auto mb-2 h-24 w-auto" />
-					<p class="font-medium text-green-600">Ideal Espresso Zone</p>
+					<p class="font-medium text-green-600">Ideal Extraction Zone</p>
 					<p class="text-sm text-muted-foreground">
 						Needle in solid gray zone indicates extraction at ideal pressure.
 					</p>
@@ -58,7 +58,7 @@
 		</div>
 
 		<div class="space-y-4">
-			<h2 class="text-lg font-semibold">Optimal Parameters</h2>
+			<h2 class="text-lg font-semibold">Parameters for Ideal Extraction</h2>
 			<div class="rounded-lg border p-3 bg-muted/50">
 				<div class="grid grid-cols-4 gap-2 text-center text-sm font-medium">
 					<div>Grind</div>
@@ -77,7 +77,8 @@
 
 		<div class="space-y-4">
 			<h2 class="text-lg font-semibold">Troubleshooting Parameters</h2>
-			<div class="-ml-2">
+			<p class="text-sm">If you find yourselve outside of the idal extraction zone, consider these possible culprits and adjust as necessary:</p>
+			<div class="">
 				<table class="w-full text-sm">
 					<thead>
 						<tr class="border-b">
@@ -85,7 +86,6 @@
 							<th class="p-2 text-left">Grind Setting</th>
 							<th class="p-2 text-left">Dry Weight</th>
 							<th class="p-2 text-left">Tamp Pressure</th>
-							<th class="p-2 text-left">Shot Time</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -94,14 +94,12 @@
 							<td class="p-2">Too Fine</td>
 							<td class="p-2">Too Much</td>
 							<td class="p-2">Too Heavy</td>
-							<td class="p-2">&gt; 50 sec</td>
 						</tr>
 						<tr class="border-b">
 							<td class="p-2 font-medium text-yellow-600">Under Extracted</td>
 							<td class="p-2">Too Coarse</td>
 							<td class="p-2">Too Little</td>
 							<td class="p-2">Too Light</td>
-							<td class="p-2">&lt; 20 sec</td>
 						</tr>
 					</tbody>
 				</table>
