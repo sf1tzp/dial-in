@@ -69,7 +69,7 @@
 							<BagEntry bag={entry.data} relativeTime={formatRelativeTime(entry.data.createdAt)} />
 						{:else}
 							<BrewEntry
-								brew={entry.data}
+								coffeeBrew={entry.data}
 								coffeeBag={entry.coffeeBag}
 								relativeTime={formatRelativeTime(entry.data.createdAt)}
 							/>

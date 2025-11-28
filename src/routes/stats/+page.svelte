@@ -18,7 +18,7 @@
 	// Transform CoffeeBrew data into chart-compatible format
 	const brewChartData: TimeSeriesDataPoint[] = $derived(filteredBrews.map(brew => ({
 		date: brew.createdAt,
-		grinderCoarseness: brew.grinderCoarseness,
+		grinderCoarseness: brew.grindSetting,
 		brewTime: brew.brewTime,
 		pressureReading: brew.pressureReading,
 		dryWeight: brew.dryWeight,
@@ -26,8 +26,8 @@
 
 	// Define which series to display
 	const brewSeries: TimeSeriesConfig[] = [
-		{ key: 'grinderCoarseness', label: 'Grinder Coarseness', color: 'var(--chart-1)' },
-		{ key: 'brewTime', label: 'Brew Time (s)', color: 'var(--chart-2)' },
+		{ key: 'grinderCoarseness', label: 'Grind Setting:', color: 'var(--chart-1)' },
+		{ key: 'brewTime', label: 'Brew Time (s):', color: 'var(--chart-2)' },
 	];
 </script>
 

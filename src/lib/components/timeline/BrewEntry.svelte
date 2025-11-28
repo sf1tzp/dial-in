@@ -5,12 +5,12 @@
 	import { Separator } from '$lib/components/ui/separator';
 
 	interface Props {
-		brew: CoffeeBrew;
+		coffeeBrew?: CoffeeBrew;
 		coffeeBag?: CoffeeBag;
 		relativeTime: string;
 	}
 
-	let { brew: shot, coffeeBag, relativeTime }: Props = $props();
+	let { coffeeBrew, coffeeBag, relativeTime }: Props = $props();
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -51,35 +51,33 @@
 
 	<div class="text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
 		<div>
-			<span class="font-medium">Dose:</span>
-			{shot.dryWeight}g
+			<span class="font-medium">Grind Setting:</span>
+			{coffeeBrew?.grindSetting}
 		</div>
 		<div>
-			<span class="font-medium">Time:</span>
-			{shot.brewTime}s
+			<span class="font-medium">Dry Weight:</span>
+			{coffeeBrew?.dryWeight}g
+		</div>
+		<div>
+			<span class="font-medium">Brew Time:</span>
+			{coffeeBrew?.brewTime}s
 		</div>
 		<div>
 			<span class="font-medium">Pressure:</span>
-			{shot.pressureReading} bar
-		</div>
-		<div>
-			<span class="font-medium">Grind:</span>
-			{shot.grinderCoarseness}
-		</div>
-		<div>
-			<span class="font-medium">Grind Time:</span>
-			{shot.grinderTime}s
+			{coffeeBrew?.pressureReading}%
 		</div>
 	</div>
 
-	{#if shot.notes}
+	{#if coffeeBrew?.notes}
 		<Separator class="my-3" />
-		<p class="text-muted-foreground text-sm italic">"{shot.notes}"</p>
+		<p class="text-muted-foreground text-sm italic">"{coffeeBrew?.notes}"</p>
 	{/if}
 
+	{#if coffeeBrew?.createdAt}
 	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
-		<time datetime={shot.createdAt.toISOString()}>
-			{formatDate(shot.createdAt)} at {formatTime(shot.createdAt)}
+		<time datetime={coffeeBrew.createdAt.toISOString()}>
+			{formatDate(coffeeBrew.createdAt)} at {formatTime(coffeeBrew.createdAt)}
 		</time>
 	</div>
+	{/if}
 </div>

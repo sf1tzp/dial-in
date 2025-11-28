@@ -38,9 +38,9 @@
             id: uuidv7(),
             name: formData.name,
             roasterName: formData.roasterName,
-            style: formData.style,
-            dateRoasted: formData.dateRoasted,
-            dateOpened: formData.dateOpened,
+            style: formData.style || '',
+            dateRoasted: formData.dateRoasted || undefined,
+            dateOpened: formData.dateOpened || undefined,
             notes: formData.notes || '',
             picture: formData.picture,
             createdAt: now,
@@ -55,8 +55,7 @@
         const newShot: CoffeeBrew = {
             id: uuidv7(),
             coffeeBagId: formData.coffeeBagId,
-            grinderCoarseness: formData.grinderCoarseness,
-            grinderTime: formData.grinderTime,
+            grindSetting: formData.grindSetting,
             dryWeight: formData.dryWeight,
             brewTime: formData.brewTime,
             pressureReading: formData.pressureReading,
@@ -103,9 +102,7 @@
                     <Coffee class="pl-2 size-8"/>
                 </Dialog.Title>
             </Dialog.Header>
-            <ScrollArea class="h-120">
                 <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBagStore.items} onSubmit={handleCoffeeBrewSubmit} />
-            </ScrollArea>
         </Dialog.Content>
     </Dialog.Root>
 </div>

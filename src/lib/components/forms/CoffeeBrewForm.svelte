@@ -6,7 +6,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
+	import { Slider } from '$lib/components/ui/slider';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
+    import { GRINDER_MAX, PRESSURE_MAX, PRESSURE_UNIT, USE_PRESSURE_UNIT } from '$lib/settings';
+    import ScrollArea from '../ui/scroll-area/scroll-area.svelte';
 
 	interface Props {
 		data: SuperValidated<CoffeeBrewFormData>;
@@ -15,7 +18,7 @@
 		submitLabel?: string;
 	}
 
-	let { data, coffeeBags = [], onSubmit, submitLabel = 'Log Shot' }: Props = $props();
+	let { data, coffeeBags = [], onSubmit, submitLabel = 'Save' }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zod4(coffeeBrewSchema),
@@ -38,6 +41,7 @@
 </script>
 
 <form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
+	<ScrollArea class="h-100">
 	<Field.Field>
 		<Field.Label for="coffeeBagId">Coffee Bag</Field.Label>
 		<select
@@ -55,43 +59,26 @@
 		<Field.Error>{$errors.coffeeBagId}</Field.Error>
 	</Field.Field>
 
-	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
-			<Field.Label for="grinderCoarseness">Grinder Setting</Field.Label>
-			<Input
+			<Field.Label for="grinderCoarseness">
+				Grinder Setting: {($formData.grindSetting ?? (0.5 * GRINDER_MAX)).toFixed(1)}
+			</Field.Label>
+			<Slider
+				type="single"
 				id="grinderCoarseness"
-				name="grinderCoarseness"
-				type="number"
-				step="0.1"
-				min="0"
-				max="100"
-				placeholder="e.g., 15"
-				bind:value={$formData.grinderCoarseness}
-				aria-invalid={$errors.grinderCoarseness ? 'true' : undefined}
+				min={0}
+				max={GRINDER_MAX}
+				step={0.1}
+				value={$formData.grindSetting ?? (0.5 * GRINDER_MAX)}
+				onValueChange={(v) => ($formData.grindSetting = v)}
 			/>
-			<Field.Description>Coarseness setting (0-100)</Field.Description>
-			<Field.Error>{$errors.grinderCoarseness}</Field.Error>
+			<Field.Description>Coarseness setting (0-{GRINDER_MAX})</Field.Description>
+			<Field.Error>{$errors.grindSetting}</Field.Error>
 		</Field.Field>
-
-		<Field.Field>
-			<Field.Label for="grinderTime">Grind Time (seconds)</Field.Label>
-			<Input
-				id="grinderTime"
-				name="grinderTime"
-				type="number"
-				step="0.1"
-				min="0"
-				placeholder="e.g., 12.5"
-				bind:value={$formData.grinderTime}
-				aria-invalid={$errors.grinderTime ? 'true' : undefined}
-			/>
-			<Field.Error>{$errors.grinderTime}</Field.Error>
-		</Field.Field>
-	</div>
 
 	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
-			<Field.Label for="dryWeight">Dose (grams)</Field.Label>
+			<Field.Label for="dryWeight">Dry Weight (grams)</Field.Label>
 			<Input
 				id="dryWeight"
 				name="dryWeight"
@@ -102,7 +89,7 @@
 				bind:value={$formData.dryWeight}
 				aria-invalid={$errors.dryWeight ? 'true' : undefined}
 			/>
-			<Field.Description>Dry coffee weight</Field.Description>
+			<!-- <Field.Description>Dry coffee weight</Field.Description> -->
 			<Field.Error>{$errors.dryWeight}</Field.Error>
 		</Field.Field>
 
@@ -123,19 +110,17 @@
 	</div>
 
 	<Field.Field>
-		<Field.Label for="pressureReading">Pressure (bar)</Field.Label>
-		<Input
+		<Field.Label for="pressureReading">Pressure: {$formData.pressureReading ?? (USE_PRESSURE_UNIT ? 0.5 * PRESSURE_MAX : 50)} {USE_PRESSURE_UNIT ? PRESSURE_UNIT : '%'}</Field.Label>
+		<Slider
+			type="single"
 			id="pressureReading"
-			name="pressureReading"
-			type="number"
-			step="0.1"
-			min="0"
-			max="15"
-			placeholder="e.g., 9.0"
-			bind:value={$formData.pressureReading}
-			aria-invalid={$errors.pressureReading ? 'true' : undefined}
+			min={0}
+			max={USE_PRESSURE_UNIT ? PRESSURE_MAX : 100}
+			step={1}
+			value={$formData.pressureReading ?? (USE_PRESSURE_UNIT ? 0.5 * PRESSURE_MAX : 50)}
+			onValueChange={(v) => ($formData.pressureReading = v)}
 		/>
-		<Field.Description>Average pressure during extraction</Field.Description>
+		<Field.Description>Pressure level { USE_PRESSURE_UNIT ? `(0-${PRESSURE_MAX} bar)` : '(0-100%)'}</Field.Description>
 		<Field.Error>{$errors.pressureReading}</Field.Error>
 	</Field.Field>
 
@@ -165,8 +150,9 @@
 				}
 			}}
 		/>
-		<Field.Description>Upload a photo of your shot</Field.Description>
+		<!-- <Field.Description>Upload a photo of your shot</Field.Description> -->
 	</Field.Field>
+	</ScrollArea>
 
 	<Button type="submit" class="w-full">
 		{submitLabel}

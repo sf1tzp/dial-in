@@ -1,7 +1,7 @@
 export interface CoffeeBag {
   id: string;
-  dateRoasted: Date;
-  dateOpened: Date;
+  dateRoasted: Date | undefined;
+  dateOpened: Date | undefined;
   name: string;
   roasterName: string;
   style: string;
@@ -14,8 +14,7 @@ export interface CoffeeBag {
 export interface CoffeeBrew {
   id: string;
   coffeeBagId: string;
-  grinderCoarseness: number;
-  grinderTime: number;
+  grindSetting: number;
   dryWeight: number;
   brewTime: number;
   pressureReading: number;
