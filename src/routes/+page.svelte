@@ -8,7 +8,6 @@
     import { defaults } from 'sveltekit-superforms';
     import { zod4 } from 'sveltekit-superforms/adapters';
     import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
-    import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
     import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
     import { buttonVariants } from "$lib/components/ui/button";
@@ -46,6 +45,7 @@
             createdAt: now,
             updatedAt: now,
         };
+        // Add is async but updates UI immediately, errors are handled internally
         coffeeBagStore.add(newBag);
         coffeeBagDialogOpen = false;
     }
@@ -64,6 +64,7 @@
             createdAt: now,
             updatedAt: now,
         };
+        // Add is async but updates UI immediately, errors are handled internally
         coffeeBrewStore.add(newShot);
         coffeeBrewDialogOpen = false;
     }

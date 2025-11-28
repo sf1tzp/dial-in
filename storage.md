@@ -6,13 +6,13 @@ This document outlines the steps to migrate our storage layer from `localStorage
 
 ## Why IndexedDB?
 
-| Feature | LocalStorage | IndexedDB |
-|---------|--------------|-----------|
-| Storage Limit | ~5-10 MB | 50% of disk space (typically GB) |
-| Data Types | Strings only | Structured data, Blobs, Files |
-| Performance | Synchronous (blocks UI) | Asynchronous |
-| Durability | Can be cleared by browser | More persistent, better for PWAs |
-| Querying | No indexing | Supports indexes and cursors |
+| Feature       | LocalStorage              | IndexedDB                        |
+| ------------- | ------------------------- | -------------------------------- |
+| Storage Limit | ~5-10 MB                  | 50% of disk space (typically GB) |
+| Data Types    | Strings only              | Structured data, Blobs, Files    |
+| Performance   | Synchronous (blocks UI)   | Asynchronous                     |
+| Durability    | Can be cleared by browser | More persistent, better for PWAs |
+| Querying      | No indexing               | Supports indexes and cursors     |
 
 ## Current Implementation
 
@@ -44,25 +44,25 @@ Located in `src/lib/storage/local-storage.svelte.ts`:
 Create a new file `src/lib/storage/idb-storage.svelte.ts`:
 
 ```typescript
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
 interface DialInDB extends DBSchema {
   coffeeBags: {
     key: string;
     value: CoffeeBag;
-    indexes: { 'by-created': Date };
+    indexes: { "by-created": Date };
   };
   coffeeBrews: {
     key: string;
     value: CoffeeBrew;
     indexes: {
-      'by-created': Date;
-      'by-bag': string;
+      "by-created": Date;
+      "by-bag": string;
     };
   };
 }
 
-const DB_NAME = 'dial-in-db';
+const DB_NAME = "dial-in-db";
 const DB_VERSION = 1;
 ```
 
@@ -73,13 +73,13 @@ async function initDB(): Promise<IDBPDatabase<DialInDB>> {
   return openDB<DialInDB>(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // Coffee Bags store
-      const bagStore = db.createObjectStore('coffeeBags', { keyPath: 'id' });
-      bagStore.createIndex('by-created', 'createdAt');
+      const bagStore = db.createObjectStore("coffeeBags", { keyPath: "id" });
+      bagStore.createIndex("by-created", "createdAt");
 
       // Coffee Brews store
-      const brewStore = db.createObjectStore('coffeeBrews', { keyPath: 'id' });
-      brewStore.createIndex('by-created', 'createdAt');
-      brewStore.createIndex('by-bag', 'coffeeBagId');
+      const brewStore = db.createObjectStore("coffeeBrews", { keyPath: "id" });
+      brewStore.createIndex("by-created", "createdAt");
+      brewStore.createIndex("by-bag", "coffeeBagId");
     },
   });
 }
@@ -91,7 +91,7 @@ Replace synchronous localStorage calls with async IndexedDB operations:
 
 ```typescript
 async function createIDBStore<T extends { id: string; createdAt: Date }>(
-  storeName: 'coffeeBags' | 'coffeeBrews'
+  storeName: "coffeeBags" | "coffeeBrews",
 ) {
   const db = await initDB();
   let items = $state<T[]>([]);
@@ -99,13 +99,13 @@ async function createIDBStore<T extends { id: string; createdAt: Date }>(
   // Load initial data
   async function load() {
     const all = await db.getAll(storeName);
-    items = all.sort((a, b) =>
-      b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    items = all.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   return {
-    get items() { return items; },
+    get items() {
+      return items;
+    },
 
     async add(item: T) {
       await db.add(storeName, item);
@@ -117,13 +117,13 @@ async function createIDBStore<T extends { id: string; createdAt: Date }>(
       if (existing) {
         const updated = { ...existing, ...updates, updatedAt: new Date() };
         await db.put(storeName, updated);
-        items = items.map(i => i.id === id ? updated : i);
+        items = items.map((i) => (i.id === id ? updated : i));
       }
     },
 
     async remove(id: string) {
       await db.delete(storeName, id);
-      items = items.filter(i => i.id !== id);
+      items = items.filter((i) => i.id !== id);
     },
 
     // ... other methods
@@ -138,14 +138,16 @@ Since IndexedDB is async, we need to handle store initialization:
 
 ```typescript
 // Option A: Export a promise
-export const coffeeBagStorePromise = createIDBStore<CoffeeBag>('coffeeBags');
+export const coffeeBagStorePromise = createIDBStore<CoffeeBag>("coffeeBags");
 
 // Option B: Use a loader pattern
-let _coffeeBagStore: Awaited<ReturnType<typeof createIDBStore<CoffeeBag>>> | null = null;
+let _coffeeBagStore: Awaited<
+  ReturnType<typeof createIDBStore<CoffeeBag>>
+> | null = null;
 
 export async function getCoffeeBagStore() {
   if (!_coffeeBagStore) {
-    _coffeeBagStore = await createIDBStore<CoffeeBag>('coffeeBags');
+    _coffeeBagStore = await createIDBStore<CoffeeBag>("coffeeBags");
     await _coffeeBagStore.load();
   }
   return _coffeeBagStore;
@@ -176,7 +178,7 @@ export async function load() {
 ```typescript
 export async function getBrewsForBag(bagId: string): Promise<CoffeeBrew[]> {
   const db = await initDB();
-  return db.getAllFromIndex('coffeeBrews', 'by-bag', bagId);
+  return db.getAllFromIndex("coffeeBrews", "by-bag", bagId);
 }
 ```
 
@@ -188,19 +190,19 @@ IndexedDB natively supports Blobs, simplifying image storage:
 // No more base64 encoding needed!
 async function addBagWithImage(bag: CoffeeBag, imageBlob: Blob) {
   const db = await initDB();
-  await db.add('coffeeBags', { ...bag, picture: imageBlob });
+  await db.add("coffeeBags", { ...bag, picture: imageBlob });
 }
 ```
 
 ## File Changes Summary
 
-| File | Action |
-|------|--------|
-| `src/lib/storage/idb-storage.svelte.ts` | **Create** - New IndexedDB implementation |
-| `src/lib/storage/local-storage.svelte.ts` | **Delete** or keep for reference |
-| `src/lib/storage/index.ts` | **Update** - Export new IDB stores |
-| `src/routes/+layout.svelte` | **Update** - Initialize stores on app load |
-| Components using stores | **Update** - Handle async store access |
+| File                                      | Action                                     |
+| ----------------------------------------- | ------------------------------------------ |
+| `src/lib/storage/idb-storage.svelte.ts`   | **Create** - New IndexedDB implementation  |
+| `src/lib/storage/local-storage.svelte.ts` | **Delete** or keep for reference           |
+| `src/lib/storage/index.ts`                | **Update** - Export new IDB stores         |
+| `src/routes/+layout.svelte`               | **Update** - Initialize stores on app load |
+| Components using stores                   | **Update** - Handle async store access     |
 
 ## Considerations
 

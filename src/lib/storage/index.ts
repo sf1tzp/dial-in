@@ -1,2 +1,2 @@
 export * from "./interfaces";
-export * from "./local-storage.svelte";
+export * from "./idb-storage.svelte";

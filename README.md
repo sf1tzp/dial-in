@@ -67,4 +67,3 @@ We may later implement online features and offer these optional benefits:
 ### Limitations with LocalStorage
 
 Currently the app uses a simple key value local storage system. This was simple to implement, but doesn't provide much durability. We don't want the user's data to be deleted prematurely, so we should look at adopting IndexedDB before publishing.
-
