@@ -29,7 +29,7 @@
 	const { form: formData, errors, enhance } = form;
 </script>
 
-<form method="POST" use:enhance class="space-y-6">
+<form method="POST" use:enhance class="space-y-4">
 	<Field.Field>
 		<Field.Label for="coffeeBagId">Coffee Bag</Field.Label>
 		<select
@@ -47,7 +47,7 @@
 		<Field.Error>{$errors.coffeeBagId}</Field.Error>
 	</Field.Field>
 
-	<div class="grid gap-6 sm:grid-cols-2">
+	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
 			<Field.Label for="grinderCoarseness">Grinder Setting</Field.Label>
 			<Input
@@ -81,7 +81,7 @@
 		</Field.Field>
 	</div>
 
-	<div class="grid gap-6 sm:grid-cols-2">
+	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
 			<Field.Label for="dryWeight">Dose (grams)</Field.Label>
 			<Input

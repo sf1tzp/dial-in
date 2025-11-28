@@ -39,7 +39,7 @@
 	}
 </script>
 
-<form method="POST" use:enhance class="space-y-6">
+<form method="POST" use:enhance class="space-y-4">
 	<Field.Field>
 		<Field.Label for="name">Coffee Name</Field.Label>
 		<Input
@@ -79,7 +79,7 @@
 		<Field.Error>{$errors.style}</Field.Error>
 	</Field.Field>
 
-	<div class="grid gap-6 sm:grid-cols-2">
+	<div class="grid gap-4 sm:grid-cols-2">
 		<Field.Field>
 			<Field.Label for="dateRoasted">Date Roasted</Field.Label>
 			<Input
@@ -140,7 +140,7 @@
 		<Field.Description>Upload an image of the coffee bag</Field.Description>
 	</Field.Field>
 
-	<Button type="submit" class="w-full">
+	<Button type="submit" class="mt-4 w-full">
 		{submitLabel}
 	</Button>
 </form>
