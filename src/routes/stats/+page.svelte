@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
+  import { GradientChart } from '$lib/components/ui/gradient-chart';
 </script>
 
 <svelte:head>
@@ -37,9 +38,9 @@
 			<Card.Description>Your coffee journey at a glance</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<p class="text-muted-foreground">
-				Start logging your brews to see statistics and insights about your coffee preferences.
-			</p>
+			<GradientChart />
 		</Card.Content>
 	</Card.Root>
+
+
 </div>
