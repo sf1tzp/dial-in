@@ -3,10 +3,13 @@
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { coffeeBagSchema, type CoffeeBagFormData } from '$lib/schemas/coffee';
 	import * as Field from '$lib/components/ui/field';
+	import * as Carousel from '$lib/components/ui/carousel';
+	import type { CarouselAPI } from '$lib/components/ui/carousel/context';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
-  	import { DateInput } from '$lib/components/ui/date-input';
+	import { DateInput } from '$lib/components/ui/date-input';
+	import CameraIcon from '@lucide/svelte/icons/camera';
 
 	interface Props {
 		data: SuperValidated<CoffeeBagFormData>;
@@ -14,7 +17,7 @@
 		submitLabel?: string;
 	}
 
-	let { data, onSubmit, submitLabel = 'Save Coffee' }: Props = $props();
+	let { data, onSubmit, submitLabel = 'Save' }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zod4(coffeeBagSchema),
@@ -28,123 +31,201 @@
 
 	const { form: formData, errors, enhance } = form;
 
-	// Format date for input[type="date"]
-	function formatDateForInput(date: Date | undefined): string {
-		if (!date) return '';
-		return date.toISOString().split('T')[0];
+	let api = $state<CarouselAPI>();
+	let currentSlide = $state(0);
+
+	$effect(() => {
+		if (api) {
+			currentSlide = api.selectedScrollSnap();
+			api.on('select', () => {
+				currentSlide = api!.selectedScrollSnap();
+			});
+		}
+	});
+
+	function goToDetails() {
+		api?.scrollNext();
 	}
 
-	// Parse date from input[type="date"]
-	function parseDateFromInput(value: string): Date | undefined {
-		if (!value) return undefined;
-		return new Date(value);
+	function goBack() {
+		api?.scrollPrev();
 	}
 </script>
 
-<form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
-	<Field.Field>
-		<Field.Label for="name">Coffee Name</Field.Label>
-		<Input
-			id="name"
-			name="name"
-			type="text"
-			placeholder="Enter coffee name"
-			bind:value={$formData.name}
-			aria-invalid={$errors.name ? 'true' : undefined}
-		/>
-		<Field.Error>{$errors.name}</Field.Error>
-	</Field.Field>
+<form method="POST" enctype="multipart/form-data" use:enhance>
+	<Carousel.Root
+		setApi={(emblaApi) => (api = emblaApi)}
+		opts={{ watchDrag: false }}
+		class="w-full"
+	>
+		<Carousel.Content>
+			<!-- Slide 1: Essential Fields -->
+			<Carousel.Item>
+				<div class="space-y-4 px-1">
+					<div class="flex gap-4">
+						<div class="flex-1 space-y-4 ">
+							<Field.Field class="border-2 border-dashed rounded-lg">
+								<Field.Label for="name">Name</Field.Label>
+								<Input
+									id="name"
+									name="name"
+									type="text"
+									placeholder="Enter coffee name"
+									bind:value={$formData.name}
+									aria-invalid={$errors.name ? 'true' : undefined}
+								/>
+								<Field.Error>{$errors.name}</Field.Error>
+							</Field.Field>
 
-	<Field.Field>
-		<Field.Label for="roasterName">Roaster</Field.Label>
-		<Input
-			id="roasterName"
-			name="roasterName"
-			type="text"
-			placeholder="Enter roaster name"
-			bind:value={$formData.roasterName}
-			aria-invalid={$errors.roasterName ? 'true' : undefined}
-		/>
-		<Field.Error>{$errors.roasterName}</Field.Error>
-	</Field.Field>
+							<Field.Field class="border-2 border-dashed rounded-lg">
+								<Field.Label for="roasterName">Roaster</Field.Label>
+								<Input
+									id="roasterName"
+									name="roasterName"
+									type="text"
+									placeholder="Enter roaster name"
+									bind:value={$formData.roasterName}
+									aria-invalid={$errors.roasterName ? 'true' : undefined}
+								/>
+								<Field.Error>{$errors.roasterName}</Field.Error>
+							</Field.Field>
+						</div>
 
-	<Field.Field>
-		<Field.Label for="style">Style</Field.Label>
-		<Input
-			id="style"
-			name="style"
-			type="text"
-			placeholder="e.g., Single Origin, Blend, Espresso"
-			bind:value={$formData.style}
-			aria-invalid={$errors.style ? 'true' : undefined}
-		/>
-		<Field.Error>{$errors.style}</Field.Error>
-	</Field.Field>
+						<Field.Field class="flex flex-col items-center border-2 border-dashed rounded-lg">
+							<Field.Label for="picture" class="sr-only">Picture</Field.Label>
+							<label
+								for="picture"
+								class="flex flex-col items-end justify-right"
+							>
+								<CameraIcon class="size-8 mr-4"/>
+								<span class="mt-1 text-xs text-muted-foreground">Add Picture</span>
+							</label>
+							<Input
+								id="picture"
+								name="picture"
+								type="file"
+								accept="image/*"
+								class="hidden"
+								onchange={(e) => {
+									const file = e.currentTarget.files?.[0];
+									if (file) {
+										$formData.picture = file;
+									}
+								}}
+							/>
+						</Field.Field>
+					</div>
 
-	<div class="grid gap-4 sm:grid-cols-2">
-		<Field.Field>
-			<Field.Label for="dateRoasted">Date Roasted</Field.Label>
-			<DateInput
-				id="dateRoasted"
-				value={$formData.dateRoasted}
-				placeholder="Roasted On"
-				onchange={(date) => {
-					if (date) {
-						$formData.dateRoasted = date;
-					}
-				}}
-				aria-invalid={$errors.dateRoasted ? 'true' : undefined}
-			/>
-			<Field.Error>{$errors.dateRoasted}</Field.Error>
-		</Field.Field>
+					<button
+						type="button"
+						onclick={goToDetails}
+						class="flex w-full items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+					>
+						Add details...
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-4 w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</button>
 
-		<Field.Field>
-			<Field.Label for="dateOpened">Date Opened</Field.Label>
-			<DateInput
-				id="dateOpened"
-				value={$formData.dateOpened}
-				placeholder="Opened On"
-				onchange={(date) => {
-					if (date) {
-						$formData.dateOpened = date;
-					}
-				}}
-				aria-invalid={$errors.dateOpened ? 'true' : undefined}
-			/>
-			<Field.Error>{$errors.dateOpened}</Field.Error>
-		</Field.Field>
-	</div>
+					<Button type="submit" class="w-full">
+						{submitLabel}
+					</Button>
+				</div>
+			</Carousel.Item>
 
-	<Field.Field>
-		<Field.Label for="notes">Notes</Field.Label>
-		<Textarea
-			id="notes"
-			name="notes"
-			placeholder="Tasting notes, brewing tips, etc."
-			bind:value={$formData.notes}
-			aria-invalid={$errors.notes ? 'true' : undefined}
-		/>
-		<Field.Error>{$errors.notes}</Field.Error>
-	</Field.Field>
+			<!-- Slide 2: Detail Fields -->
+			<Carousel.Item>
+				<div class="space-y-4 px-1">
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							onclick={goBack}
+							aria-label="Go back"
+							class="text-muted-foreground hover:text-foreground"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-5 w-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+							</svg>
+						</button>
+						<h3 class="text-lg font-semibold">Details</h3>
+					</div>
 
-	<Field.Field>
-		<Field.Label for="picture">Picture (optional)</Field.Label>
-		<Input
-			id="picture"
-			name="picture"
-			type="file"
-			accept="image/*"
-			onchange={(e) => {
-				const file = e.currentTarget.files?.[0];
-				if (file) {
-					$formData.picture = file;
-				}
-			}}
-		/>
-		<Field.Description>Upload an image of the coffee bag</Field.Description>
-	</Field.Field>
+					<Field.Field>
+						<Field.Label for="style">Style</Field.Label>
+						<Input
+							id="style"
+							name="style"
+							type="text"
+							placeholder="e.g., Single Origin, Blend, Espresso"
+							bind:value={$formData.style}
+							aria-invalid={$errors.style ? 'true' : undefined}
+						/>
+						<Field.Error>{$errors.style}</Field.Error>
+					</Field.Field>
 
-	<Button type="submit" class="mt-4 w-full">
-		{submitLabel}
-	</Button>
+					<div class="grid gap-4 sm:grid-cols-2">
+						<Field.Field>
+							<Field.Label for="dateRoasted">Roasted On</Field.Label>
+							<DateInput
+								id="dateRoasted"
+								value={$formData.dateRoasted}
+								placeholder="Roasted On"
+								onchange={(date) => {
+									if (date) {
+										$formData.dateRoasted = date;
+									}
+								}}
+								aria-invalid={$errors.dateRoasted ? 'true' : undefined}
+							/>
+							<Field.Error>{$errors.dateRoasted}</Field.Error>
+						</Field.Field>
+
+						<Field.Field>
+							<Field.Label for="dateOpened">Opened On</Field.Label>
+							<DateInput
+								id="dateOpened"
+								value={$formData.dateOpened}
+								placeholder="Opened On"
+								onchange={(date) => {
+									if (date) {
+										$formData.dateOpened = date;
+									}
+								}}
+								aria-invalid={$errors.dateOpened ? 'true' : undefined}
+							/>
+							<Field.Error>{$errors.dateOpened}</Field.Error>
+						</Field.Field>
+					</div>
+
+					<Field.Field>
+						<Field.Label for="notes">Notes</Field.Label>
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Tasting notes, brewing tips, etc."
+							bind:value={$formData.notes}
+							aria-invalid={$errors.notes ? 'true' : undefined}
+						/>
+						<Field.Error>{$errors.notes}</Field.Error>
+					</Field.Field>
+
+					<Button type="submit" class="w-full">
+						{submitLabel}
+					</Button>
+				</div>
+			</Carousel.Item>
+		</Carousel.Content>
+	</Carousel.Root>
 </form>

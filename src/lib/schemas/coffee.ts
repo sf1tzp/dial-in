@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const coffeeBagSchema = z.object({
   id: z.string().optional(),
-  dateRoasted: z.date({ message: "Roast date is required" }),
-  dateOpened: z.date({ message: "Open date is required" }),
+  dateRoasted: z.date({ message: "Roast date is required" }).optional(),
+  dateOpened: z.date({ message: "Open date is required" }).optional(),
   name: z.string().min(1, "Coffee name is required"),
   roasterName: z.string().min(1, "Roaster name is required"),
-  style: z.string().min(1, "Style is required"),
+  style: z.string().optional(),
   notes: z.string().default(""),
   picture: z.union([z.instanceof(Blob), z.string().url()]).optional(),
 });
