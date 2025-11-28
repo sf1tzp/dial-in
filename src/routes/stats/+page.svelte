@@ -27,10 +27,28 @@
 	// Define which series to display
 	const brewSeries: TimeSeriesConfig[] = [
 		{ key: 'grinderCoarseness', label: 'Grind Setting:', color: 'var(--chart-1)' },
-		{ key: 'brewTime', label: 'Brew Time (s):', color: 'var(--chart-2)' },
+		// { key: 'brewTime', label: 'Brew Time (s):', color: 'var(--chart-2)' },
 		{ key: 'dryWeight', label: 'Dry Weight (g):', color: 'var(--chart-3)' },
 		{ key: 'pressureReading', label: 'Pressure Reading (%):', color: 'var(--chart-4)' },
 	];
+
+	// Calculate insights for selected bag
+	const brewCount = $derived(filteredBrews.length);
+	const avgPressure = $derived(
+		brewCount > 0
+			? (filteredBrews.reduce((sum, b) => sum + (b.pressureReading ?? 0), 0) / brewCount).toFixed(1)
+			: '—'
+	);
+	const avgDryWeight = $derived(
+		brewCount > 0
+			? (filteredBrews.reduce((sum, b) => sum + (b.dryWeight ?? 0), 0) / brewCount).toFixed(1)
+			: '—'
+	);
+	const avgGrindSetting = $derived(
+		brewCount > 0
+			? (filteredBrews.reduce((sum, b) => sum + (b.grindSetting ?? 0), 0) / brewCount).toFixed(1)
+			: '—'
+	);
 </script>
 
 <svelte:head>
@@ -56,27 +74,18 @@
 			</Card.Content>
 		</Card.Root>
 	{:else}
-		<div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Total Brews</Card.Title>
-				<Card.Description>All time brewing sessions</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<p class="text-4xl font-bold">{coffeeBrewStore.items.length}</p>
+		<Card.Root class="mt-4">
+			<Card.Content class="grid grid-cols-2 gap-4">
+				<div>
+					<p class="text-muted-foreground text-sm">Total Brews</p>
+					<p class="text-3xl font-bold">{coffeeBrewStore.items.length}</p>
+				</div>
+				<div>
+					<p class="text-muted-foreground text-sm">Coffee Bags</p>
+					<p class="text-3xl font-bold">{coffeeBagStore.items.length}</p>
+				</div>
 			</Card.Content>
 		</Card.Root>
-
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Coffee Bags</Card.Title>
-				<Card.Description>Bags tracked</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<p class="text-4xl font-bold">{coffeeBagStore.items.length}</p>
-			</Card.Content>
-		</Card.Root>
-	</div>
 
 	<Card.Root class="mt-4">
 		<Card.Header class="flex flex-row justify-between">
@@ -96,6 +105,24 @@
 			</Select.Root>
 		</Card.Header>
 		<Card.Content>
+			<div class="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+				<div>
+					<p class="text-muted-foreground text-sm"># of Brews</p>
+					<p class="text-2xl font-bold">{brewCount}</p>
+				</div>
+				<div>
+					<p class="text-muted-foreground text-sm">Avg Pressure</p>
+					<p class="text-2xl font-bold">{avgPressure}{avgPressure !== '—' ? '%' : ''}</p>
+				</div>
+				<div>
+					<p class="text-muted-foreground text-sm">Avg Dry Weight</p>
+					<p class="text-2xl font-bold">{avgDryWeight}{avgDryWeight !== '—' ? 'g' : ''}</p>
+				</div>
+				<div>
+					<p class="text-muted-foreground text-sm">Avg Grind Setting</p>
+					<p class="text-2xl font-bold">{avgGrindSetting}</p>
+				</div>
+			</div>
 			<GradientChart data={brewChartData} series={brewSeries} />
 		</Card.Content>
 	</Card.Root>
