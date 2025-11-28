@@ -58,7 +58,7 @@ export const testCoffeeBrews: CoffeeBrew[] = [
     coffeeBagId: "test-bag-1",
     grindSetting: 2.5,
     dryWeight: 18,
-    brewTime: 38,
+    brewTime: 35,
     pressureReading: 75,
     notes: "Too slow, starting to taste bitter and ashy. Back off a bit.",
     createdAt: new Date("2025-11-26T14:30:00"),

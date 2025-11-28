@@ -1,6 +1,16 @@
 # Dial In
 
-Track various parameters and dial in the perfect brew.
+Track brewing parameters and dial in the perfect brew.
+
+## Screenshots
+### Homepage
+![Homepage screenshot](https://i.imgur.com/t9U9kKw.png)
+
+### Statistics View
+![Statistics view screenshot](https://i.imgur.com/Abw2oWp.png)
+
+### Timeline View
+![Timeline view screenshot](https://i.imgur.com/25YVc5h.png)
 
 ## Design Document
 
@@ -33,7 +43,9 @@ Additionally, we will offer two options for data storage
 - On device / browser storage (potentially limited in terms of size?)
 - Opt in integration with backend API & Database
 
-We are targeting a PWA-style experience for mobile web. Users should be able to use local offline storage compeltely free. Users may opt in to account creation and receive these optional benefits
+We are targeting a PWA-style experience for mobile web. Users should be able to use local offline storage compeltely free.
+
+We may later implement online features and offer these optional benefits:
 
 - 1 Year data retention
 - Sharable Profile
