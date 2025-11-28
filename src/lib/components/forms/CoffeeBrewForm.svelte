@@ -28,6 +28,13 @@
 	});
 
 	const { form: formData, errors, enhance } = form;
+
+	// Preselect the most recently added coffee bag (first in the array)
+	$effect(() => {
+		if (!$formData.coffeeBagId && coffeeBags.length > 0) {
+			$formData.coffeeBagId = coffeeBags[0].id;
+		}
+	});
 </script>
 
 <form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
