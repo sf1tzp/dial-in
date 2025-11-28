@@ -2,6 +2,7 @@
     import CoffeeBagForm from "$lib/components/forms/CoffeeBagForm.svelte";
     import CoffeeBrewForm from "$lib/components/forms/CoffeeBrewForm.svelte";
     import CoffeeTimeline from "$lib/components/timeline/CoffeeTimeline.svelte";
+    import { Greeting } from "$lib/components/greeting";
     import { uuidv7 } from "uuidv7";
     import * as Dialog from "$lib/components/ui/dialog";
     import { defaults } from 'sveltekit-superforms';
@@ -69,8 +70,8 @@
     }
 </script>
 
-<div class="pt-48 text-center">
-    <h1 class="text-4xl">Greetings Component Placeholder</h1>
+<div class="pt-32 text-center">
+    <Greeting />
 </div>
 
 <div class="mt-48 flex justify-around">
