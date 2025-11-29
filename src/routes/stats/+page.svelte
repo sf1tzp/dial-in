@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from "$app/paths";
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
@@ -70,7 +71,7 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<Button href="/">Go to Home</Button>
+				<Button href="{base}/">Go to Home</Button>
 			</Card.Content>
 		</Card.Root>
 	{:else}

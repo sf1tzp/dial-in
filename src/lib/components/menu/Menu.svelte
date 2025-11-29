@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from "$app/paths";
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { DarkModeToggle } from '$lib/components/ui/darkmode-toggle';
@@ -45,9 +46,10 @@
 	);
 
 	const navItems = [
-		{ href: '/', label: 'Dial-in' },
-		{ href: '/stats', label: 'Stats' },
-		{ href: '/how-to', label: 'How-To' }
+		// fixme: use resolve() instead of base (deprecated)
+		{ href: `${base}/`, label: 'Dial-in' },
+		{ href: `${base}/stats`, label: 'Stats' },
+		{ href: `${base}/how-to`, label: 'How-To' }
 	];
 
 	function isCurrentPath(href: string): boolean {

@@ -8,6 +8,7 @@
 
 	import { ModeWatcher } from "mode-watcher";
 
+
 	let { children } = $props();
 
 	let storesReady = $state(false);
@@ -16,6 +17,8 @@
 		await initializeStores();
 		storesReady = true;
 	});
+
+
 </script>
 
 <svelte:head>

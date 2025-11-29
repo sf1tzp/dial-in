@@ -11,7 +11,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "format": "prettier --write .",
-    "lint": "prettier --check ."
+    "lint": "prettier --check .",
+    "deploy": "gh-pages -d build -t"
   },
   "devDependencies": {
     "@internationalized/date": "^3.10.0",
@@ -43,8 +44,8 @@
     "zod": "^4.1.13"
   },
   "dependencies": {
+    "gh-pages": "^6.3.0",
     "idb": "^8.0.3",
-    "mode-watcher": "^1.1.0",
-    "virtua": "^0.47.2"
+    "mode-watcher": "^1.1.0"
   }
 }
