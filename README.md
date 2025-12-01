@@ -63,13 +63,6 @@ We may later implement online features and offer these optional benefits:
 
 ## Feature Planning & Enhancements:
 
-### Feature: Provide a way to edit or remove entries from the timeline
-
-It would be cool to implement nice swipe guestures using this pure CSS method:
-https://www.youtube.com/watch?v=WjuqAGpj6DM
-
-But a simple edit button / dialog, with an option to delete will suffice.
-
 ### Feature: When scrolling down the timeline, we should hover some filter options at the top of the page, eg Bag Selector
 
 The demo data presents a scenario with multiple interleaved bags & brews, which feels cluttered if you're trying to look at a specific set
