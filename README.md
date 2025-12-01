@@ -77,10 +77,6 @@ Users are fairly likely to order the same Kind of coffee again. Our app should a
 
 The timeline potentially contains hundreds of items, depending on activity. We can leverage a virtual list to reduce bottlenecks
 
-### Feature: Do something with user photos
-
-Photos provided to the app are not yet displayed anywhere. They should be displayed on the Timeline entries or on some kind of detailed view.
-
 ### Feature: Allow user to supply Grind and Pressure Units and Scale
 
 My grinder and esspresso machine do not have real units of measure. We scaffolded some settings
@@ -104,3 +100,12 @@ and/or improve its robustness.
 
 It's annoying that this input defaults to "0". Once a user is 'dialed-in' it's less likely that they
 will change the grinder setting.
+
+
+### Enhancement: Revise form styling
+
+Bag form
+- Show Opened on on first page, default to current date
+
+Brew Form
+- Use the same photo icon / button as in the Bag form

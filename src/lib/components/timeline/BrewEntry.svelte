@@ -3,6 +3,11 @@
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { BrewDetail } from '$lib/components/detail';
+    import Gauge from '@lucide/svelte/icons/gauge';
+    import Weight from '@lucide/svelte/icons/weight';
+    import Cog from '@lucide/svelte/icons/cog';
 
 	interface Props {
 		coffeeBrew?: CoffeeBrew;
@@ -11,6 +16,8 @@
 	}
 
 	let { coffeeBrew, coffeeBag, relativeTime }: Props = $props();
+
+	let detailDialogOpen = $state(false);
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -26,58 +33,72 @@
 			minute: '2-digit',
 		});
 	}
+
+	function getBrewTitle(date: Date): string {
+		const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+		const hour = date.getHours();
+
+		let timeOfDay: string;
+		if (hour < 12) {
+			timeOfDay = 'Morning';
+		} else if (hour < 17) {
+			timeOfDay = 'Afternoon';
+		} else {
+			timeOfDay = 'Evening';
+		}
+
+		return `${dayOfWeek} ${timeOfDay} Brew`;
+	}
 </script>
 
-<div class="p-4">
-	<div class="mb-2 flex items-start justify-between gap-2">
-		<div class="flex flex-wrap items-center gap-2">
-			<Badge
-				variant="secondary"
-				class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
-			>
-				<Coffee class="size-2" />
-				Coffee Brewed
-			</Badge>
-		</div>
-		<span class="text-muted-foreground shrink-0 text-xs">
-			{relativeTime}
-		</span>
+<div class="flex">
+	<div class="my-4 ml-4 mr-4 sm:mx-12">
+		<Coffee class="size-18 text-brew-icon" />
 	</div>
 
-	{#if coffeeBag}
-		<h3 class="text-foreground mb-1 font-semibold">{coffeeBag.name}</h3>
-		<p class="text-muted-foreground mb-2 text-xs">{coffeeBag.roasterName}</p>
-	{/if}
+	<div
+		class="mt-3 cursor-pointer flex flex-col"
+		onclick={() => detailDialogOpen = true}
+		onkeydown={(e) => e.key === 'Enter' && (detailDialogOpen = true)}
+		role="button"
+		tabindex="0"
+	>
+		<h3 class="text-foreground font-semibold">
+			{coffeeBrew ? getBrewTitle(coffeeBrew.createdAt) : 'Brew'}
+		</h3>
+		<h3 class="text-muted-foreground text-sm">
+			{coffeeBag?.name}
+		</h3>
 
-	<div class="text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
-		<div>
-			<span class="font-medium">Grind Setting:</span>
-			{coffeeBrew?.grindSetting}
-		</div>
-		<div>
-			<span class="font-medium">Dry Weight:</span>
-			{coffeeBrew?.dryWeight}g
-		</div>
-		<div>
-			<span class="font-medium">Brew Time:</span>
-			{coffeeBrew?.brewTime}s
-		</div>
-		<div>
-			<span class="font-medium">Pressure:</span>
-			{coffeeBrew?.pressureReading}%
+		<div class="text-center flex justify-between gap-4 my-2">
+			<div class="flex gap-2">
+				<Cog class="size-6 text-muted-foreground"/>
+				<p>{coffeeBrew?.grindSetting.toFixed(1)}</p>
+			</div>
+			<div class="flex gap-2">
+				<Weight class="size-6 text-muted-foreground"/>
+				<p>{coffeeBrew?.dryWeight}g </p>
+			</div>
+			<div class="flex gap-2">
+				<Gauge class="size-6 text-muted-foreground"/>
+				<p>{coffeeBrew?.pressureReading}%</p>
+			</div>
 		</div>
 	</div>
 
-	{#if coffeeBrew?.notes}
-		<Separator class="my-3" />
-		<p class="text-muted-foreground text-sm italic">"{coffeeBrew?.notes}"</p>
-	{/if}
-
-	{#if coffeeBrew?.createdAt}
-	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
-		<time datetime={coffeeBrew.createdAt.toISOString()}>
-			{formatDate(coffeeBrew.createdAt)} at {formatTime(coffeeBrew.createdAt)}
-		</time>
-	</div>
-	{/if}
 </div>
+
+{#if coffeeBrew}
+<Dialog.Root bind:open={detailDialogOpen}>
+	<Dialog.Content class="max-h-[90vh] overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center justify-center gap-2">
+				<Coffee class="size-5 text-bold inline-block align-text-top" />
+				<!-- interpolate a name based on the createdDate "Saturday Morning Brew" -->
+				{coffeeBrew ? getBrewTitle(coffeeBrew.createdAt) : 'Brew'}
+			</Dialog.Title>
+		</Dialog.Header>
+		<BrewDetail brew={coffeeBrew} {coffeeBag} />
+	</Dialog.Content>
+</Dialog.Root>
+{/if}
