@@ -3,6 +3,8 @@
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { BagDetail } from '$lib/components/detail';
 
 	interface Props {
 		bag: CoffeeBag;
@@ -10,6 +12,8 @@
 	}
 
 	let { bag, relativeTime }: Props = $props();
+
+	let detailDialogOpen = $state(false);
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -27,7 +31,13 @@
 	}
 </script>
 
-<div class="p-4">
+<div
+	class="p-4 cursor-pointer"
+	onclick={() => detailDialogOpen = true}
+	onkeydown={(e) => e.key === 'Enter' && (detailDialogOpen = true)}
+	role="button"
+	tabindex="0"
+>
 	<div class="mb-2 flex items-start justify-between gap-2">
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge
@@ -72,3 +82,15 @@
 		</time>
 	</div>
 </div>
+
+<Dialog.Root bind:open={detailDialogOpen}>
+	<Dialog.Content class="max-h-[90vh] overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center justify-center gap-2">
+				<ClipboardList class="size-5" />
+				Bag Details
+			</Dialog.Title>
+		</Dialog.Header>
+		<BagDetail {bag} />
+	</Dialog.Content>
+</Dialog.Root>
