@@ -156,8 +156,18 @@
         deleteBrewDialogOpen = true;
     }
 
-    function confirmDeleteBag() {
+    // Get brews associated with the bag being deleted
+    const associatedBrews = $derived(
+        deletingBag
+            ? coffeeBrewStore.items.filter(brew => brew.coffeeBagId === deletingBag!.id)
+            : []
+    );    function confirmDeleteBag() {
         if (deletingBag) {
+            // First delete all associated brews
+            for (const brew of associatedBrews) {
+                coffeeBrewStore.remove(brew.id);
+            }
+            // Then delete the bag
             coffeeBagStore.remove(deletingBag.id);
             deleteBagDialogOpen = false;
             deletingBag = null;
@@ -260,6 +270,13 @@
                 Are you sure you want to delete "{deletingBag?.name}"? This action cannot be undone.
             </Dialog.Description>
         </Dialog.Header>
+        {#if associatedBrews.length > 0}
+            <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-md border p-3 text-sm">
+                <p class="font-medium">Warning!</p>
+                <p>Deleting this bag will also delete {associatedBrews.length} associated {associatedBrews.length === 1 ? 'brew' : 'brews'}.</p>
+                <p class="mt-1 text-xs opacity-80">You can change the bag associated with a brew by editing that brew instead.</p>
+            </div>
+        {/if}
         <Dialog.Footer>
             <Button variant="outline" onclick={() => { deleteBagDialogOpen = false; deletingBag = null; }}>
                 Cancel
