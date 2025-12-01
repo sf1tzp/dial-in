@@ -52,6 +52,7 @@
 </script>
 
 <div class="">
+			<p class="text-center text-muted-foreground text-sm italic mb-2">Swipe left or right to edit or delete</p>
 	{#if sortedEntries.length === 0}
 		<div class="text-muted-foreground flex flex-col items-center justify-center py-12 text-center">
             <BookOpen class="size-4"/>

@@ -1,11 +1,9 @@
 <script lang="ts">
 	import Coffee from '@lucide/svelte/icons/coffee';
-	import Pencil from '@lucide/svelte/icons/pencil';
-	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
+	import { Swiper } from '$lib/components/ui/swiper';
 
 	interface Props {
 		coffeeBrew?: CoffeeBrew;
@@ -33,7 +31,8 @@
 	}
 </script>
 
-<div class="bg-card border-border rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md">
+<Swiper ondelete={() => coffeeBrew && onDelete?.(coffeeBrew)} onedit={() => coffeeBrew && onEdit?.(coffeeBrew)} class="bg-card border-border rounded-lg border shadow-sm transition-shadow hover:shadow-md">
+	<div class="p-4">
 	<div class="mb-2 flex items-start justify-between gap-2">
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge
@@ -79,18 +78,11 @@
 	{/if}
 
 	{#if coffeeBrew?.createdAt}
-	<div class="text-muted-foreground mt-3 flex items-center justify-between text-xs">
-		<div class="flex gap-1">
-			<Button variant="ghost" size="icon-sm" onclick={() => coffeeBrew && onEdit?.(coffeeBrew)} aria-label="Edit brew">
-				<Pencil class="size-4" />
-			</Button>
-			<Button variant="ghost" size="icon-sm" onclick={() => coffeeBrew && onDelete?.(coffeeBrew)} aria-label="Delete brew">
-				<Trash2 class="size-4" />
-			</Button>
-		</div>
+	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
 		<time datetime={coffeeBrew.createdAt.toISOString()}>
 			{formatDate(coffeeBrew.createdAt)} at {formatTime(coffeeBrew.createdAt)}
 		</time>
 	</div>
 	{/if}
-</div>
+	</div>
+</Swiper>

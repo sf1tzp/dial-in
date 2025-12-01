@@ -1,11 +1,9 @@
 <script lang="ts">
 	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
-	import Pencil from '@lucide/svelte/icons/pencil';
-	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
+	import { Swiper } from '$lib/components/ui/swiper';
 
 	interface Props {
 		bag: CoffeeBag;
@@ -32,7 +30,8 @@
 	}
 </script>
 
-<div class="bg-card border-border rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md">
+<Swiper ondelete={() => onDelete?.(bag)} onedit={() => onEdit?.(bag)} class="bg-card border-border rounded-lg border shadow-sm transition-shadow hover:shadow-md">
+<div class="p-4">
 	<div class="mb-2 flex items-start justify-between gap-2">
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge
@@ -71,17 +70,10 @@
 		<p class="text-muted-foreground text-sm italic">"{bag.notes}"</p>
 	{/if}
 
-	<div class="text-muted-foreground mt-3 flex items-center justify-between text-xs">
-		<div class="flex gap-1">
-			<Button variant="ghost" size="icon-sm" onclick={() => onEdit?.(bag)} aria-label="Edit bag">
-				<Pencil class="size-4" />
-			</Button>
-			<Button variant="ghost" size="icon-sm" onclick={() => onDelete?.(bag)} aria-label="Delete bag">
-				<Trash2 class="size-4" />
-			</Button>
-		</div>
+	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
 		<time datetime={bag.createdAt.toISOString()}>
 			{formatDate(bag.createdAt)} at {formatTime(bag.createdAt)}
 		</time>
 	</div>
 </div>
+</Swiper>

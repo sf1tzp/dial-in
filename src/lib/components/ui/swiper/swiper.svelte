@@ -72,6 +72,7 @@
 		display: grid;
 		grid-template-columns: auto 1fr auto;
 		overflow-x: auto;
+		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
 		container-type: inline-size;
 		scrollbar-width: none;
@@ -107,14 +108,32 @@
 		cursor: pointer;
 		color: white;
 		font-size: 1rem;
+		position: relative;
+	}
+
+	.swiper-action::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 100vw;
+		background: inherit;
+	}
+
+	.swiper-action.delete::before {
+		right: 100%;
+	}
+
+	.swiper-action.edit::before {
+		left: 100%;
 	}
 
 	.swiper-action.delete {
-		background: var(--destructive, #ef4444);
+		background: var(--color-destructive, #ef4444);
 	}
 
 	.swiper-action.edit {
-		background: var(--primary, #22c55e);
+		background: var(--color-edit, #22c55e);
 	}
 
 	.swiper-placeholder {
