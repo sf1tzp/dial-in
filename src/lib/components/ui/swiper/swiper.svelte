@@ -1,25 +1,18 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-
-	interface SwiperAction {
-		color?: string;
-		icon?: Snippet;
-		label?: string;
-		onclick?: () => void;
-	}
+	import Trash2 from '@lucide/svelte/icons/trash-2';
+	import Pencil from '@lucide/svelte/icons/pencil';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
-		hold?: boolean;
-		left?: SwiperAction;
-		right?: SwiperAction;
+		ondelete?: () => void;
+		onedit?: () => void;
 		children?: Snippet;
 	}
 
 	let {
-		hold = false,
-		left,
-		right,
+		ondelete,
+		onedit,
 		children,
 		class: className = '',
 		...restProps
@@ -27,9 +20,9 @@
 
 	let swiperRef: HTMLDivElement | undefined = $state();
 
-	// For hold variant, scroll to center on mount
+	// Scroll to center on mount to hide actions
 	$effect(() => {
-		if (hold && swiperRef) {
+		if (swiperRef) {
 			const centerChild = swiperRef.children[1] as HTMLElement;
 			if (centerChild) {
 				requestAnimationFrame(() => {
@@ -38,52 +31,19 @@
 			}
 		}
 	});
-
-	function handleScroll(e: Event) {
-		const scrollDiv = e.currentTarget as HTMLDivElement;
-		const scrollCenter = scrollDiv.scrollWidth / 2;
-		const viewportCenter = scrollDiv.clientWidth / 2;
-		const current = scrollDiv.scrollLeft + viewportCenter;
-		const dx = current - scrollCenter;
-
-		// Detect if fully swiped to trigger action
-		const threshold = 50;
-		const maxScroll = scrollDiv.scrollWidth - scrollDiv.clientWidth;
-
-		if (scrollDiv.scrollLeft <= threshold && left?.onclick) {
-			// Swiped to reveal left action (scrolled to start)
-		} else if (scrollDiv.scrollLeft >= maxScroll - threshold && right?.onclick) {
-			// Swiped to reveal right action (scrolled to end)
-		}
-	}
-
-	function handleLeftClick() {
-		left?.onclick?.();
-	}
-
-	function handleRightClick() {
-		right?.onclick?.();
-	}
 </script>
 
 <div
 	bind:this={swiperRef}
-	class="swiper {hold ? 'hold' : ''} {className}"
-	onscroll={handleScroll}
+	class="swiper {className}"
 	{...restProps}
 >
-	{#if left}
+	{#if ondelete}
 		<button
-			class="swiper-action left"
-			style:background={left.color}
-			onclick={handleLeftClick}
+			class="swiper-action delete"
+			onclick={ondelete}
 		>
-			{#if left.icon}
-				{@render left.icon()}
-			{/if}
-			{#if left.label}
-				<span class="swiper-label">{left.label}</span>
-			{/if}
+			<Trash2 />
 		</button>
 	{:else}
 		<div class="swiper-placeholder"></div>
@@ -95,18 +55,12 @@
 		{/if}
 	</div>
 
-	{#if right}
+	{#if onedit}
 		<button
-			class="swiper-action right"
-			style:background={right.color}
-			onclick={handleRightClick}
+			class="swiper-action edit"
+			onclick={onedit}
 		>
-			{#if right.icon}
-				{@render right.icon()}
-			{/if}
-			{#if right.label}
-				<span class="swiper-label">{right.label}</span>
-			{/if}
+			<Pencil />
 		</button>
 	{:else}
 		<div class="swiper-placeholder"></div>
@@ -132,16 +86,14 @@
 		scroll-snap-align: center;
 	}
 
-	.swiper.hold {
-		> .swiper-action:first-child,
-		> .swiper-placeholder:first-child {
-			scroll-snap-align: start;
-		}
+	.swiper > .swiper-action:first-child,
+	.swiper > .swiper-placeholder:first-child {
+		scroll-snap-align: start;
+	}
 
-		> .swiper-action:last-child,
-		> .swiper-placeholder:last-child {
-			scroll-snap-align: end;
-		}
+	.swiper > .swiper-action:last-child,
+	.swiper > .swiper-placeholder:last-child {
+		scroll-snap-align: end;
 	}
 
 	.swiper-action {
@@ -157,19 +109,15 @@
 		font-size: 1rem;
 	}
 
-	.swiper-action.left {
-		border-radius: 0;
+	.swiper-action.delete {
+		background: var(--destructive, #ef4444);
 	}
 
-	.swiper-action.right {
-		border-radius: 0;
+	.swiper-action.edit {
+		background: var(--primary, #22c55e);
 	}
 
 	.swiper-placeholder {
 		width: 0;
-	}
-
-	.swiper-label {
-		font-weight: 500;
 	}
 </style>
