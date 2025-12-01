@@ -114,16 +114,13 @@
 		</div>
 
 		{#if brew.notes}
-			<div>
-				<p class="text-muted-foreground mb-1 text-sm font-medium">
-                    <ScrollText class="size-3 inline-block text-muted-foreground " />
-                    Notes</p>
+			<div class="mt-4">
 				<p class="text-foreground italic">"{brew.notes}"</p>
 			</div>
 		{/if}
 
         <div class="text-muted-foreground text-xs text-end">
-			<p>Added: {formatDate(brew.createdAt)} at {formatTime(brew.createdAt)}</p>
+			<p>Brewed on: {formatDate(brew.createdAt)} at {formatTime(brew.createdAt)}</p>
 			{#if brew.updatedAt.getTime() !== brew.createdAt.getTime()}
 				<p>Updated: {formatDate(brew.updatedAt)} at {formatTime(brew.updatedAt)}</p>
 			{/if}

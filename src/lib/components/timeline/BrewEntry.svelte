@@ -33,12 +33,27 @@
 			minute: '2-digit',
 		});
 	}
+
+	function getBrewTitle(date: Date): string {
+		const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+		const hour = date.getHours();
+
+		let timeOfDay: string;
+		if (hour < 12) {
+			timeOfDay = 'Morning';
+		} else if (hour < 17) {
+			timeOfDay = 'Afternoon';
+		} else {
+			timeOfDay = 'Evening';
+		}
+
+		return `${dayOfWeek} ${timeOfDay} Brew`;
+	}
 </script>
 
 <div class="flex">
-	<div class="my-4 ml-2 mr-4">
+	<div class="my-4 ml-4 mr-4 sm:mx-12">
 		<Coffee class="size-18 text-muted" />
-
 	</div>
 
 	<div
@@ -48,9 +63,8 @@
 		role="button"
 		tabindex="0"
 	>
-		<!-- interpolate a name based on the createdDate "Saturday Morning Brew" -->
 		<h3 class="text-foreground font-semibold">
-			Saturday Morning Brew
+			{coffeeBrew ? getBrewTitle(coffeeBrew.createdAt) : 'Brew'}
 		</h3>
 		<h3 class="text-muted-foreground text-sm">
 			{coffeeBag?.name}
@@ -81,7 +95,7 @@
 			<Dialog.Title class="flex items-center justify-center gap-2">
 				<Coffee class="size-5 text-bold inline-block align-text-top" />
 				<!-- interpolate a name based on the createdDate "Saturday Morning Brew" -->
-				Brew Details
+				{coffeeBrew ? getBrewTitle(coffeeBrew.createdAt) : 'Brew'}
 			</Dialog.Title>
 		</Dialog.Header>
 		<BrewDetail brew={coffeeBrew} {coffeeBag} />
