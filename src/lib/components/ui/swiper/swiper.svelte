@@ -129,11 +129,11 @@
 	}
 
 	.swiper-action.delete {
-		background: var(--color-destructive, #ef4444);
+		background: var(--destructive);
 	}
 
 	.swiper-action.edit {
-		background: var(--color-edit, #22c55e);
+		background: var(--edit);
 	}
 
 	.swiper-placeholder {
