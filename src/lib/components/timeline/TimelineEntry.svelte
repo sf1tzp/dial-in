@@ -40,7 +40,7 @@
 		<div class="flex flex-col justify-start gap-2 p-3 text-muted-foreground">
 			{#if ondelete}
 				<Button
-                    variant="destructive"
+                    variant="ghostDestructive"
 					onclick={ondelete}
 					aria-label="Delete"
 				>
@@ -49,7 +49,7 @@
 			{/if}
 			{#if onedit}
 				<Button
-                    variant="outline"
+                    variant="ghostEdit"
 					onclick={onedit}
 					aria-label="Edit"
 				>
