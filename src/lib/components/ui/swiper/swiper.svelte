@@ -104,7 +104,6 @@
 		gap: 0.5rem;
 		min-width: 80px;
 		padding: 0.5rem 1rem;
-		border: none;
 		cursor: pointer;
 		color: white;
 		font-size: 1rem;

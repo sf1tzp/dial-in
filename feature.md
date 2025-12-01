@@ -15,7 +15,6 @@ We should provide an additional warning text when deleting a bag:
 
 (the wording of this warning is not yet finalized..)
 
-
 ## Enhancement: Integrate CSS Swiper component
 
 ### Part 1
@@ -28,11 +27,9 @@ We should allow users of this component to specify whether to use the "hold" var
 
 We should also allow users to specify the color and icon and optional label to be used on each side of the swiper.
 
-
 ### Part 2
 
 Let's integrate this new component into coffee timeline. Each element in the timeline should use this component:
+
 - Swiping "to the right" should reveal the delete button
 - Swiping "to the left" should trigger the edit dialog
-
-

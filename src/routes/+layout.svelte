@@ -26,7 +26,7 @@
 
 <Menu currentPath={page.url.pathname}/>
 
-<main class="container mx-auto px-4 py-4 lg:max-w-7xl">
+<main class="container mx-auto px-4 py-4 lg:max-w-6xl">
 	{#if storesReady}
 		{@render children?.()}
 	{:else}

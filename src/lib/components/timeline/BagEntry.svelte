@@ -3,16 +3,13 @@
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Swiper } from '$lib/components/ui/swiper';
 
 	interface Props {
 		bag: CoffeeBag;
 		relativeTime: string;
-		onEdit?: (bag: CoffeeBag) => void;
-		onDelete?: (bag: CoffeeBag) => void;
 	}
 
-	let { bag, relativeTime, onEdit, onDelete }: Props = $props();
+	let { bag, relativeTime }: Props = $props();
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -30,7 +27,6 @@
 	}
 </script>
 
-<Swiper ondelete={() => onDelete?.(bag)} onedit={() => onEdit?.(bag)} class="bg-card border-border rounded-lg border shadow-sm transition-shadow hover:shadow-md">
 <div class="p-4">
 	<div class="mb-2 flex items-start justify-between gap-2">
 		<div class="flex flex-wrap items-center gap-2">
@@ -76,4 +72,3 @@
 		</time>
 	</div>
 </div>
-</Swiper>
