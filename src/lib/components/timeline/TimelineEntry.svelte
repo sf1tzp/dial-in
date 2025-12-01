@@ -30,16 +30,17 @@
 </div>
 
 <!-- Desktop: Grid layout with action buttons on the right -->
-<div class="hidden md:grid md:grid-cols-[1fr_auto] bg-card border-border rounded-lg border shadow-sm transition-shadow hover:shadow-md {className}">
+<div class="hidden md:block max-w-4xl mx-auto">
+<div class="md:grid md:grid-cols-[1fr_auto] bg-card border-border rounded-lg border shadow-sm transition-shadow hover:shadow-md {className}">
 	{#if children}
 		{@render children()}
 	{/if}
 
 	{#if onedit || ondelete}
-		<div class="flex flex-col justify-start gap-4 p-4">
+		<div class="flex flex-col justify-start gap-2 p-3 text-muted-foreground">
 			{#if ondelete}
 				<Button
-                    variant="destructive"
+                    variant="ghostDestructive"
 					onclick={ondelete}
 					aria-label="Delete"
 				>
@@ -48,7 +49,7 @@
 			{/if}
 			{#if onedit}
 				<Button
-                    variant="outline"
+                    variant="ghostEdit"
 					onclick={onedit}
 					aria-label="Edit"
 				>
@@ -57,4 +58,5 @@
 			{/if}
 		</div>
 	{/if}
+</div>
 </div>
