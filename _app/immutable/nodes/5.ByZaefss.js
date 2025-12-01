@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import"../chunks/ChtlaF6l.js";import{f as r,b as p}from"../chunks/mSWrT_we.js";import{S as l}from"../chunks/Cwia3zi2.js";var i=r("<p>Swipeable content here</p>");function d(o){l(o,{ondelete:()=>console.log("Delete clicked"),onedit:()=>console.log("Edit clicked"),children:(e,n)=>{var t=i();p(e,t)},$$slots:{default:!0}})}export{d as component};
