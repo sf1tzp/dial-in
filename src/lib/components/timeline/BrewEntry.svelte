@@ -53,7 +53,7 @@
 
 <div class="flex">
 	<div class="my-4 ml-4 mr-4 sm:mx-12">
-		<Coffee class="size-18 text-muted" />
+		<Coffee class="size-18 text-brew-icon" />
 	</div>
 
 	<div

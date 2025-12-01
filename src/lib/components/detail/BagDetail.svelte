@@ -98,7 +98,6 @@
 
 
 		<div class="text-muted-foreground text-xs text-end">
-			<p>Created: {formatDate(bag.createdAt)} at {formatTime(bag.createdAt)}</p>
 			{#if bag.updatedAt.getTime() !== bag.createdAt.getTime()}
 				<p>Updated: {formatDate(bag.updatedAt)} at {formatTime(bag.updatedAt)}</p>
 			{/if}

@@ -25,8 +25,8 @@
 </script>
 
 <div class="flex">
-	<div class="my-4 ml-2 mr-4">
-		<ClipboardList class="size-18 text-muted" />
+	<div class="my-4 ml-3 mr-5 sm:ml-11 sm:mr-13">
+		<ClipboardList class="size-18 text-bag-icon" />
 	</div>
 
 	<div
@@ -41,7 +41,8 @@
 		<div class="text-center flex justify-between gap-4 my-2">
 			<div class="flex gap-2">
 				<Calendar class="size-6 text-muted-foreground" />
-				<p><span class="text-muted-foreground">Opened on</span> {bag.dateOpened ? formatDate(bag.dateOpened) : 'N/A'}</p>
+				<p class="text-muted-foreground">Opened on</p>
+				<p>{bag.dateOpened ? formatDate(bag.dateOpened) : 'N/A'}</p>
 			</div>
 		</div>
 	</div>
