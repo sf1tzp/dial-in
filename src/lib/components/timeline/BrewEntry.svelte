@@ -1,16 +1,21 @@
 <script lang="ts">
 	import Coffee from '@lucide/svelte/icons/coffee';
+	import Pencil from '@lucide/svelte/icons/pencil';
+	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 
 	interface Props {
 		coffeeBrew?: CoffeeBrew;
 		coffeeBag?: CoffeeBag;
 		relativeTime: string;
+		onEdit?: (brew: CoffeeBrew) => void;
+		onDelete?: (brew: CoffeeBrew) => void;
 	}
 
-	let { coffeeBrew, coffeeBag, relativeTime }: Props = $props();
+	let { coffeeBrew, coffeeBag, relativeTime, onEdit, onDelete }: Props = $props();
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -74,7 +79,15 @@
 	{/if}
 
 	{#if coffeeBrew?.createdAt}
-	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
+	<div class="text-muted-foreground mt-3 flex items-center justify-between text-xs">
+		<div class="flex gap-1">
+			<Button variant="ghost" size="icon-sm" onclick={() => coffeeBrew && onEdit?.(coffeeBrew)} aria-label="Edit brew">
+				<Pencil class="size-4" />
+			</Button>
+			<Button variant="ghost" size="icon-sm" onclick={() => coffeeBrew && onDelete?.(coffeeBrew)} aria-label="Delete brew">
+				<Trash2 class="size-4" />
+			</Button>
+		</div>
 		<time datetime={coffeeBrew.createdAt.toISOString()}>
 			{formatDate(coffeeBrew.createdAt)} at {formatTime(coffeeBrew.createdAt)}
 		</time>

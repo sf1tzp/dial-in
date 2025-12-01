@@ -11,9 +11,13 @@
 	interface Props {
 		entries: TimelineEntry[];
 		class?: string;
+		onEditBag?: (bag: CoffeeBag) => void;
+		onDeleteBag?: (bag: CoffeeBag) => void;
+		onEditBrew?: (brew: CoffeeBrew) => void;
+		onDeleteBrew?: (brew: CoffeeBrew) => void;
 	}
 
-	let { entries, class: className = '' }: Props = $props();
+	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew }: Props = $props();
 
 	// Sort entries by createdAt in descending order (newest first)
 	const sortedEntries = $derived(
@@ -66,12 +70,19 @@
 				{#each sortedEntries as entry (entry.data.id)}
 					<li>
 						{#if entry.type === 'coffee-bag'}
-							<BagEntry bag={entry.data} relativeTime={formatRelativeTime(entry.data.createdAt)} />
+							<BagEntry
+								bag={entry.data}
+								relativeTime={formatRelativeTime(entry.data.createdAt)}
+								onEdit={onEditBag}
+								onDelete={onDeleteBag}
+							/>
 						{:else}
 							<BrewEntry
 								coffeeBrew={entry.data}
 								coffeeBag={entry.coffeeBag}
 								relativeTime={formatRelativeTime(entry.data.createdAt)}
+								onEdit={onEditBrew}
+								onDelete={onDeleteBrew}
 							/>
 						{/if}
 					</li>

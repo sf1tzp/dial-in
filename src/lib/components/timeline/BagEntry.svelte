@@ -1,15 +1,20 @@
 <script lang="ts">
 	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
+	import Pencil from '@lucide/svelte/icons/pencil';
+	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 
 	interface Props {
 		bag: CoffeeBag;
 		relativeTime: string;
+		onEdit?: (bag: CoffeeBag) => void;
+		onDelete?: (bag: CoffeeBag) => void;
 	}
 
-	let { bag, relativeTime }: Props = $props();
+	let { bag, relativeTime, onEdit, onDelete }: Props = $props();
 
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
@@ -66,7 +71,15 @@
 		<p class="text-muted-foreground text-sm italic">"{bag.notes}"</p>
 	{/if}
 
-	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
+	<div class="text-muted-foreground mt-3 flex items-center justify-between text-xs">
+		<div class="flex gap-1">
+			<Button variant="ghost" size="icon-sm" onclick={() => onEdit?.(bag)} aria-label="Edit bag">
+				<Pencil class="size-4" />
+			</Button>
+			<Button variant="ghost" size="icon-sm" onclick={() => onDelete?.(bag)} aria-label="Delete bag">
+				<Trash2 class="size-4" />
+			</Button>
+		</div>
 		<time datetime={bag.createdAt.toISOString()}>
 			{formatDate(bag.createdAt)} at {formatTime(bag.createdAt)}
 		</time>
