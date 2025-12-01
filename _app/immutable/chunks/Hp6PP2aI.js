@@ -1,0 +1,1 @@
+import{e as c,h as _,g as o,E as d,q as E,u as T,v as b,m as g,B as v,l as f}from"./mSWrT_we.js";function p(t,i,u=!1){_&&o();var r=new v(t),h=u?d:0;function n(a,s){if(_){const l=E(t)===T;if(a===l){var e=b();g(e),r.anchor=e,f(!1),r.ensure(a,s),f(!0);return}}r.ensure(a,s)}c(()=>{var a=!1;i((s,e=!0)=>{a=!0,n(e,s)}),a||n(!1,null)},h)}export{p as i};
