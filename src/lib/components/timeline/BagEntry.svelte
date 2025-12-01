@@ -27,7 +27,7 @@
 	}
 </script>
 
-<div class="bg-card border-border rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md">
+<div class="p-4">
 	<div class="mb-2 flex items-start justify-between gap-2">
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge

@@ -3,17 +3,22 @@
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import BagEntry from './BagEntry.svelte';
 	import BrewEntry from './BrewEntry.svelte';
+	import TimelineEntry from './TimelineEntry.svelte';
 
-	type TimelineEntry =
+	type TimelineItem =
 		| { type: 'coffee-bag'; data: CoffeeBag }
 		| { type: 'coffee-brew'; data: CoffeeBrew; coffeeBag?: CoffeeBag };
 
 	interface Props {
-		entries: TimelineEntry[];
+		entries: TimelineItem[];
 		class?: string;
+		onEditBag?: (bag: CoffeeBag) => void;
+		onDeleteBag?: (bag: CoffeeBag) => void;
+		onEditBrew?: (brew: CoffeeBrew) => void;
+		onDeleteBrew?: (brew: CoffeeBrew) => void;
 	}
 
-	let { entries, class: className = '' }: Props = $props();
+	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew }: Props = $props();
 
 	// Sort entries by createdAt in descending order (newest first)
 	const sortedEntries = $derived(
@@ -47,7 +52,6 @@
 	}
 </script>
 
-<div class="">
 	{#if sortedEntries.length === 0}
 		<div class="text-muted-foreground flex flex-col items-center justify-center py-12 text-center">
             <BookOpen class="size-4"/>
@@ -55,6 +59,7 @@
 			<p class="text-sm">Open a bag of coffee to get started</p>
 		</div>
 	{:else}
+		<p class="text-center text-muted-foreground text-sm italic mb-2 md:hidden">Swipe left or right to edit or delete</p>
 		<div class="relative">
 			<!-- Timeline line - centered and behind content -->
 			<div
@@ -66,17 +71,29 @@
 				{#each sortedEntries as entry (entry.data.id)}
 					<li>
 						{#if entry.type === 'coffee-bag'}
-							<BagEntry bag={entry.data} relativeTime={formatRelativeTime(entry.data.createdAt)} />
+							<TimelineEntry
+								onedit={() => onEditBag?.(entry.data)}
+								ondelete={() => onDeleteBag?.(entry.data)}
+							>
+								<BagEntry
+									bag={entry.data}
+									relativeTime={formatRelativeTime(entry.data.createdAt)}
+								/>
+							</TimelineEntry>
 						{:else}
-							<BrewEntry
-								coffeeBrew={entry.data}
-								coffeeBag={entry.coffeeBag}
-								relativeTime={formatRelativeTime(entry.data.createdAt)}
-							/>
+							<TimelineEntry
+								onedit={() => onEditBrew?.(entry.data)}
+								ondelete={() => onDeleteBrew?.(entry.data)}
+							>
+								<BrewEntry
+									coffeeBrew={entry.data}
+									coffeeBag={entry.coffeeBag}
+									relativeTime={formatRelativeTime(entry.data.createdAt)}
+								/>
+							</TimelineEntry>
 						{/if}
 					</li>
 				{/each}
 			</ul>
 		</div>
 	{/if}
-</div>
