@@ -66,7 +66,6 @@
 	{/if}
 
 	<div class="space-y-4">
-
 		{#if coffeeBag}
 			<div>
 				<h2 class="text-foreground text-2xl font-bold">

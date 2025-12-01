@@ -6,6 +6,7 @@
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
+    import Heater from '@lucide/svelte/icons/heater';
 
 	interface Props {
 		bag: CoffeeBag;
@@ -65,6 +66,23 @@
 			<p class="text-muted-foreground text-lg">{bag.roasterName}</p>
 		</div>
 
+		<div class="grid grid-cols-2 gap-4">
+			<div>
+				<p class="text-muted-foreground text-sm font-medium">
+                    <Heater class="size-3 align-baseline inline-block text-muted-foreground " />
+					Roasted On</p>
+				<p class="text-foreground font-semibold">
+                    {bag.dateRoasted ? formatDate(bag.dateRoasted) : 'Not specified'}</p>
+			</div>
+			<div>
+				<p class="text-muted-foreground text-sm font-medium">
+                    <CalendarCheck2 class="size-3 align-baseline inline-block text-muted-foreground " />
+					Opened On</p>
+				<p class="text-foreground font-semibold">
+                    {bag.dateOpened ? formatDate(bag.dateOpened) : 'Not specified'}</p>
+			</div>
+		</div>
+
 		{#if bag.style}
 			<div class="text-foreground">
 				<span class="text-muted-foreground font-medium">Style:</span>
@@ -72,38 +90,14 @@
 			</div>
 		{/if}
 
-		<Separator />
-
-		<div class="grid grid-cols-2 gap-4">
-			<div>
-				<p class="text-muted-foreground text-sm font-medium">Roasted</p>
-				<p class="text-foreground">
-                    <CalendarClock class="size-3 align-baseline inline-block text-muted-foreground " />
-                    {bag.dateRoasted ? formatDate(bag.dateRoasted) : 'Not specified'}</p>
-			</div>
-			<div>
-				<p class="text-muted-foreground text-sm font-medium">Opened</p>
-				<p class="text-foreground">
-
-                    <CalendarCheck2 class="size-3 align-baseline inline-block text-muted-foreground " />
-                    {bag.dateOpened ? formatDate(bag.dateOpened) : 'Not specified'}</p>
-			</div>
-		</div>
-
 		{#if bag.notes}
-			<Separator />
-			<div>
-				<p class="text-muted-foreground mb-1 text-md font-medium">
-                    <ScrollText class="size-3 align-baseline inline-block text-muted-foreground " />
-                    Notes
-                </p>
+			<div class="mt-4">
 				<p class="text-foreground italic">"{bag.notes}"</p>
 			</div>
 		{/if}
 
-		<Separator />
 
-		<div class="text-muted-foreground text-xs">
+		<div class="text-muted-foreground text-xs text-end">
 			<p>Created: {formatDate(bag.createdAt)} at {formatTime(bag.createdAt)}</p>
 			{#if bag.updatedAt.getTime() !== bag.createdAt.getTime()}
 				<p>Updated: {formatDate(bag.updatedAt)} at {formatTime(bag.updatedAt)}</p>

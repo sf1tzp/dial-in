@@ -52,8 +52,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center justify-center gap-2">
 				<ClipboardList class="size-5 text-bold inline-block align-text-top" />
-				{bag.name}
-			</Dialog.Title>
+				Bag Opened			</Dialog.Title>
 		</Dialog.Header>
 		<BagDetail {bag} />
 	</Dialog.Content>
