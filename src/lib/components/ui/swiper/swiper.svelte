@@ -85,6 +85,7 @@
 	.swiper-content {
 		width: 100cqw;
 		scroll-snap-align: center;
+		scroll-snap-stop: always;
 	}
 
 	.swiper > .swiper-action:first-child,
