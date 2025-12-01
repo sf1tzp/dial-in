@@ -18,3 +18,6 @@ We have shadcn Dialog components in src/lib/components/ui/dialog
 
 Let's place the dialog component in the Entry component, instead of adding another dialog in our main +page.svelte
 
+## Enhancement: Interpoalate the brew's Created Date in the detail card title, eg "Saturday morning brew"
+
+Note: The detail card's title is actually rendered in the Entry component

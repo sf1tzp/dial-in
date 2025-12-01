@@ -5,6 +5,9 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { BrewDetail } from '$lib/components/detail';
+    import Gauge from '@lucide/svelte/icons/gauge';
+    import Weight from '@lucide/svelte/icons/weight';
+    import Cog from '@lucide/svelte/icons/cog';
 
 	interface Props {
 		coffeeBrew?: CoffeeBrew;
@@ -49,47 +52,34 @@
 				Coffee Brewed
 			</Badge>
 		</div>
-		<span class="text-muted-foreground shrink-0 text-xs">
-			{relativeTime}
-		</span>
 	</div>
 
 	{#if coffeeBag}
-		<h3 class="text-foreground mb-1 font-semibold">{coffeeBag.name}</h3>
-		<p class="text-muted-foreground mb-2 text-xs">{coffeeBag.roasterName}</p>
+		<!-- interpolate a name based on the createdDate "Saturday Morning Brew" -->
+		<div class="flex justify-between my-4">
+			<h3 class="text-foreground font-semibold">
+				{coffeeBag.name}
+			</h3>
+			<span class="pt-2 text-muted-foreground text-end text-xs align-baseline ">
+				{relativeTime}
+			</span>
+		</div>
 	{/if}
 
-	<div class="text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
-		<div>
-			<span class="font-medium">Grind Setting:</span>
+	<div class="mt-4 text-muted-foreground flex text-sm justify-between">
+		<div class="m-2">
+			<Cog class="size-4 text-foreground text-bold inline-block align-text-top  mr-2 "/>
 			{coffeeBrew?.grindSetting}
 		</div>
-		<div>
-			<span class="font-medium">Dry Weight:</span>
+		<div class="m-2">
+			<Weight class="size-4 text-foreground text-bold align-text-top inline-block mr-2"/>
 			{coffeeBrew?.dryWeight}g
 		</div>
-		<div>
-			<span class="font-medium">Brew Time:</span>
-			{coffeeBrew?.brewTime}s
-		</div>
-		<div>
-			<span class="font-medium">Pressure:</span>
+		<div class="m-2">
+			<Gauge class="size-4 text-foreground text-bold align-text-top inline-block mr-2"/>
 			{coffeeBrew?.pressureReading}%
 		</div>
 	</div>
-
-	{#if coffeeBrew?.notes}
-		<Separator class="my-3" />
-		<p class="text-muted-foreground text-sm italic">"{coffeeBrew?.notes}"</p>
-	{/if}
-
-	{#if coffeeBrew?.createdAt}
-	<div class="text-muted-foreground mt-3 flex items-center justify-end text-xs">
-		<time datetime={coffeeBrew.createdAt.toISOString()}>
-			{formatDate(coffeeBrew.createdAt)} at {formatTime(coffeeBrew.createdAt)}
-		</time>
-	</div>
-	{/if}
 </div>
 
 {#if coffeeBrew}
@@ -97,7 +87,8 @@
 	<Dialog.Content class="max-h-[90vh] overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center justify-center gap-2">
-				<Coffee class="size-5" />
+				<Coffee class="size-5 text-bold inline-block align-text-top" />
+				<!-- interpolate a name based on the createdDate "Saturday Morning Brew" -->
 				Brew Details
 			</Dialog.Title>
 		</Dialog.Header>

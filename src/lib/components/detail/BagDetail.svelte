@@ -1,5 +1,8 @@
 <script lang="ts">
 	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
+    import CalendarClock from '@lucide/svelte/icons/calendar-clock';
+    import CalendarCheck2 from '@lucide/svelte/icons/calendar-check-2';
+    import ScrollText from '@lucide/svelte/icons/scroll-text';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
@@ -56,17 +59,7 @@
 		</div>
 	{/if}
 
-	<div class="space-y-3">
-		<div class="flex items-center gap-2">
-			<Badge
-				variant="secondary"
-				class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-			>
-				<ClipboardList class="mr-1 size-3" />
-				Bag Opened
-			</Badge>
-		</div>
-
+	<div class="space-y-4">
 		<div>
 			<h2 class="text-foreground text-2xl font-bold">{bag.name}</h2>
 			<p class="text-muted-foreground text-lg">{bag.roasterName}</p>
@@ -84,18 +77,26 @@
 		<div class="grid grid-cols-2 gap-4">
 			<div>
 				<p class="text-muted-foreground text-sm font-medium">Roasted</p>
-				<p class="text-foreground">{bag.dateRoasted ? formatDate(bag.dateRoasted) : 'Not specified'}</p>
+				<p class="text-foreground">
+                    <CalendarClock class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {bag.dateRoasted ? formatDate(bag.dateRoasted) : 'Not specified'}</p>
 			</div>
 			<div>
 				<p class="text-muted-foreground text-sm font-medium">Opened</p>
-				<p class="text-foreground">{bag.dateOpened ? formatDate(bag.dateOpened) : 'Not specified'}</p>
+				<p class="text-foreground">
+
+                    <CalendarCheck2 class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {bag.dateOpened ? formatDate(bag.dateOpened) : 'Not specified'}</p>
 			</div>
 		</div>
 
 		{#if bag.notes}
 			<Separator />
 			<div>
-				<p class="text-muted-foreground mb-1 text-sm font-medium">Notes</p>
+				<p class="text-muted-foreground mb-1 text-md font-medium">
+                    <ScrollText class="size-3 align-baseline inline-block text-muted-foreground " />
+                    Notes
+                </p>
 				<p class="text-foreground italic">"{bag.notes}"</p>
 			</div>
 		{/if}

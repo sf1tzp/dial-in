@@ -1,5 +1,13 @@
 <script lang="ts">
+	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
+    import Heater from '@lucide/svelte/icons/heater';
 	import Coffee from '@lucide/svelte/icons/coffee';
+    import ServerCog from '@lucide/svelte/icons/server-cog';
+    import Cog from '@lucide/svelte/icons/cog';
+    import Weight from '@lucide/svelte/icons/weight';
+    import Timer from '@lucide/svelte/icons/timer';
+    import Gauge from '@lucide/svelte/icons/gauge';
+    import ScrollText from '@lucide/svelte/icons/scroll-text';
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
@@ -57,60 +65,69 @@
 		</div>
 	{/if}
 
-	<div class="space-y-3">
-		<div class="flex items-center gap-2">
-			<Badge
-				variant="secondary"
-				class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
-			>
-				<Coffee class="mr-1 size-3" />
-				Coffee Brewed
-			</Badge>
-		</div>
+	<div class="space-y-4">
 
 		{#if coffeeBag}
 			<div>
-				<h2 class="text-foreground text-2xl font-bold">{coffeeBag.name}</h2>
-				<p class="text-muted-foreground">{coffeeBag.roasterName}</p>
+				<h2 class="text-foreground text-2xl font-bold">
+                    <!-- <ClipboardList class="size-4 align-baseline inline-block "/> -->
+                    {coffeeBag.name}
+                </h2>
+				<p class="text-muted-foreground">
+                    <!-- <Heater class="size-3 align-baseline inline-block "/> -->
+                    {coffeeBag.roasterName}
+                </p>
 			</div>
 		{/if}
 
-		<Separator />
-
 		<div class="grid grid-cols-2 gap-4">
 			<div>
-				<p class="text-muted-foreground text-sm font-medium">Grind Setting</p>
-				<p class="text-foreground text-xl font-semibold">{brew.grindSetting}</p>
+				<p class="text-muted-foreground text-sm font-medium">
+                    Grind Setting
+                </p>
+				<p class="text-foreground text-xl font-semibold">
+                <Cog class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {brew.grindSetting}</p>
 			</div>
 			<div>
 				<p class="text-muted-foreground text-sm font-medium">Dry Weight</p>
-				<p class="text-foreground text-xl font-semibold">{brew.dryWeight}g</p>
+				<p class="text-foreground text-xl font-semibold">
+
+                    <Weight class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {brew.dryWeight}g
+                </p>
 			</div>
 			<div>
 				<p class="text-muted-foreground text-sm font-medium">Brew Time</p>
-				<p class="text-foreground text-xl font-semibold">{brew.brewTime}s</p>
+				<p class="text-foreground text-xl font-semibold">
+
+                    <Timer class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {brew.brewTime}s</p>
 			</div>
 			<div>
 				<p class="text-muted-foreground text-sm font-medium">Pressure</p>
-				<p class="text-foreground text-xl font-semibold">{brew.pressureReading}%</p>
+				<p class="text-foreground text-xl font-semibold">
+
+                    <Gauge class="size-3 align-baseline inline-block text-muted-foreground " />
+                    {brew.pressureReading}%</p>
 			</div>
 		</div>
 
 		{#if brew.notes}
-			<Separator />
 			<div>
-				<p class="text-muted-foreground mb-1 text-sm font-medium">Notes</p>
+				<p class="text-muted-foreground mb-1 text-sm font-medium">
+                    <ScrollText class="size-3 inline-block text-muted-foreground " />
+                    Notes</p>
 				<p class="text-foreground italic">"{brew.notes}"</p>
 			</div>
 		{/if}
 
-		<Separator />
-
-		<div class="text-muted-foreground text-xs">
-			<p>Created: {formatDate(brew.createdAt)} at {formatTime(brew.createdAt)}</p>
+        <div class="text-muted-foreground text-xs text-end">
+			<p>Added: {formatDate(brew.createdAt)} at {formatTime(brew.createdAt)}</p>
 			{#if brew.updatedAt.getTime() !== brew.createdAt.getTime()}
 				<p>Updated: {formatDate(brew.updatedAt)} at {formatTime(brew.updatedAt)}</p>
 			{/if}
 		</div>
+
 	</div>
 </div>
