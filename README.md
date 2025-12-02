@@ -100,12 +100,3 @@ and/or improve its robustness.
 
 It's annoying that this input defaults to "0". Once a user is 'dialed-in' it's less likely that they
 will change the grinder setting.
-
-
-### Enhancement: Revise form styling
-
-Bag form
-- Show Opened on on first page, default to current date
-
-Brew Form
-- Use the same photo icon / button as in the Bag form

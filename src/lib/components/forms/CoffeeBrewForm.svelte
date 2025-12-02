@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Camera from "@lucide/svelte/icons/camera"
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { coffeeBrewSchema, type CoffeeBrewFormData } from '$lib/schemas/coffee';
@@ -42,22 +43,49 @@
 
 <form method="POST" enctype="multipart/form-data" use:enhance class="space-y-4">
 	<ScrollArea class="h-100">
-	<Field.Field>
-		<Field.Label for="coffeeBagId">Coffee Bag</Field.Label>
-		<select
-			id="coffeeBagId"
-			name="coffeeBagId"
-			bind:value={$formData.coffeeBagId}
-			class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 shadow-xs flex h-9 w-full rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30"
-			aria-invalid={$errors.coffeeBagId ? 'true' : undefined}
-		>
-			<option value="">Select a coffee bag</option>
-			{#each coffeeBags as bag}
-				<option value={bag.id}>{bag.name} - {bag.roasterName}</option>
-			{/each}
-		</select>
-		<Field.Error>{$errors.coffeeBagId}</Field.Error>
-	</Field.Field>
+		<!-- Name and Picture on same row -->
+		<div class="flex items-start">
+			<Field.Field class="w-2/3">
+				<Field.Label for="coffeeBagId">Coffee Bag</Field.Label>
+				<select
+					id="coffeeBagId"
+					name="coffeeBagId"
+					bind:value={$formData.coffeeBagId}
+					class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 shadow-xs flex h-9 w-full rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30"
+					aria-invalid={$errors.coffeeBagId ? 'true' : undefined}
+				>
+					<option value="">Select a coffee bag</option>
+					{#each coffeeBags as bag}
+						<option value={bag.id}>{bag.name} - {bag.roasterName}</option>
+					{/each}
+				</select>
+				<Field.Error>{$errors.coffeeBagId}</Field.Error>
+			</Field.Field>
+
+			<Field.Field class="w-1/3 flex-1 flex-col items-center">
+				<Field.Label for="picture" class="sr-only">Picture</Field.Label>
+				<label
+					for="picture"
+					class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
+				>
+					<Camera class="size-6" />
+					<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
+				</label>
+				<Input
+					id="picture"
+					name="picture"
+					type="file"
+					accept="image/*"
+					class="hidden"
+					onchange={(e) => {
+						const file = e.currentTarget.files?.[0];
+						if (file) {
+							$formData.picture = file;
+						}
+					}}
+				/>
+			</Field.Field>
+		</div>
 
 		<Field.Field>
 			<Field.Label for="grinderCoarseness">
@@ -136,22 +164,7 @@
 		<Field.Error>{$errors.notes}</Field.Error>
 	</Field.Field>
 
-	<Field.Field>
-		<Field.Label for="picture">Picture (optional)</Field.Label>
-		<Input
-			id="picture"
-			name="picture"
-			type="file"
-			accept="image/*"
-			onchange={(e) => {
-				const file = e.currentTarget.files?.[0];
-				if (file) {
-					$formData.picture = file;
-				}
-			}}
-		/>
-		<!-- <Field.Description>Upload a photo of your shot</Field.Description> -->
-	</Field.Field>
+
 	</ScrollArea>
 
 	<Button type="submit" class="w-full">
