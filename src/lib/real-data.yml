@@ -1,0 +1,17 @@
+coffeeName: Etheopian Yirgaasdfasdf
+roasterName: Private Selection (Kroger)
+Roasted on: unknown
+Opened on: 11/30/2025
+
+brews:
+- grindSetting: 3.6
+  dryWeight: 16.0
+  brewTime: 33s
+  pressureReading: 37%
+
+- grindSetting: 3.6
+  dryWeight: 18.5
+  brewTime: 33s
+  pressureReading: 45%
+  notes: That's about as much coffee that will fit in the portafilter
+
