@@ -11,6 +11,7 @@
 	import { DateInput } from '$lib/components/ui/date-input';
 	import CameraIcon from '@lucide/svelte/icons/camera';
     import ChevronRight from '@lucide/svelte/icons/chevron-right';
+    import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
 	interface Props {
 		data: SuperValidated<CoffeeBagFormData>;
@@ -31,6 +32,13 @@
 	});
 
 	const { form: formData, errors, enhance } = form;
+
+	// Default dateOpened to today if not set
+	$effect(() => {
+		if ($formData.dateOpened === undefined) {
+			$formData.dateOpened = new Date();
+		}
+	});
 
 	let api = $state<CarouselAPI>();
 	let currentSlide = $state(0);
@@ -117,40 +125,54 @@
 						<Field.Error>{$errors.roasterName}</Field.Error>
 					</Field.Field>
 
-					<Button
-						variant="ghost"
-						onclick={goToDetails}
-						class="w-full"
-					>
-						Add details...
-						<ChevronRight/>
-					</Button>
+					<div class="grid gap-4 grid-cols-2">
+						<Field.Field>
+							<DateInput
+								id="dateRoasted"
+								value={$formData.dateRoasted}
+								placeholder="Roasted On"
+								label="Roasted:"
+								onchange={(date) => {
+									if (date) {
+										$formData.dateRoasted = date;
+									}
+								}}
+								aria-invalid={$errors.dateRoasted ? 'true' : undefined}
+							/>
+							<Field.Error>{$errors.dateRoasted}</Field.Error>
+						</Field.Field>
+
+					<Field.Field>
+						<DateInput
+							id="dateOpened"
+							value={$formData.dateOpened}
+							placeholder="Unknown"
+							label="Opened:"
+							onchange={(date) => {
+								if (date) {
+									$formData.dateOpened = date;
+								}
+							}}
+							aria-invalid={$errors.dateOpened ? 'true' : undefined}
+						/>
+						<Field.Error>{$errors.dateOpened}</Field.Error>
+					</Field.Field>
+				</div>
+
+				<Button
+					variant="ghost"
+					onclick={goToDetails}
+					class="w-full"
+				>
+					<p class="text-muted-foreground">Add Details</p>
+					<ChevronRight/>
+				</Button>
 				</div>
 			</Carousel.Item>
 
 			<!-- Slide 2: Detail Fields -->
 			<Carousel.Item>
-				<div class="space-y-4 px-1">
-					<div class="flex items-center gap-2">
-						<button
-							type="button"
-							onclick={goBack}
-							aria-label="Go back"
-							class="text-muted-foreground hover:text-foreground"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-							</svg>
-						</button>
-						<h3 class="text-lg font-semibold">Details</h3>
-					</div>
-
+				<div class="flex flex-col flex-1 space-y-4 px-1">
 					<Field.Field>
 						<Field.Label for="style">Style</Field.Label>
 						<Input
@@ -164,7 +186,7 @@
 						<Field.Error>{$errors.style}</Field.Error>
 					</Field.Field>
 
-					<Field.Field>
+					<Field.Field class="flex flex-col flex-1">
 						<Field.Label for="notes">Notes</Field.Label>
 						<Textarea
 							id="notes"
@@ -172,49 +194,24 @@
 							placeholder="Tasting notes, brewing tips, etc."
 							bind:value={$formData.notes}
 							aria-invalid={$errors.notes ? 'true' : undefined}
+							class="flex-1 min-h-[120px] resize-none"
 						/>
 						<Field.Error>{$errors.notes}</Field.Error>
 					</Field.Field>
-
-					<div class="grid gap-4 grid-cols-2">
-						<Field.Field>
-							<!-- <Field.Label for="dateRoasted">Roasted On</Field.Label> -->
-							<DateInput
-								id="dateRoasted"
-								value={$formData.dateRoasted}
-								placeholder="Roasted On"
-								onchange={(date) => {
-									if (date) {
-										$formData.dateRoasted = date;
-									}
-								}}
-								aria-invalid={$errors.dateRoasted ? 'true' : undefined}
-							/>
-							<Field.Error>{$errors.dateRoasted}</Field.Error>
-						</Field.Field>
-
-						<Field.Field>
-							<!-- <Field.Label for="dateOpened">Opened On</Field.Label> -->
-							<DateInput
-								id="dateOpened"
-								value={$formData.dateOpened}
-								placeholder="Opened On"
-								onchange={(date) => {
-									if (date) {
-										$formData.dateOpened = date;
-									}
-								}}
-								aria-invalid={$errors.dateOpened ? 'true' : undefined}
-							/>
-							<Field.Error>{$errors.dateOpened}</Field.Error>
-						</Field.Field>
-					</div>
-
 				</div>
+					<Button
+						variant="ghost"
+						onclick={goBack}
+						class="w-full"
+					>
+						<ChevronLeft/>
+						<p class="text-muted-foreground">Go Back</p>
+					</Button>
+
 			</Carousel.Item>
 		</Carousel.Content>
 	</Carousel.Root>
-	<Button type="submit" class="mt-8 w-full">
+	<Button type="submit" class="mt-4 w-full">
 		{submitLabel}
 	</Button>
 </form>
