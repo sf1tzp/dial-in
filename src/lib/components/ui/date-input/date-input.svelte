@@ -2,28 +2,30 @@
   import CalendarPlus from "@lucide/svelte/icons/calendar-plus";
   import {
     type DateValue,
-    DateFormatter,
     getLocalTimeZone,
     CalendarDate,
+    today,
   } from "@internationalized/date";
   import { cn } from "$lib/utils.js";
+  import { formatColloquialDate } from "$lib/dates.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
+  import Heater from "@lucide/svelte/icons/heater";
 
   interface Props {
     value?: Date;
     onchange?: (date: Date | undefined) => void;
     placeholder?: string;
+    label?: string;
     id?: string;
     "aria-invalid"?: "true" | undefined;
   }
 
-  let { value: dateValue, onchange, placeholder = "Select a date", id, "aria-invalid": ariaInvalid }: Props = $props();
+  let { value: dateValue, onchange, placeholder = "Unknown", label, id, "aria-invalid": ariaInvalid }: Props = $props();
 
-  const df = new DateFormatter("en-US", {
-    dateStyle: "long",
-  });
+  // Disallow future dates
+  const maxValue = today(getLocalTimeZone());
 
   // Convert JS Date to DateValue
   function toDateValue(date: Date | undefined): DateValue | undefined {
@@ -48,6 +50,14 @@
     calendarValue = v;
     onchange?.(toDate(v));
   }
+
+  function getDisplayText(): string {
+    if (!calendarValue) {
+      return "";
+    }
+    const formattedDate = formatColloquialDate(calendarValue.toDate(getLocalTimeZone()));
+    return formattedDate;
+  }
 </script>
 
 <Popover.Root>
@@ -57,15 +67,27 @@
         {id}
         variant="outline"
         class={cn(
-          "w-full justify-start text-start text-3xl",
           !calendarValue && "text-muted-foreground"
         )}
         aria-invalid={ariaInvalid}
         {...props}
       >
-        {calendarValue ? df.format(calendarValue.toDate(getLocalTimeZone())) : placeholder}
+
         {#if !calendarValue}
-          <CalendarPlus class="ml-2 size-4" />
+          <span class="text-muted-foreground text-sm">{placeholder}</span>
+        {:else}
+          <!--  -->
+          {#if id == "dateRoasted"}
+            <Heater class="size-4 text-muted-foreground" />
+            <span class="text-muted-foreground text-sm">Roasted:</span>
+          {:else if id == "dateOpened"}
+            <span class="text-muted-foreground text-sm">Opened:</span>
+          {/if}
+        {/if}
+
+        {getDisplayText()}
+        {#if !calendarValue}
+          <CalendarPlus class="size-4" />
         {/if}
       </Button>
     {/snippet}
@@ -77,6 +99,7 @@
       type="single"
       initialFocus
       captionLayout="dropdown"
+      {maxValue}
     />
   </Popover.Content>
 </Popover.Root>
