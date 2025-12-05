@@ -14,3 +14,24 @@ brews:
     brewTime: 33s
     pressureReading: 45%
     notes: That's about as much coffee that will fit in the portafilter
+
+  - brewedAt: 12/2/2025 ~3:30pm
+    grindSetting: 3.6
+    dryWeight: 17.6
+    brewTime: 33s
+    pressureReading: 48%
+    notes: Really nice flavor. Need to settle on a proceedure for reading pressure
+
+  - brewedAt: 12/2/25 5:34
+    grindSetting: 3.6
+    dryWeight: 17.6
+    brewTime: 33s
+    pressureReading: 48%
+    notes: Really nice flavor. Need to settle on a proceedure for reading pressure
+
+  - brewedAt: 12/2/25 19:36
+    grindSetting: 3.6
+    dryWeight: 17.3
+    brewTime: 32s
+    pressureReading: 45% (fist 3)
+    notes: Really nice flavor. Need to settle on a proceedure for reading pressure

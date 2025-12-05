@@ -25,6 +25,10 @@
 		unit = '%'
 	}: Props = $props();
 
+    let colors = {
+
+    }
+
 	// Calculate needle rotation angle
 	// Gauge spans from -135deg (min) to +135deg (max), total 270deg arc
 	const minAngle = -135;
@@ -73,7 +77,7 @@
 
 		const rect = gaugeElement.getBoundingClientRect();
 		const centerX = rect.left + rect.width / 2;
-		const centerY = rect.top + rect.height * 0.6; // Center is lower on semicircle
+		const centerY = rect.top + rect.height * 0.8; // Center matches needle pivot point
 
 		const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
 		const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -156,123 +160,34 @@
 		ontouchstart={handleTouchStart}
 		ontouchmove={handleTouchMove}
 	>
-		<!-- SVG Gauge -->
+		<!-- SVG Gauge (Lucide gauge icon style) -->
 		<svg
-			viewBox="0 0 200 130"
+			viewBox="0 0 24 24"
 			class="w-full h-full overflow-visible"
+			fill="none"
+			stroke-linecap="round"
+			stroke-linejoin="round"
 		>
-			<!-- Gauge background arc -->
+			<!-- Gauge background arc (from Lucide gauge icon) -->
 			<path
-				d="M 20 110 A 80 80 0 0 1 180 110"
+				d="M3.34 19a10 10 0 1 1 17.32 0"
 				fill="none"
 				stroke="currentColor"
-				stroke-width="12"
+				stroke-width="2"
 				class="text-muted"
 			/>
 
-			<!-- Colored zones (under-extracted, ideal, over-extracted) -->
-			<!-- Under-extracted zone (left) - 0-35% of arc -->
-			<path
-				d="M 20 110 A 80 80 0 0 1 52 48"
-				fill="none"
-				stroke="hsl(45 93% 47%)"
-				stroke-width="10"
-				opacity="0.7"
-			/>
-			<!-- Ideal zone (middle) - 35-65% of arc -->
-			<path
-				d="M 52 48 A 80 80 0 0 1 148 48"
-				fill="none"
-				stroke="hsl(142 76% 36%)"
-				stroke-width="10"
-				opacity="0.7"
-			/>
-			<!-- Over-extracted zone (right) - 65-100% of arc -->
-			<path
-				d="M 148 48 A 80 80 0 0 1 180 110"
-				fill="none"
-				stroke="hsl(0 72% 51%)"
-				stroke-width="10"
-				opacity="0.7"
-			/>
-
-			<!-- Major tick marks -->
-			{#each majorTickMarks() as tick}
-				<line
-					x1="100"
-					y1="25"
-					x2="100"
-					y2="40"
-					stroke="currentColor"
-					stroke-width="2"
-					class="text-foreground"
-					transform="rotate({tick.angle} 100 110)"
-				/>
-				{#if showLabels}
-					<text
-						x="100"
-						y="15"
-						text-anchor="middle"
-						class="fill-muted-foreground text-[10px] font-medium"
-						transform="rotate({tick.angle} 100 110)"
-					>
-						<tspan
-							transform="rotate({-tick.angle})"
-							style="transform-origin: 100px 15px; transform-box: fill-box;"
-						>
-							{Math.round(tick.value)}
-						</tspan>
-					</text>
-				{/if}
-			{/each}
-
-			<!-- Minor tick marks -->
-			{#each minorTickMarks() as tick}
-				<line
-					x1="100"
-					y1="28"
-					x2="100"
-					y2="38"
-					stroke="currentColor"
-					stroke-width="1"
-					class="text-muted-foreground"
-					transform="rotate({tick.angle} 100 110)"
-				/>
-			{/each}
-
-			<!-- Needle -->
-			<g transform="rotate({needleAngle()} 100 110)">
-				<!-- Needle shadow -->
-				<polygon
-					points="98,45 102,45 101,112 99,112"
-					class="fill-foreground/20"
-					transform="translate(2, 2)"
-				/>
-				<!-- Needle body -->
-				<polygon
-					points="97,50 103,50 101,112 99,112"
-					class="fill-destructive"
-				/>
-				<!-- Needle tip -->
-				<polygon
-					points="100,30 97,50 103,50"
+			<!-- Needle (rotating pill) -->
+			<g transform="rotate({needleAngle()} 12 19)">
+				<rect
+					x="5"
+					y="5"
+					width="2"
+					height="4"
+					rx="1"
 					class="fill-destructive"
 				/>
 			</g>
-
-			<!-- Center cap -->
-			<circle
-				cx="100"
-				cy="110"
-				r="10"
-				class="fill-muted-foreground"
-			/>
-			<circle
-				cx="100"
-				cy="110"
-				r="6"
-				class="fill-background"
-			/>
 		</svg>
 	</div>
 

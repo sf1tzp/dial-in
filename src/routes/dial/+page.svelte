@@ -7,10 +7,10 @@
 
 <div class="max-w-4xl mx-auto p-4">
     <h1 class="text-2xl font-bold text-center mb-6">Pressure Gauge</h1>
-    
+
     <div class="flex flex-col items-center gap-8">
         <Card class="p-6">
-            <Dial 
+            <Dial
                 bind:value={pressureValue}
                 min={0}
                 max={100}
@@ -19,7 +19,7 @@
                 size={250}
             />
         </Card>
-        
+
         <p class="text-muted-foreground text-center">
             Click or drag on the gauge to adjust the pressure reading.<br>
             Use arrow keys for fine control.
