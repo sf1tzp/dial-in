@@ -1,0 +1,9 @@
+services:
+  dial-in:
+    container_name: dial-in-server
+    image: dial-in:latest
+    networks:
+      - caddy_network
+networks:
+  caddy_network:
+    driver: bridge
