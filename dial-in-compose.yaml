@@ -1,5 +1,6 @@
 services:
   dial-in:
+    restart: unless-stopped
     container_name: dial-in-server
     image: dial-in:latest
     networks:
