@@ -30,37 +30,39 @@ jobs:
       # - name: Test
       #   run: just test
 
-  build:
-    runs-on: ubuntu-latest
-    needs: lint-and-test
-    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v6
+  # TODO: need nerdctl on runner to utilize existing build script..
+  # build:
+  #   runs-on: ubuntu-latest
+  #   needs: lint-and-test
+  #   # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - uses: actions/checkout@v6
 
-      - name: Install just
-        uses: extractions/setup-just@v3
+  #     - name: Install just
+  #       uses: extractions/setup-just@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Log in to GitHub Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image
-        run: just build
+  #     # Can't use this recipe without install nerdctl first; no plugin exists yet
+  #     - name: Build image
+  #       run: just build
 
-      - name: Tag and push image
-        run: |
-          docker tag $(just get-image-name) ${{ env.IMAGE_NAME }}
-          docker push ${{ env.IMAGE_NAME }}
-          docker tag ${{ env.IMAGE_NAME }} ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:latest
+  #     - name: Tag and push image
+  #       run: |
+  #         docker tag $(just get-image-name) ${{ env.IMAGE_NAME }}
+  #         docker push ${{ env.IMAGE_NAME }}
+  #         docker tag ${{ env.IMAGE_NAME }} ghcr.io/${{ github.repository }}:latest
+  #         docker push ghcr.io/${{ github.repository }}:latest
 
-  # TODO:
+  # TODO: Set up deployment credentials in repo secrets
   # deploy:
   #   runs-on: ubuntu-latest
   #   needs: build
