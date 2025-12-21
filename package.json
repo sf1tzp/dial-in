@@ -10,8 +10,8 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "format": "prettier --write .",
-    "lint": "prettier --check ."
+    "format": "prettier --write src/",
+    "lint": "prettier --check src/"
   },
   "devDependencies": {
     "@internationalized/date": "^3.10.0",
@@ -46,5 +46,11 @@
     "idb": "^8.0.3",
     "mode-watcher": "^1.1.0",
     "virtua": "^0.48.2"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true
   }
 }
