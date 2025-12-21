@@ -1,3 +1,9 @@
+lint:
+    npm run lint
+
+test:
+    echo "todo"
+
 build:
     ~/.local/bin/nerdctl build . -t dial-in:latest
     ~/.local/bin/nerdctl save dial-in:latest -o dial-in-latest.tar
