@@ -14,3 +14,6 @@ deploy: # build
     ssh fitz.gg-prod -C "~/.local/bin/nerdctl load -i ~/dial-in-latest.tar"
     ssh fitz.gg-prod -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml down"
     ssh fitz.gg-prod -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml up -d"
+
+get-image-name:
+    printf "dial-in"
