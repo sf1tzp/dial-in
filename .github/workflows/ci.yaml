@@ -2,7 +2,7 @@ name: dial-in CI
 
 on:
   pull_request:
-    branches: [ci]
+    branches: [main]
   push:
     branches: [main]
 
