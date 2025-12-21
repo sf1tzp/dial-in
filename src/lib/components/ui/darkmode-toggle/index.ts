@@ -1,3 +1,3 @@
-import DarkModeToggle from "./darkmode-toggle.svelte";
+import DarkModeToggle from './darkmode-toggle.svelte';
 
 export { DarkModeToggle };

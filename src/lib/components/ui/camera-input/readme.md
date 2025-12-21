@@ -84,13 +84,13 @@ npm install tesseract.js
 
 ```typescript
 // In your component
-import Tesseract from "tesseract.js";
+import Tesseract from 'tesseract.js';
 
 async function processWithTesseract(file: File) {
-  const {
-    data: { text },
-  } = await Tesseract.recognize(file, "eng");
-  return text;
+    const {
+        data: { text },
+    } = await Tesseract.recognize(file, 'eng');
+    return text;
 }
 ```
 
@@ -99,33 +99,33 @@ async function processWithTesseract(file: File) {
 Create `src/routes/api/ocr/+server.ts`:
 
 ```typescript
-import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
-  const { image } = await request.json();
+    const { image } = await request.json();
 
-  // Example with Google Cloud Vision
-  const response = await fetch(
-    `https://vision.googleapis.com/v1/images:annotate?key=${process.env.GOOGLE_VISION_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        requests: [
-          {
-            image: { content: image.split(",")[1] }, // Remove data:image prefix
-            features: [{ type: "TEXT_DETECTION" }],
-          },
-        ],
-      }),
-    },
-  );
+    // Example with Google Cloud Vision
+    const response = await fetch(
+        `https://vision.googleapis.com/v1/images:annotate?key=${process.env.GOOGLE_VISION_API_KEY}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                requests: [
+                    {
+                        image: { content: image.split(',')[1] }, // Remove data:image prefix
+                        features: [{ type: 'TEXT_DETECTION' }],
+                    },
+                ],
+            }),
+        }
+    );
 
-  const data = await response.json();
-  const text = data.responses[0]?.fullTextAnnotation?.text || "";
+    const data = await response.json();
+    const text = data.responses[0]?.fullTextAnnotation?.text || '';
 
-  return json({ text });
+    return json({ text });
 };
 ```
 
@@ -144,10 +144,10 @@ You might want to show a preview of the captured image while processing:
 let previewUrl = $state<string | null>(null);
 
 function handleImageCapture(event: Event) {
-  const file = input.files?.[0];
-  if (file) {
-    previewUrl = URL.createObjectURL(file);
-    // ... rest of processing
-  }
+    const file = input.files?.[0];
+    if (file) {
+        previewUrl = URL.createObjectURL(file);
+        // ... rest of processing
+    }
 }
 ```
