@@ -6,7 +6,7 @@
 	import { initializeStores } from '$lib/storage';
 	import { onMount } from 'svelte';
 
-	import CardViewIcon from '@lucide/svelte/icons/phone';
+	import CardViewIcon from '@lucide/svelte/icons/smartphone';
 
 	import Profile from '$lib/components/profile.svelte';
 
@@ -39,6 +39,7 @@
 		</div>
 	{/if}
 </main>
+
 <div class="fixed bottom-0 left-0 right-0 bg-background grid grid-cols-3 items-center py-4 border-t-2 sm:max-w-lg sm:mx-auto sm:gap-24">
 	<div class="pl-4">
 			<CardViewIcon class="size-8 text-muted-foreground"/>
