@@ -5,6 +5,8 @@ services:
     image: dial-in:latest
     networks:
       - caddy_network
+    ports:
+      - ${SERVICE_PORT:-3000}:3000
 networks:
   caddy_network:
     driver: bridge
