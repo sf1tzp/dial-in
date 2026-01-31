@@ -111,9 +111,9 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
  * Creates a reactive store backed by IndexedDB
  * The store maintains reactive state in memory and persists to IndexedDB
  */
-function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata>(
-    storeName: 'coffeeBags' | 'coffeeBrews'
-) {
+function createIDBStore<
+    T extends { id: string; createdAt: Date } & SyncMetadata,
+>(storeName: 'coffeeBags' | 'coffeeBrews') {
     let items = $state<T[]>([]);
     let initialized = $state(false);
 
@@ -126,15 +126,18 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
             const all = (await db.getAll(storeName)) as unknown as T[];
             // Sort by createdAt descending (newest first)
             // Also migrate old items without sync metadata
-            items = all.map(item => ({
-                ...item,
-                deviceId: item.deviceId ?? getOrCreateDeviceId(),
-                syncedAt: item.syncedAt ?? null,
-                deletedAt: item.deletedAt ?? null,
-                isDirty: item.isDirty ?? true, // Assume dirty if not set
-            } as T)).sort(
-                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-            );
+            items = all
+                .map(
+                    (item) =>
+                        ({
+                            ...item,
+                            deviceId: item.deviceId ?? getOrCreateDeviceId(),
+                            syncedAt: item.syncedAt ?? null,
+                            deletedAt: item.deletedAt ?? null,
+                            isDirty: item.isDirty ?? true, // Assume dirty if not set
+                        }) as T
+                )
+                .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
             initialized = true;
         } catch (error) {
             console.error(`Failed to load ${storeName} from IndexedDB:`, error);
@@ -147,7 +150,7 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
          * Get all non-deleted items (for UI display)
          */
         get items() {
-            return items.filter(item => !item.deletedAt);
+            return items.filter((item) => !item.deletedAt);
         },
 
         /**
@@ -165,14 +168,14 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
          * Get items that have been modified since last sync (excludes deleted)
          */
         getDirtyItems(): T[] {
-            return items.filter(item => item.isDirty && !item.deletedAt);
+            return items.filter((item) => item.isDirty && !item.deletedAt);
         },
 
         /**
          * Get items that have been soft-deleted and need to be synced
          */
         getDeletedDirtyItems(): T[] {
-            return items.filter(item => item.isDirty && item.deletedAt);
+            return items.filter((item) => item.isDirty && item.deletedAt);
         },
 
         /**
@@ -180,22 +183,29 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
          * Call this after successful sync to clean up
          */
         async cleanupSyncedDeletes(): Promise<void> {
-            const toCleanup = items.filter(item => item.deletedAt && !item.isDirty);
+            const toCleanup = items.filter(
+                (item) => item.deletedAt && !item.isDirty
+            );
 
             if (toCleanup.length === 0) return;
 
             // Update reactive state immediately
-            items = items.filter(item => !item.deletedAt || item.isDirty);
+            items = items.filter((item) => !item.deletedAt || item.isDirty);
 
             if (!browser) return;
 
             try {
                 const db = await getDB();
                 const tx = db.transaction(storeName, 'readwrite');
-                await Promise.all(toCleanup.map(item => tx.store.delete(item.id)));
+                await Promise.all(
+                    toCleanup.map((item) => tx.store.delete(item.id))
+                );
                 await tx.done;
             } catch (error) {
-                console.error(`Failed to cleanup synced deletes in ${storeName}:`, error);
+                console.error(
+                    `Failed to cleanup synced deletes in ${storeName}:`,
+                    error
+                );
             }
         },
 
@@ -208,7 +218,9 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
          * Add a new item to the store
          * Sync metadata fields are optional and will be set to defaults if not provided
          */
-        async add(item: Omit<T, keyof SyncMetadata> & Partial<SyncMetadata>): Promise<void> {
+        async add(
+            item: Omit<T, keyof SyncMetadata> & Partial<SyncMetadata>
+        ): Promise<void> {
             // Ensure sync metadata is set and mark as dirty
             const itemWithMeta = {
                 ...item,
@@ -225,7 +237,10 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
 
             try {
                 const db = await getDB();
-                await db.add(storeName, itemWithMeta as T & CoffeeBag & CoffeeBrew);
+                await db.add(
+                    storeName,
+                    itemWithMeta as T & CoffeeBag & CoffeeBrew
+                );
             } catch (error) {
                 console.error(`Failed to add item to ${storeName}:`, error);
                 // Rollback on error
@@ -290,7 +305,10 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
 
             try {
                 const db = await getDB();
-                await db.put(storeName, softDeleted as T & CoffeeBag & CoffeeBrew);
+                await db.put(
+                    storeName,
+                    softDeleted as T & CoffeeBag & CoffeeBrew
+                );
             } catch (error) {
                 console.error(
                     `Failed to soft delete item from ${storeName}:`,
@@ -423,7 +441,10 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
                 );
                 await tx.done;
             } catch (error) {
-                console.error(`Failed to mark items as synced in ${storeName}:`, error);
+                console.error(
+                    `Failed to mark items as synced in ${storeName}:`,
+                    error
+                );
             }
         },
 
@@ -450,9 +471,15 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
 
             try {
                 const db = await getDB();
-                await db.put(storeName, syncedItem as T & CoffeeBag & CoffeeBrew);
+                await db.put(
+                    storeName,
+                    syncedItem as T & CoffeeBag & CoffeeBrew
+                );
             } catch (error) {
-                console.error(`Failed to upsert from remote in ${storeName}:`, error);
+                console.error(
+                    `Failed to upsert from remote in ${storeName}:`,
+                    error
+                );
                 throw error;
             }
         },

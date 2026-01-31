@@ -369,7 +369,9 @@ class SyncService {
         const coffeeBags = allDirtyBags.map(localBagToRemote);
         const coffeeBrews = allDirtyBrews.map(localBrewToRemote);
 
-        console.log(`Pushing ${dirtyBags.length} bags, ${dirtyBrews.length} brews, and ${deletedBags.length + deletedBrews.length} deletions`);
+        console.log(
+            `Pushing ${dirtyBags.length} bags, ${dirtyBrews.length} brews, and ${deletedBags.length + deletedBrews.length} deletions`
+        );
 
         const response = await fetch('/api/sync/push', {
             method: 'POST',
@@ -393,10 +395,10 @@ class SyncService {
 
         // Mark pushed items as synced
         if (allDirtyBags.length > 0) {
-            await coffeeBagStore.markAsSynced(allDirtyBags.map(b => b.id));
+            await coffeeBagStore.markAsSynced(allDirtyBags.map((b) => b.id));
         }
         if (allDirtyBrews.length > 0) {
-            await coffeeBrewStore.markAsSynced(allDirtyBrews.map(b => b.id));
+            await coffeeBrewStore.markAsSynced(allDirtyBrews.map((b) => b.id));
         }
 
         // Clean up soft-deleted items that have been synced
@@ -455,7 +457,8 @@ class SyncService {
 
             return { pullResults, pushResults };
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            const errorMessage =
+                err instanceof Error ? err.message : 'Unknown error';
             console.error('Sync failed:', err);
             this.updateStatus({ lastError: errorMessage });
             throw err;
