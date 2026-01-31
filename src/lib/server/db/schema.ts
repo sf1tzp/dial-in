@@ -10,6 +10,7 @@ import {
     real,
     integer,
     index,
+    foreignKey,
 } from 'drizzle-orm/pg-core';
 
 /**
@@ -53,7 +54,9 @@ export const coffeeBrews = pgTable(
     {
         // Primary fields (matching IndexedDB)
         id: text('id').primaryKey(), // UUID generated client-side
-        coffeeBagId: text('coffee_bag_id').notNull(),
+        coffeeBagId: text('coffee_bag_id')
+            .notNull()
+            .references(() => coffeeBags.id, { onDelete: 'cascade' }),
         grindSetting: real('grind_setting').notNull(),
         dryWeight: real('dry_weight').notNull(),
         brewTime: real('brew_time').notNull(),

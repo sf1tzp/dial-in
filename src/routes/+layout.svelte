@@ -10,6 +10,7 @@
 	import CardViewIcon from '@lucide/svelte/icons/smartphone';
 
 	import Profile from '$lib/components/profile.svelte';
+	import SyncStatus from '$lib/components/sync-status.svelte';
 
 	import { ModeWatcher } from "mode-watcher";
 
@@ -61,7 +62,11 @@
 
 <div class="fixed bottom-0 left-0 right-0 bg-background grid grid-cols-3 items-center py-4 border-t-2 sm:max-w-lg sm:mx-auto sm:gap-24">
 	<div class="pl-4">
+		{#if $session.data?.user}
+			<SyncStatus />
+		{:else}
 			<CardViewIcon class="size-8 text-muted-foreground"/>
+		{/if}
 	</div>
 
 	<a href="https://fitz.gg">

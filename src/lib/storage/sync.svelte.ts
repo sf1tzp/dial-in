@@ -12,6 +12,15 @@ import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
 const DEVICE_ID_KEY = 'dial-in-device-id';
 const LAST_SYNC_KEY = 'dial-in-last-sync';
 
+// Sync status for UI visibility
+export interface SyncStatus {
+    lastSyncTime: Date | null;
+    isSyncing: boolean;
+    lastError: string | null;
+    lastPullResults: { bags: number; brews: number; deleted: number } | null;
+    lastPushResults: { bags: number; brews: number } | null;
+}
+
 /**
  * Get or create a unique device ID
  */
@@ -65,11 +74,14 @@ interface SyncPushResponse {
     serverTime: number;
 }
 
-// Remote types include sync metadata
-interface RemoteCoffeeBag extends Omit<
-    CoffeeBag,
-    'dateRoasted' | 'dateOpened' | 'createdAt' | 'updatedAt'
-> {
+// Remote types - standalone definitions to avoid conflicts with local SyncMetadata
+interface RemoteCoffeeBag {
+    id: string;
+    name: string;
+    roasterName: string;
+    style: string;
+    notes: string;
+    picture?: string;
     dateRoasted: string | null;
     dateOpened: string | null;
     createdAt: string;
@@ -80,7 +92,15 @@ interface RemoteCoffeeBag extends Omit<
     deviceId: string;
 }
 
-interface RemoteCoffeeBrew extends Omit<CoffeeBrew, 'createdAt' | 'updatedAt'> {
+interface RemoteCoffeeBrew {
+    id: string;
+    coffeeBagId: string;
+    grindSetting: number;
+    dryWeight: number;
+    brewTime: number;
+    pressureReading: number;
+    notes?: string;
+    picture?: string;
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
@@ -106,6 +126,11 @@ function remoteBagToLocal(remote: RemoteCoffeeBag): CoffeeBag {
         dateOpened: remote.dateOpened ? new Date(remote.dateOpened) : undefined,
         createdAt: new Date(remote.createdAt),
         updatedAt: new Date(remote.updatedAt),
+        // Sync metadata
+        deviceId: remote.deviceId,
+        syncedAt: remote.syncedAt ? new Date(remote.syncedAt) : null,
+        deletedAt: remote.deletedAt ? new Date(remote.deletedAt) : null,
+        isDirty: false, // Coming from server, not dirty
     };
 }
 
@@ -124,6 +149,11 @@ function remoteBrewToLocal(remote: RemoteCoffeeBrew): CoffeeBrew {
         picture: remote.picture ?? undefined,
         createdAt: new Date(remote.createdAt),
         updatedAt: new Date(remote.updatedAt),
+        // Sync metadata
+        deviceId: remote.deviceId,
+        syncedAt: remote.syncedAt ? new Date(remote.syncedAt) : null,
+        deletedAt: remote.deletedAt ? new Date(remote.deletedAt) : null,
+        isDirty: false, // Coming from server, not dirty
     };
 }
 
@@ -197,6 +227,29 @@ class SyncService {
     private syncing = false;
     private autoSyncInterval: ReturnType<typeof setInterval> | null = null;
 
+    // Reactive sync status using Svelte 5 runes
+    private _status = $state<SyncStatus>({
+        lastSyncTime: null,
+        isSyncing: false,
+        lastError: null,
+        lastPullResults: null,
+        lastPushResults: null,
+    });
+
+    /**
+     * Get the current sync status (reactive)
+     */
+    get status(): SyncStatus {
+        return this._status;
+    }
+
+    /**
+     * Update sync status
+     */
+    private updateStatus(updates: Partial<SyncStatus>): void {
+        this._status = { ...this._status, ...updates };
+    }
+
     /**
      * Check if user is authenticated
      */
@@ -254,11 +307,8 @@ class SyncService {
             const merged = mergeEntity(localBag, converted);
 
             if (merged) {
-                if (localBag) {
-                    await coffeeBagStore.update(merged.id, merged);
-                } else {
-                    await coffeeBagStore.add(merged);
-                }
+                // Use upsertFromRemote to properly handle sync metadata
+                await coffeeBagStore.upsertFromRemote(merged);
                 bagsUpdated++;
             }
         }
@@ -280,11 +330,8 @@ class SyncService {
             const merged = mergeEntity(localBrew, converted);
 
             if (merged) {
-                if (localBrew) {
-                    await coffeeBrewStore.update(merged.id, merged);
-                } else {
-                    await coffeeBrewStore.add(merged);
-                }
+                // Use upsertFromRemote to properly handle sync metadata
+                await coffeeBrewStore.upsertFromRemote(merged);
                 brewsUpdated++;
             }
         }
@@ -297,15 +344,25 @@ class SyncService {
 
     /**
      * Push local changes to the server
+     * Only pushes items that have been modified since last sync (dirty items)
      */
-    async push(): Promise<SyncPushResponse['results']> {
+    async push(): Promise<{ bags: number; brews: number }> {
         const deviceId = getDeviceId();
 
-        // For now, push all local data
-        // In a more sophisticated implementation, we'd track which items
-        // have changed since last sync using a sync queue
-        const coffeeBags = coffeeBagStore.items.map(localBagToRemote);
-        const coffeeBrews = coffeeBrewStore.items.map(localBrewToRemote);
+        // Only push dirty items (delta tracking)
+        const dirtyBags = coffeeBagStore.getDirtyItems();
+        const dirtyBrews = coffeeBrewStore.getDirtyItems();
+
+        // If nothing to push, return early
+        if (dirtyBags.length === 0 && dirtyBrews.length === 0) {
+            console.log('No dirty items to push');
+            return { bags: 0, brews: 0 };
+        }
+
+        const coffeeBags = dirtyBags.map(localBagToRemote);
+        const coffeeBrews = dirtyBrews.map(localBrewToRemote);
+
+        console.log(`Pushing ${coffeeBags.length} bags and ${coffeeBrews.length} brews`);
 
         const response = await fetch('/api/sync/push', {
             method: 'POST',
@@ -327,7 +384,15 @@ class SyncService {
         const result: SyncPushResponse = await response.json();
         setLastSyncTime(result.serverTime);
 
-        return result.results;
+        // Mark pushed items as synced
+        if (dirtyBags.length > 0) {
+            await coffeeBagStore.markAsSynced(dirtyBags.map(b => b.id));
+        }
+        if (dirtyBrews.length > 0) {
+            await coffeeBrewStore.markAsSynced(dirtyBrews.map(b => b.id));
+        }
+
+        return { bags: dirtyBags.length, brews: dirtyBrews.length };
     }
 
     /**
@@ -335,7 +400,7 @@ class SyncService {
      */
     async syncNow(): Promise<{
         pullResults: { bags: number; brews: number; deleted: number };
-        pushResults: SyncPushResponse['results'];
+        pushResults: { bags: number; brews: number };
     } | null> {
         if (!browser) return null;
 
@@ -343,6 +408,7 @@ class SyncService {
         const authenticated = await this.isAuthenticated();
         if (!authenticated) {
             console.log('Sync skipped: not authenticated');
+            this.updateStatus({ lastError: 'Not authenticated' });
             return null;
         }
 
@@ -353,6 +419,7 @@ class SyncService {
         }
 
         this.syncing = true;
+        this.updateStatus({ isSyncing: true, lastError: null });
 
         try {
             console.log('Starting sync...');
@@ -365,12 +432,21 @@ class SyncService {
             const pushResults = await this.push();
             console.log('Push complete:', pushResults);
 
+            this.updateStatus({
+                lastSyncTime: new Date(),
+                lastPullResults: pullResults,
+                lastPushResults: pushResults,
+            });
+
             return { pullResults, pushResults };
         } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             console.error('Sync failed:', err);
+            this.updateStatus({ lastError: errorMessage });
             throw err;
         } finally {
             this.syncing = false;
+            this.updateStatus({ isSyncing: false });
         }
     }
 

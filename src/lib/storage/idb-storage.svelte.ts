@@ -1,18 +1,39 @@
 import { browser } from '$app/environment';
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { CoffeeBag, CoffeeBrew } from './interfaces';
+import type { CoffeeBag, CoffeeBrew, SyncMetadata } from './interfaces';
 
 // NOTE: idb cannot guarantee that data will not be evicted
 // We should think about adding an export feature or implement
 // serverside persistence
 // https://github.com/jakearchibald/idb/issues/299
 
+// Device ID for tracking which device made changes
+const DEVICE_ID_KEY = 'dial-in-device-id';
+
+/**
+ * Get or create a unique device ID
+ */
+function getOrCreateDeviceId(): string {
+    if (!browser) return 'server';
+
+    let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+    if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    }
+    return deviceId;
+}
+
 // Database schema definition
 interface DialInDB extends DBSchema {
     coffeeBags: {
         key: string;
         value: CoffeeBag;
-        indexes: { 'by-created': Date };
+        indexes: {
+            'by-created': Date;
+            'by-dirty': number; // 1 for dirty, 0 for clean
+            'by-synced': Date;
+        };
     };
     coffeeBrews: {
         key: string;
@@ -20,12 +41,14 @@ interface DialInDB extends DBSchema {
         indexes: {
             'by-created': Date;
             'by-bag': string;
+            'by-dirty': number;
+            'by-synced': Date;
         };
     };
 }
 
 const DB_NAME = 'dial-in-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // Singleton database instance
 let dbInstance: IDBPDatabase<DialInDB> | null = null;
@@ -37,22 +60,46 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
     if (dbInstance) return dbInstance;
 
     dbInstance = await openDB<DialInDB>(DB_NAME, DB_VERSION, {
-        upgrade(db) {
-            // Coffee Bags store
-            if (!db.objectStoreNames.contains('coffeeBags')) {
+        upgrade(db, oldVersion, _newVersion, transaction) {
+            // Version 1: Basic stores
+            if (oldVersion < 1) {
+                // Coffee Bags store
                 const bagStore = db.createObjectStore('coffeeBags', {
                     keyPath: 'id',
                 });
                 bagStore.createIndex('by-created', 'createdAt');
-            }
+                bagStore.createIndex('by-dirty', 'isDirty');
+                bagStore.createIndex('by-synced', 'syncedAt');
 
-            // Coffee Brews store
-            if (!db.objectStoreNames.contains('coffeeBrews')) {
+                // Coffee Brews store
                 const brewStore = db.createObjectStore('coffeeBrews', {
                     keyPath: 'id',
                 });
                 brewStore.createIndex('by-created', 'createdAt');
                 brewStore.createIndex('by-bag', 'coffeeBagId');
+                brewStore.createIndex('by-dirty', 'isDirty');
+                brewStore.createIndex('by-synced', 'syncedAt');
+            }
+
+            // Version 2: Add sync metadata indexes to existing stores
+            if (oldVersion >= 1 && oldVersion < 2) {
+                // Add sync indexes to coffeeBags
+                const bagStore = transaction.objectStore('coffeeBags');
+                if (!bagStore.indexNames.contains('by-dirty')) {
+                    bagStore.createIndex('by-dirty', 'isDirty');
+                }
+                if (!bagStore.indexNames.contains('by-synced')) {
+                    bagStore.createIndex('by-synced', 'syncedAt');
+                }
+
+                // Add sync indexes to coffeeBrews
+                const brewStore = transaction.objectStore('coffeeBrews');
+                if (!brewStore.indexNames.contains('by-dirty')) {
+                    brewStore.createIndex('by-dirty', 'isDirty');
+                }
+                if (!brewStore.indexNames.contains('by-synced')) {
+                    brewStore.createIndex('by-synced', 'syncedAt');
+                }
             }
         },
     });
@@ -64,7 +111,7 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
  * Creates a reactive store backed by IndexedDB
  * The store maintains reactive state in memory and persists to IndexedDB
  */
-function createIDBStore<T extends { id: string; createdAt: Date }>(
+function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata>(
     storeName: 'coffeeBags' | 'coffeeBrews'
 ) {
     let items = $state<T[]>([]);
@@ -78,7 +125,14 @@ function createIDBStore<T extends { id: string; createdAt: Date }>(
             const db = await getDB();
             const all = (await db.getAll(storeName)) as unknown as T[];
             // Sort by createdAt descending (newest first)
-            items = all.sort(
+            // Also migrate old items without sync metadata
+            items = all.map(item => ({
+                ...item,
+                deviceId: item.deviceId ?? getOrCreateDeviceId(),
+                syncedAt: item.syncedAt ?? null,
+                deletedAt: item.deletedAt ?? null,
+                isDirty: item.isDirty ?? true, // Assume dirty if not set
+            } as T)).sort(
                 (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
             );
             initialized = true;
@@ -98,6 +152,13 @@ function createIDBStore<T extends { id: string; createdAt: Date }>(
         },
 
         /**
+         * Get items that have been modified since last sync
+         */
+        getDirtyItems(): T[] {
+            return items.filter(item => item.isDirty);
+        },
+
+        /**
          * Initialize the store by loading data from IndexedDB
          */
         load,
@@ -106,14 +167,23 @@ function createIDBStore<T extends { id: string; createdAt: Date }>(
          * Add a new item to the store
          */
         async add(item: T): Promise<void> {
+            // Ensure sync metadata is set and mark as dirty
+            const itemWithMeta = {
+                ...item,
+                deviceId: item.deviceId ?? getOrCreateDeviceId(),
+                syncedAt: null,
+                deletedAt: null,
+                isDirty: true,
+            } as T;
+
             // Update reactive state immediately for responsive UI
-            items = [item, ...items];
+            items = [itemWithMeta, ...items];
 
             if (!browser) return;
 
             try {
                 const db = await getDB();
-                await db.add(storeName, item as T & CoffeeBag & CoffeeBrew);
+                await db.add(storeName, itemWithMeta as T & CoffeeBag & CoffeeBrew);
             } catch (error) {
                 console.error(`Failed to add item to ${storeName}:`, error);
                 // Rollback on error
@@ -134,6 +204,8 @@ function createIDBStore<T extends { id: string; createdAt: Date }>(
                 ...original,
                 ...updates,
                 updatedAt: new Date(),
+                isDirty: true, // Mark as dirty on update
+                deviceId: getOrCreateDeviceId(),
             } as T;
 
             // Update reactive state immediately
@@ -235,6 +307,73 @@ function createIDBStore<T extends { id: string; createdAt: Date }>(
                 );
                 // Rollback on error
                 items = original;
+                throw error;
+            }
+        },
+
+        /**
+         * Mark items as synced (called after successful push)
+         */
+        async markAsSynced(ids: string[]): Promise<void> {
+            const now = new Date();
+            const idsSet = new Set(ids);
+
+            // Update in-memory state
+            items = items.map((item) =>
+                idsSet.has(item.id)
+                    ? { ...item, isDirty: false, syncedAt: now }
+                    : item
+            );
+
+            if (!browser) return;
+
+            try {
+                const db = await getDB();
+                const tx = db.transaction(storeName, 'readwrite');
+                await Promise.all(
+                    ids.map(async (id) => {
+                        const item = await tx.store.get(id);
+                        if (item) {
+                            await tx.store.put({
+                                ...item,
+                                isDirty: false,
+                                syncedAt: now,
+                            } as T & CoffeeBag & CoffeeBrew);
+                        }
+                    })
+                );
+                await tx.done;
+            } catch (error) {
+                console.error(`Failed to mark items as synced in ${storeName}:`, error);
+            }
+        },
+
+        /**
+         * Mark item as synced after receiving from server (no dirty flag change needed)
+         */
+        async upsertFromRemote(item: T): Promise<void> {
+            const existing = items.find((i) => i.id === item.id);
+            const syncedItem = {
+                ...item,
+                isDirty: false,
+                syncedAt: new Date(),
+            };
+
+            if (existing) {
+                items = items.map((i) => (i.id === item.id ? syncedItem : i));
+            } else {
+                items = [syncedItem, ...items].sort(
+                    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                );
+            }
+
+            if (!browser) return;
+
+            try {
+                const db = await getDB();
+                await db.put(storeName, syncedItem as T & CoffeeBag & CoffeeBrew);
+            } catch (error) {
+                console.error(`Failed to upsert from remote in ${storeName}:`, error);
                 throw error;
             }
         },
