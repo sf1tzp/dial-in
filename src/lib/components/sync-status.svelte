@@ -47,6 +47,7 @@
 			<span>Sync error</span>
 		</button>
 	{:else if status.lastSyncTime}
+		<span>Last Sync</span>
 		<button
 			onclick={handleManualSync}
 			class="flex items-center gap-2 hover:text-foreground transition-colors"
