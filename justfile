@@ -29,3 +29,18 @@ bounce HOST:
     set -euo pipefail
     ssh {{HOST}} -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml down"
     ssh {{HOST}} -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml up -d --env-file ~/dial-in/.env"
+
+generate-migration HOST:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cp env/{{HOST}} .env
+    npm run db:generate
+    rm .env
+
+
+apply-migrations HOST:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cp env/{{HOST}} .env
+    npm run db:migrate
+    rm .env

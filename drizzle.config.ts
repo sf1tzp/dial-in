@@ -1,13 +1,13 @@
 import { defineConfig } from 'drizzle-kit';
-import { getDatabaseUrl, DEFAULT_DATABASE_URL } from './src/lib/server/db/connection';
+
+// note: this config is used by drizzle-kit cli (npm run db:*)
+// Since it does not run via sveltekit, we use standard enviornment variable handling here
 
 export default defineConfig({
     schema: './src/lib/server/db/schema.ts',
     out: './drizzle',
     dialect: 'postgresql',
     dbCredentials: {
-        url: process.env.DATABASE_URL || DEFAULT_DATABASE_URL,
-    },
-    verbose: true,
-    strict: true,
+        url: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/dial-in'
+    }
 });
