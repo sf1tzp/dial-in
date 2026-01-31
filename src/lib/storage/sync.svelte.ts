@@ -18,7 +18,7 @@ export interface SyncStatus {
     isSyncing: boolean;
     lastError: string | null;
     lastPullResults: { bags: number; brews: number; deleted: number } | null;
-    lastPushResults: { bags: number; brews: number } | null;
+    lastPushResults: { bags: number; brews: number; deleted: number } | null;
 }
 
 /**
@@ -174,7 +174,7 @@ function localBagToRemote(
         dateOpened: local.dateOpened?.toISOString() ?? null,
         createdAt: local.createdAt.toISOString(),
         updatedAt: local.updatedAt.toISOString(),
-        deletedAt: null,
+        deletedAt: local.deletedAt?.toISOString() ?? null,
         deviceId: getDeviceId(),
     };
 }
@@ -196,7 +196,7 @@ function localBrewToRemote(
         picture: typeof local.picture === 'string' ? local.picture : undefined,
         createdAt: local.createdAt.toISOString(),
         updatedAt: local.updatedAt.toISOString(),
-        deletedAt: null,
+        deletedAt: local.deletedAt?.toISOString() ?? null,
         deviceId: getDeviceId(),
     };
 }
@@ -292,11 +292,11 @@ class SyncService {
 
         // Process coffee bags
         for (const remoteBag of result.data.coffeeBags) {
-            // Handle soft deletes
+            // Handle soft deletes - use hardDelete since server already knows about deletion
             if (remoteBag.deletedAt) {
                 const existing = coffeeBagStore.getById(remoteBag.id);
                 if (existing) {
-                    await coffeeBagStore.remove(remoteBag.id);
+                    await coffeeBagStore.hardDelete(remoteBag.id);
                     deleted++;
                 }
                 continue;
@@ -315,11 +315,11 @@ class SyncService {
 
         // Process coffee brews
         for (const remoteBrew of result.data.coffeeBrews) {
-            // Handle soft deletes
+            // Handle soft deletes - use hardDelete since server already knows about deletion
             if (remoteBrew.deletedAt) {
                 const existing = coffeeBrewStore.getById(remoteBrew.id);
                 if (existing) {
-                    await coffeeBrewStore.remove(remoteBrew.id);
+                    await coffeeBrewStore.hardDelete(remoteBrew.id);
                     deleted++;
                 }
                 continue;
@@ -345,24 +345,31 @@ class SyncService {
     /**
      * Push local changes to the server
      * Only pushes items that have been modified since last sync (dirty items)
+     * Includes soft-deleted items so deletions are synced
      */
-    async push(): Promise<{ bags: number; brews: number }> {
+    async push(): Promise<{ bags: number; brews: number; deleted: number }> {
         const deviceId = getDeviceId();
 
-        // Only push dirty items (delta tracking)
+        // Get dirty items (modified) and deleted dirty items
         const dirtyBags = coffeeBagStore.getDirtyItems();
         const dirtyBrews = coffeeBrewStore.getDirtyItems();
+        const deletedBags = coffeeBagStore.getDeletedDirtyItems();
+        const deletedBrews = coffeeBrewStore.getDeletedDirtyItems();
+
+        // Combine all items that need to be pushed
+        const allDirtyBags = [...dirtyBags, ...deletedBags];
+        const allDirtyBrews = [...dirtyBrews, ...deletedBrews];
 
         // If nothing to push, return early
-        if (dirtyBags.length === 0 && dirtyBrews.length === 0) {
+        if (allDirtyBags.length === 0 && allDirtyBrews.length === 0) {
             console.log('No dirty items to push');
-            return { bags: 0, brews: 0 };
+            return { bags: 0, brews: 0, deleted: 0 };
         }
 
-        const coffeeBags = dirtyBags.map(localBagToRemote);
-        const coffeeBrews = dirtyBrews.map(localBrewToRemote);
+        const coffeeBags = allDirtyBags.map(localBagToRemote);
+        const coffeeBrews = allDirtyBrews.map(localBrewToRemote);
 
-        console.log(`Pushing ${coffeeBags.length} bags and ${coffeeBrews.length} brews`);
+        console.log(`Pushing ${dirtyBags.length} bags, ${dirtyBrews.length} brews, and ${deletedBags.length + deletedBrews.length} deletions`);
 
         const response = await fetch('/api/sync/push', {
             method: 'POST',
@@ -385,14 +392,22 @@ class SyncService {
         setLastSyncTime(result.serverTime);
 
         // Mark pushed items as synced
-        if (dirtyBags.length > 0) {
-            await coffeeBagStore.markAsSynced(dirtyBags.map(b => b.id));
+        if (allDirtyBags.length > 0) {
+            await coffeeBagStore.markAsSynced(allDirtyBags.map(b => b.id));
         }
-        if (dirtyBrews.length > 0) {
-            await coffeeBrewStore.markAsSynced(dirtyBrews.map(b => b.id));
+        if (allDirtyBrews.length > 0) {
+            await coffeeBrewStore.markAsSynced(allDirtyBrews.map(b => b.id));
         }
 
-        return { bags: dirtyBags.length, brews: dirtyBrews.length };
+        // Clean up soft-deleted items that have been synced
+        await coffeeBagStore.cleanupSyncedDeletes();
+        await coffeeBrewStore.cleanupSyncedDeletes();
+
+        return {
+            bags: dirtyBags.length,
+            brews: dirtyBrews.length,
+            deleted: deletedBags.length + deletedBrews.length,
+        };
     }
 
     /**
@@ -400,7 +415,7 @@ class SyncService {
      */
     async syncNow(): Promise<{
         pullResults: { bags: number; brews: number; deleted: number };
-        pushResults: { bags: number; brews: number };
+        pushResults: { bags: number; brews: number; deleted: number };
     } | null> {
         if (!browser) return null;
 

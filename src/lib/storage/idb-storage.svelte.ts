@@ -143,7 +143,17 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
     }
 
     return {
+        /**
+         * Get all non-deleted items (for UI display)
+         */
         get items() {
+            return items.filter(item => !item.deletedAt);
+        },
+
+        /**
+         * Get all items including soft-deleted ones (for sync)
+         */
+        get allItems() {
             return items;
         },
 
@@ -152,10 +162,41 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
         },
 
         /**
-         * Get items that have been modified since last sync
+         * Get items that have been modified since last sync (excludes deleted)
          */
         getDirtyItems(): T[] {
-            return items.filter(item => item.isDirty);
+            return items.filter(item => item.isDirty && !item.deletedAt);
+        },
+
+        /**
+         * Get items that have been soft-deleted and need to be synced
+         */
+        getDeletedDirtyItems(): T[] {
+            return items.filter(item => item.isDirty && item.deletedAt);
+        },
+
+        /**
+         * Remove all soft-deleted items that have been synced
+         * Call this after successful sync to clean up
+         */
+        async cleanupSyncedDeletes(): Promise<void> {
+            const toCleanup = items.filter(item => item.deletedAt && !item.isDirty);
+
+            if (toCleanup.length === 0) return;
+
+            // Update reactive state immediately
+            items = items.filter(item => !item.deletedAt || item.isDirty);
+
+            if (!browser) return;
+
+            try {
+                const db = await getDB();
+                const tx = db.transaction(storeName, 'readwrite');
+                await Promise.all(toCleanup.map(item => tx.store.delete(item.id)));
+                await tx.done;
+            } catch (error) {
+                console.error(`Failed to cleanup synced deletes in ${storeName}:`, error);
+            }
         },
 
         /**
@@ -165,15 +206,16 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
 
         /**
          * Add a new item to the store
+         * Sync metadata fields are optional and will be set to defaults if not provided
          */
-        async add(item: T): Promise<void> {
+        async add(item: Omit<T, keyof SyncMetadata> & Partial<SyncMetadata>): Promise<void> {
             // Ensure sync metadata is set and mark as dirty
             const itemWithMeta = {
                 ...item,
                 deviceId: item.deviceId ?? getOrCreateDeviceId(),
-                syncedAt: null,
-                deletedAt: null,
-                isDirty: true,
+                syncedAt: item.syncedAt ?? null,
+                deletedAt: item.deletedAt ?? null,
+                isDirty: item.isDirty ?? true,
             } as T;
 
             // Update reactive state immediately for responsive UI
@@ -225,9 +267,46 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
         },
 
         /**
-         * Remove an item from the store
+         * Remove an item from the store (soft delete for sync)
+         * Marks the item as deleted but keeps it for sync purposes
          */
         async remove(id: string): Promise<void> {
+            const original = items.find((item) => item.id === id);
+            if (!original) return;
+
+            const now = new Date();
+            const softDeleted = {
+                ...original,
+                deletedAt: now,
+                updatedAt: now,
+                isDirty: true,
+                deviceId: getOrCreateDeviceId(),
+            } as T;
+
+            // Update reactive state immediately - soft deleted items are filtered from view
+            items = items.map((item) => (item.id === id ? softDeleted : item));
+
+            if (!browser) return;
+
+            try {
+                const db = await getDB();
+                await db.put(storeName, softDeleted as T & CoffeeBag & CoffeeBrew);
+            } catch (error) {
+                console.error(
+                    `Failed to soft delete item from ${storeName}:`,
+                    error
+                );
+                // Rollback on error
+                items = items.map((item) => (item.id === id ? original : item));
+                throw error;
+            }
+        },
+
+        /**
+         * Hard delete an item from the store (removes from IndexedDB completely)
+         * Use this after sync confirms the deletion was processed
+         */
+        async hardDelete(id: string): Promise<void> {
             const original = items.find((item) => item.id === id);
             if (!original) return;
 
@@ -241,7 +320,7 @@ function createIDBStore<T extends { id: string; createdAt: Date } & SyncMetadata
                 await db.delete(storeName, id);
             } catch (error) {
                 console.error(
-                    `Failed to remove item from ${storeName}:`,
+                    `Failed to hard delete item from ${storeName}:`,
                     error
                 );
                 // Rollback on error - insert back at original position

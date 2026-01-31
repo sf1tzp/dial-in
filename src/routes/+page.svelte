@@ -68,7 +68,7 @@
 
     function handleCoffeeBagSubmit(formData: CoffeeBagFormData) {
         const now = new Date();
-        const newBag: CoffeeBag = {
+        coffeeBagStore.add({
             id: uuidv7(),
             name: formData.name,
             roasterName: formData.roasterName,
@@ -79,15 +79,13 @@
             picture: formData.picture,
             createdAt: now,
             updatedAt: now,
-        };
-        // Add is async but updates UI immediately, errors are handled internally
-        coffeeBagStore.add(newBag);
+        });
         coffeeBagDialogOpen = false;
     }
 
     function handleCoffeeBrewSubmit(formData: CoffeeBrewFormData) {
         const now = new Date();
-        const newShot: CoffeeBrew = {
+        coffeeBrewStore.add({
             id: uuidv7(),
             coffeeBagId: formData.coffeeBagId,
             grindSetting: formData.grindSetting,
@@ -98,9 +96,7 @@
             picture: formData.picture,
             createdAt: now,
             updatedAt: now,
-        };
-        // Add is async but updates UI immediately, errors are handled internally
-        coffeeBrewStore.add(newShot);
+        });
         coffeeBrewDialogOpen = false;
     }
 
