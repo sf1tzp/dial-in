@@ -23,11 +23,15 @@ import { uuidv7 } from 'uuidv7';
 /**
  * Get all coffee bags for a user (excluding soft-deleted)
  */
-export async function getCoffeeBags(userId: string): Promise<CoffeeBagRecord[]> {
+export async function getCoffeeBags(
+    userId: string
+): Promise<CoffeeBagRecord[]> {
     return db
         .select()
         .from(coffeeBags)
-        .where(and(eq(coffeeBags.userId, userId), isNull(coffeeBags.deletedAt)));
+        .where(
+            and(eq(coffeeBags.userId, userId), isNull(coffeeBags.deletedAt))
+        );
 }
 
 /**
@@ -41,7 +45,9 @@ export async function getCoffeeBagsSince(
     return db
         .select()
         .from(coffeeBags)
-        .where(and(eq(coffeeBags.userId, userId), gt(coffeeBags.updatedAt, since)));
+        .where(
+            and(eq(coffeeBags.userId, userId), gt(coffeeBags.updatedAt, since))
+        );
 }
 
 /**
@@ -62,9 +68,10 @@ export async function getCoffeeBagById(
  * Upsert a coffee bag (insert or update based on existence)
  * Returns the resulting record and whether it was created or updated
  */
-export async function upsertCoffeeBag(
-    data: CoffeeBagInsert
-): Promise<{ record: CoffeeBagRecord; operation: 'created' | 'updated' | 'conflict' }> {
+export async function upsertCoffeeBag(data: CoffeeBagInsert): Promise<{
+    record: CoffeeBagRecord;
+    operation: 'created' | 'updated' | 'conflict';
+}> {
     const existing = await db
         .select()
         .from(coffeeBags)
@@ -124,11 +131,15 @@ export async function softDeleteCoffeeBag(
 /**
  * Get all coffee brews for a user (excluding soft-deleted)
  */
-export async function getCoffeeBrews(userId: string): Promise<CoffeeBrewRecord[]> {
+export async function getCoffeeBrews(
+    userId: string
+): Promise<CoffeeBrewRecord[]> {
     return db
         .select()
         .from(coffeeBrews)
-        .where(and(eq(coffeeBrews.userId, userId), isNull(coffeeBrews.deletedAt)));
+        .where(
+            and(eq(coffeeBrews.userId, userId), isNull(coffeeBrews.deletedAt))
+        );
 }
 
 /**
@@ -142,7 +153,12 @@ export async function getCoffeeBrewsSince(
     return db
         .select()
         .from(coffeeBrews)
-        .where(and(eq(coffeeBrews.userId, userId), gt(coffeeBrews.updatedAt, since)));
+        .where(
+            and(
+                eq(coffeeBrews.userId, userId),
+                gt(coffeeBrews.updatedAt, since)
+            )
+        );
 }
 
 /**
@@ -167,9 +183,10 @@ export async function getCoffeeBrewsForBag(
 /**
  * Upsert a coffee brew (insert or update based on existence)
  */
-export async function upsertCoffeeBrew(
-    data: CoffeeBrewInsert
-): Promise<{ record: CoffeeBrewRecord; operation: 'created' | 'updated' | 'conflict' }> {
+export async function upsertCoffeeBrew(data: CoffeeBrewInsert): Promise<{
+    record: CoffeeBrewRecord;
+    operation: 'created' | 'updated' | 'conflict';
+}> {
     const existing = await db
         .select()
         .from(coffeeBrews)

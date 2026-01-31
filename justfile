@@ -1,6 +1,9 @@
 lint:
     npm run lint
 
+format:
+    npm run format
+
 build HOST:
     #!/usr/bin/env bash
     set -euo pipefail

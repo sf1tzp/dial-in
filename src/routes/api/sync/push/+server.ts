@@ -58,8 +58,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 // Ensure dates are Date objects
                 createdAt: new Date(bag.createdAt),
                 updatedAt: new Date(bag.updatedAt),
-                dateRoasted: bag.dateRoasted ? new Date(bag.dateRoasted) : undefined,
-                dateOpened: bag.dateOpened ? new Date(bag.dateOpened) : undefined,
+                dateRoasted: bag.dateRoasted
+                    ? new Date(bag.dateRoasted)
+                    : undefined,
+                dateOpened: bag.dateOpened
+                    ? new Date(bag.dateOpened)
+                    : undefined,
                 deletedAt: bag.deletedAt ? new Date(bag.deletedAt) : undefined,
                 syncedAt: new Date(),
             }));
@@ -82,16 +86,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         // Process coffee brews
         if (coffeeBrews.length > 0) {
             // Add userId to each record
-            const brewsWithUser: CoffeeBrewInsert[] = coffeeBrews.map((brew) => ({
-                ...brew,
-                userId,
-                deviceId,
-                // Ensure dates are Date objects
-                createdAt: new Date(brew.createdAt),
-                updatedAt: new Date(brew.updatedAt),
-                deletedAt: brew.deletedAt ? new Date(brew.deletedAt) : undefined,
-                syncedAt: new Date(),
-            }));
+            const brewsWithUser: CoffeeBrewInsert[] = coffeeBrews.map(
+                (brew) => ({
+                    ...brew,
+                    userId,
+                    deviceId,
+                    // Ensure dates are Date objects
+                    createdAt: new Date(brew.createdAt),
+                    updatedAt: new Date(brew.updatedAt),
+                    deletedAt: brew.deletedAt
+                        ? new Date(brew.deletedAt)
+                        : undefined,
+                    syncedAt: new Date(),
+                })
+            );
 
             results.coffeeBrews = await batchUpsertCoffeeBrews(brewsWithUser);
 

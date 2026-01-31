@@ -37,7 +37,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
             const since = new Date(parseInt(sinceParam, 10));
 
             if (isNaN(since.getTime())) {
-                throw error(400, 'Invalid "since" parameter. Expected timestamp in milliseconds.');
+                throw error(
+                    400,
+                    'Invalid "since" parameter. Expected timestamp in milliseconds.'
+                );
             }
 
             data = await getIncrementalSyncData(userId, since);

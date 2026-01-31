@@ -73,7 +73,10 @@ export const coffeeBrews = pgTable(
         index('coffee_brews_user_id_idx').on(table.userId),
         index('coffee_brews_bag_id_idx').on(table.coffeeBagId),
         index('coffee_brews_updated_at_idx').on(table.updatedAt),
-        index('coffee_brews_user_updated_idx').on(table.userId, table.updatedAt),
+        index('coffee_brews_user_updated_idx').on(
+            table.userId,
+            table.updatedAt
+        ),
     ]
 );
 

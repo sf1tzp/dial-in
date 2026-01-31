@@ -13,26 +13,27 @@ import * as schema from '$lib/server/db/schema';
 
 const { Pool } = pg;
 
-export const DEFAULT_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/dial-in'
+export const DEFAULT_DATABASE_URL =
+    'postgresql://postgres:postgres@localhost:5432/dial-in';
 
 export function getDatabaseUrl(): string {
     return env.DATABASE_URL || DEFAULT_DATABASE_URL;
 }
 
 function getConnectionConfig() {
-	// Prefer dial-in_DATABASE_URL if available
-	if (env.DATABASE_URL) {
-		return { connectionString: env.DATABASE_URL };
-	}
+    // Prefer dial-in_DATABASE_URL if available
+    if (env.DATABASE_URL) {
+        return { connectionString: env.DATABASE_URL };
+    }
 
-	// Fall back to individual env vars
-	return {
-		host: env.DB_HOST || 'localhost',
-		port: parseInt(env.DB_PORT || '5432', 10),
-		database: env.DB_NAME || 'dial-in',
-		user: env.DB_USER || 'postgres',
-		password: env.DB_PASSWORD || 'postgres'
-	};
+    // Fall back to individual env vars
+    return {
+        host: env.DB_HOST || 'localhost',
+        port: parseInt(env.DB_PORT || '5432', 10),
+        database: env.DB_NAME || 'dial-in',
+        user: env.DB_USER || 'postgres',
+        password: env.DB_PASSWORD || 'postgres',
+    };
 }
 
 // Create connection pool
@@ -46,5 +47,5 @@ export { pool };
 
 // Graceful shutdown helper
 export async function closeConnection(): Promise<void> {
-	await pool.end();
+    await pool.end();
 }

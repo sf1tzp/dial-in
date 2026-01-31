@@ -66,7 +66,10 @@ interface SyncPushResponse {
 }
 
 // Remote types include sync metadata
-interface RemoteCoffeeBag extends Omit<CoffeeBag, 'dateRoasted' | 'dateOpened' | 'createdAt' | 'updatedAt'> {
+interface RemoteCoffeeBag extends Omit<
+    CoffeeBag,
+    'dateRoasted' | 'dateOpened' | 'createdAt' | 'updatedAt'
+> {
     dateRoasted: string | null;
     dateOpened: string | null;
     createdAt: string;
@@ -97,7 +100,9 @@ function remoteBagToLocal(remote: RemoteCoffeeBag): CoffeeBag {
         style: remote.style,
         notes: remote.notes,
         picture: remote.picture ?? undefined,
-        dateRoasted: remote.dateRoasted ? new Date(remote.dateRoasted) : undefined,
+        dateRoasted: remote.dateRoasted
+            ? new Date(remote.dateRoasted)
+            : undefined,
         dateOpened: remote.dateOpened ? new Date(remote.dateOpened) : undefined,
         createdAt: new Date(remote.createdAt),
         updatedAt: new Date(remote.updatedAt),
@@ -125,7 +130,9 @@ function remoteBrewToLocal(remote: RemoteCoffeeBrew): CoffeeBrew {
 /**
  * Convert local coffee bag to remote format for push
  */
-function localBagToRemote(local: CoffeeBag): Omit<RemoteCoffeeBag, 'userId' | 'syncedAt'> {
+function localBagToRemote(
+    local: CoffeeBag
+): Omit<RemoteCoffeeBag, 'userId' | 'syncedAt'> {
     return {
         id: local.id,
         name: local.name,
@@ -145,7 +152,9 @@ function localBagToRemote(local: CoffeeBag): Omit<RemoteCoffeeBag, 'userId' | 's
 /**
  * Convert local coffee brew to remote format for push
  */
-function localBrewToRemote(local: CoffeeBrew): Omit<RemoteCoffeeBrew, 'userId' | 'syncedAt'> {
+function localBrewToRemote(
+    local: CoffeeBrew
+): Omit<RemoteCoffeeBrew, 'userId' | 'syncedAt'> {
     return {
         id: local.id,
         coffeeBagId: local.coffeeBagId,
@@ -382,7 +391,10 @@ class SyncService {
         }, intervalMs);
 
         // Sync on visibility change (tab becomes active)
-        document.addEventListener('visibilitychange', this.handleVisibilityChange);
+        document.addEventListener(
+            'visibilitychange',
+            this.handleVisibilityChange
+        );
 
         // Sync on network reconnect
         window.addEventListener('online', this.handleOnline);
@@ -398,7 +410,10 @@ class SyncService {
         }
 
         if (browser) {
-            document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+            document.removeEventListener(
+                'visibilitychange',
+                this.handleVisibilityChange
+            );
             window.removeEventListener('online', this.handleOnline);
         }
     }
