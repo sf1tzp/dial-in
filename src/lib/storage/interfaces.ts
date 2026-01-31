@@ -1,4 +1,12 @@
-export interface CoffeeBag {
+// Sync metadata shared by all syncable entities
+export interface SyncMetadata {
+    deviceId: string;
+    syncedAt: Date | null;
+    deletedAt: Date | null;
+    isDirty: boolean; // True if modified since last sync
+}
+
+export interface CoffeeBag extends SyncMetadata {
     id: string;
     dateRoasted: Date | undefined;
     dateOpened: Date | undefined;
@@ -11,7 +19,7 @@ export interface CoffeeBag {
     updatedAt: Date;
 }
 
-export interface CoffeeBrew {
+export interface CoffeeBrew extends SyncMetadata {
     id: string;
     coffeeBagId: string;
     grindSetting: number;

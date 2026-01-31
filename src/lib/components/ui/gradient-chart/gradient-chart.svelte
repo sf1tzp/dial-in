@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Chart from "$lib/components/ui/chart/index.js";
   import { scaleUtc } from "d3-scale";
-  import { curveNatural } from "d3-shape";
+  import { curveMonotoneX } from "d3-shape";
   import { Area, AreaChart, LinearGradient } from "layerchart";
 
   /**
@@ -79,7 +79,7 @@
     seriesLayout={stacked ? "stack" : "overlap"}
     props={{
       area: {
-        curve: curveNatural,
+        curve: curveMonotoneX,
         "fill-opacity": 0.4,
         line: { class: "stroke-1" },
         motion: "tween",

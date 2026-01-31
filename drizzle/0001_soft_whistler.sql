@@ -1,0 +1,1 @@
+ALTER TABLE "coffee_brews" ADD CONSTRAINT "coffee_brews_coffee_bag_id_coffee_bags_id_fk" FOREIGN KEY ("coffee_bag_id") REFERENCES "public"."coffee_bags"("id") ON DELETE cascade ON UPDATE no action;

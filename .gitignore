@@ -1,5 +1,4 @@
 node_modules
-database-data/
 
 # Output
 .output
@@ -16,9 +15,11 @@ Thumbs.db
 
 # Env
 .env
-.env.*
-!.env.example
-!.env.test
+env/*
+!env/example
+
+# Staging certs
+certs/*
 
 # Vite
 vite.config.js.timestamp-*
