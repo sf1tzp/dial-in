@@ -5,6 +5,7 @@
 	import { authClient } from "$lib/auth-client";
     import { redirect } from "@sveltejs/kit";
     import { goto } from "$app/navigation";
+    import { syncService } from "$lib/storage";
 	const session = authClient.useSession();
 
     import { env } from '$env/dynamic/public';
@@ -43,6 +44,7 @@
 
         <button
             onclick={async () => {
+                syncService.clearSyncState();
                 await authClient.signOut();
                 goto("/");
             }}

@@ -3,8 +3,9 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
   	import { Menu } from '$lib/components/menu';
-	import { initializeStores } from '$lib/storage';
-	import { onMount } from 'svelte';
+	import { initializeStores, syncService } from '$lib/storage';
+	import { onMount, onDestroy } from 'svelte';
+	import { authClient } from '$lib/auth-client';
 
 	import CardViewIcon from '@lucide/svelte/icons/smartphone';
 
@@ -16,9 +17,27 @@
 
 	let storesReady = $state(false);
 
+	// Track auth state for sync
+	const session = authClient.useSession();
+
+	// Start/stop sync based on auth state
+	$effect(() => {
+		if (storesReady && $session.data?.user) {
+			// User is authenticated - start auto sync
+			syncService.startAutoSync();
+		} else {
+			// User signed out - stop sync
+			syncService.stopAutoSync();
+		}
+	});
+
 	onMount(async () => {
 		await initializeStores();
 		storesReady = true;
+	});
+
+	onDestroy(() => {
+		syncService.stopAutoSync();
 	});
 </script>
 

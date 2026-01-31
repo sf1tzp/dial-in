@@ -13,7 +13,6 @@ import {
     batchUpsertCoffeeBrews,
     logSyncOperation,
 } from '$lib/server/db/store';
-import { auth } from '$lib/server/auth';
 import type { CoffeeBagInsert, CoffeeBrewInsert } from '$lib/server/db/schema';
 
 interface SyncPushPayload {
@@ -22,15 +21,12 @@ interface SyncPushPayload {
     coffeeBrews?: Array<Omit<CoffeeBrewInsert, 'userId'>>;
 }
 
-export const POST: RequestHandler = async ({ request }) => {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: request.headers });
-
-    if (!session?.user) {
+export const POST: RequestHandler = async ({ request, locals }) => {
+    if (!locals.user) {
         throw error(401, 'Unauthorized');
     }
 
-    const userId = session.user.id;
+    const userId = locals.user.id;
 
     let payload: SyncPushPayload;
     try {

@@ -9,30 +9,24 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getFullSyncData, getIncrementalSyncData } from '$lib/server/db/store';
-import { auth } from '$lib/server/auth';
 
 /**
  * HEAD request for auth check
  */
-export const HEAD: RequestHandler = async ({ request }) => {
-    const session = await auth.api.getSession({ headers: request.headers });
-
-    if (!session?.user) {
+export const HEAD: RequestHandler = async ({ locals }) => {
+    if (!locals.user) {
         throw error(401, 'Unauthorized');
     }
 
     return new Response(null, { status: 200 });
 };
 
-export const GET: RequestHandler = async ({ request, url }) => {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: request.headers });
-
-    if (!session?.user) {
+export const GET: RequestHandler = async ({ locals, url }) => {
+    if (!locals.user) {
         throw error(401, 'Unauthorized');
     }
 
-    const userId = session.user.id;
+    const userId = locals.user.id;
     const sinceParam = url.searchParams.get('since');
 
     try {
