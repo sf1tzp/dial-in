@@ -8,11 +8,7 @@ dial-in.fitz.gg {
     encode gzip zstd
 
     log {
-        output file /var/log/caddy/dial-in.log {
-            roll_size 100mb
-            roll_keep 5
-            roll_keep_for 720h
-        }
+        output stdout
         format json
     }
 
