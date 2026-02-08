@@ -102,18 +102,9 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
                 }
             }
 
-            // Version 3: Backfill archivedAt on existing coffee bags
-            if (oldVersion >= 1 && oldVersion < 3) {
-                const bagStore = transaction.objectStore('coffeeBags');
-                bagStore.openCursor().then(function iterate(cursor) {
-                    if (!cursor) return;
-                    const bag = cursor.value;
-                    if (bag.archivedAt === undefined) {
-                        cursor.update({ ...bag, archivedAt: null });
-                    }
-                    cursor.continue().then(iterate);
-                });
-            }
+            // Version 3: archivedAt field added to CoffeeBag
+            // No migration needed here — load() backfills archivedAt ?? null in memory,
+            // and the field is persisted on the next update/sync for each bag.
         },
     });
 
