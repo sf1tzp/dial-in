@@ -20,6 +20,11 @@
 
 	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew }: Props = $props();
 
+	// Extract all bags for disambiguation
+	const allBags = $derived(
+		entries.filter((e): e is { type: 'coffee-bag'; data: CoffeeBag } => e.type === 'coffee-bag').map((e) => e.data)
+	);
+
 	// Sort entries by createdAt in descending order (newest first)
 	const sortedEntries = $derived(
 		[...entries].sort((a, b) => {
@@ -77,6 +82,7 @@
 							>
 								<BagEntry
 									bag={entry.data}
+									{allBags}
 									relativeTime={formatRelativeTime(entry.data.createdAt)}
 								/>
 							</TimelineEntry>
@@ -88,6 +94,7 @@
 								<BrewEntry
 									coffeeBrew={entry.data}
 									coffeeBag={entry.coffeeBag}
+									{allBags}
 									relativeTime={formatRelativeTime(entry.data.createdAt)}
 								/>
 							</TimelineEntry>

@@ -9,6 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Slider } from '$lib/components/ui/slider';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
+	import { formatBagLabel } from '$lib/bags';
     import { GRINDER_MAX, PRESSURE_MAX, PRESSURE_UNIT, USE_PRESSURE_UNIT } from '$lib/settings';
     import ScrollArea from '../ui/scroll-area/scroll-area.svelte';
 
@@ -56,7 +57,7 @@
 				>
 					<option value="">Select a coffee bag</option>
 					{#each coffeeBags as bag}
-						<option value={bag.id}>{bag.name} - {bag.roasterName}</option>
+						<option value={bag.id}>{formatBagLabel(bag, coffeeBags)}</option>
 					{/each}
 				</select>
 				<Field.Error>{$errors.coffeeBagId}</Field.Error>

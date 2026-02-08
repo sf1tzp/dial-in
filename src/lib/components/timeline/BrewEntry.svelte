@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Coffee from '@lucide/svelte/icons/coffee';
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
+	import { getBagDisambiguator } from '$lib/bags';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -12,10 +13,13 @@
 	interface Props {
 		coffeeBrew?: CoffeeBrew;
 		coffeeBag?: CoffeeBag;
+		allBags: CoffeeBag[];
 		relativeTime: string;
 	}
 
-	let { coffeeBrew, coffeeBag, relativeTime }: Props = $props();
+	let { coffeeBrew, coffeeBag, allBags, relativeTime }: Props = $props();
+
+	const disambiguator = $derived(coffeeBag ? getBagDisambiguator(coffeeBag, allBags) : '');
 
 	let detailDialogOpen = $state(false);
 
@@ -67,7 +71,7 @@
 			{coffeeBrew ? getBrewTitle(coffeeBrew.createdAt) : 'Brew'}
 		</h3>
 		<h3 class="text-muted-foreground text-sm">
-			{coffeeBag?.name}
+			{coffeeBag?.name}{disambiguator}
 		</h3>
 
 		<div class="text-center flex justify-between gap-4 my-2">

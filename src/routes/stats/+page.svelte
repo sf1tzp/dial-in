@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { GradientChart, type TimeSeriesDataPoint, type TimeSeriesConfig } from '$lib/components/ui/gradient-chart';
 	import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
+	import { formatBagLabel } from '$lib/bags';
 	import CoffeeIcon from '@lucide/svelte/icons/coffee';
 	import * as Select from '$lib/components/ui/select';
 
@@ -92,11 +93,11 @@
 			<Card.Title class="sm:my-2">Brewing Insights</Card.Title>
 			<Select.Root type="single" bind:value={selectedBagId}>
 				<Select.Trigger id="bag-select">
-					{coffeeBagStore.items.find(bag => bag.id === selectedBagId)?.name ?? 'Select a bag'}
+					{(() => { const bag = coffeeBagStore.items.find(b => b.id === selectedBagId); return bag ? formatBagLabel(bag, coffeeBagStore.items) : 'Select a bag'; })()}
 				</Select.Trigger>
 				<Select.Content>
 					{#each coffeeBagStore.items as bag (bag.id)}
-						<Select.Item value={bag.id} label={bag.name} />
+						<Select.Item value={bag.id} label={formatBagLabel(bag, coffeeBagStore.items)} />
 					{/each}
 					{#if coffeeBagStore.items.length === 0}
 						<Select.Item value="none" label="No bags available" disabled />

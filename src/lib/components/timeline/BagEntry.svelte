@@ -4,15 +4,19 @@
 	import Calendar from '@lucide/svelte/icons/calendar';
 	import PackageOpen from '@lucide/svelte/icons/package-open';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
+	import { getBagDisambiguator } from '$lib/bags';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { BagDetail } from '$lib/components/detail';
 
 	interface Props {
 		bag: CoffeeBag;
+		allBags: CoffeeBag[];
 		relativeTime: string;
 	}
 
-	let { bag, relativeTime }: Props = $props();
+	let { bag, allBags, relativeTime }: Props = $props();
+
+	const disambiguator = $derived(getBagDisambiguator(bag, allBags));
 
 	let detailDialogOpen = $state(false);
 
@@ -36,7 +40,7 @@
 		role="button"
 		tabindex="0"
 	>
-		<h3 class="text-foreground font-semibold">Opened {bag.name}</h3>
+		<h3 class="text-foreground font-semibold">Opened {bag.name}{disambiguator}</h3>
 		<h3 class="text-muted-foreground text-sm">{bag.roasterName}</h3>
 		<div class="text-center flex justify-between gap-4 my-2">
 			<div class="flex gap-2">
