@@ -139,7 +139,9 @@ function createIDBStore<
                             syncedAt: item.syncedAt ?? null,
                             deletedAt: item.deletedAt ?? null,
                             isDirty: item.isDirty ?? true, // Assume dirty if not set
-                            archivedAt: (item as Record<string, unknown>).archivedAt ?? null,
+                            archivedAt:
+                                (item as Record<string, unknown>).archivedAt ??
+                                null,
                         }) as T
                 )
                 .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -506,14 +508,18 @@ export function getActiveBags(): CoffeeBag[] {
  * Archive a bag by setting archivedAt
  */
 export function archiveBag(id: string): Promise<void> {
-    return coffeeBagStore.update(id, { archivedAt: new Date() } as Partial<CoffeeBag>);
+    return coffeeBagStore.update(id, {
+        archivedAt: new Date(),
+    } as Partial<CoffeeBag>);
 }
 
 /**
  * Unarchive a bag by clearing archivedAt
  */
 export function unarchiveBag(id: string): Promise<void> {
-    return coffeeBagStore.update(id, { archivedAt: null } as Partial<CoffeeBag>);
+    return coffeeBagStore.update(id, {
+        archivedAt: null,
+    } as Partial<CoffeeBag>);
 }
 
 /**
