@@ -7,6 +7,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
     import Heater from '@lucide/svelte/icons/heater';
+    import Archive from '@lucide/svelte/icons/archive';
 
 	interface Props {
 		bag: CoffeeBag;
@@ -81,6 +82,14 @@
 				<p class="text-foreground font-semibold">
                     {bag.dateOpened ? formatDate(bag.dateOpened) : 'Not specified'}</p>
 			</div>
+			{#if bag.archivedAt}
+				<div>
+					<p class="text-muted-foreground text-sm font-medium">
+						<Archive class="size-3 align-baseline inline-block text-muted-foreground" />
+						Archived On</p>
+					<p class="text-foreground font-semibold">{formatDate(bag.archivedAt)}</p>
+				</div>
+			{/if}
 		</div>
 
 		{#if bag.style}

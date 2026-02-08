@@ -84,6 +84,7 @@ interface RemoteCoffeeBag {
     picture?: string;
     dateRoasted: string | null;
     dateOpened: string | null;
+    archivedAt: string | null;
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
@@ -124,6 +125,7 @@ function remoteBagToLocal(remote: RemoteCoffeeBag): CoffeeBag {
             ? new Date(remote.dateRoasted)
             : undefined,
         dateOpened: remote.dateOpened ? new Date(remote.dateOpened) : undefined,
+        archivedAt: remote.archivedAt ? new Date(remote.archivedAt) : null,
         createdAt: new Date(remote.createdAt),
         updatedAt: new Date(remote.updatedAt),
         // Sync metadata
@@ -172,6 +174,7 @@ function localBagToRemote(
         picture: typeof local.picture === 'string' ? local.picture : undefined,
         dateRoasted: local.dateRoasted?.toISOString() ?? null,
         dateOpened: local.dateOpened?.toISOString() ?? null,
+        archivedAt: local.archivedAt?.toISOString() ?? null,
         createdAt: local.createdAt.toISOString(),
         updatedAt: local.updatedAt.toISOString(),
         deletedAt: local.deletedAt?.toISOString() ?? null,

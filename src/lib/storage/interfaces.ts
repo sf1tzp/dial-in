@@ -15,6 +15,7 @@ export interface CoffeeBag extends SyncMetadata {
     style: string;
     notes: string;
     picture?: Blob | string; // Blob for local, URL for remote
+    archivedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -96,9 +96,24 @@
 					{(() => { const bag = coffeeBagStore.items.find(b => b.id === selectedBagId); return bag ? formatBagLabel(bag, coffeeBagStore.items) : 'Select a bag'; })()}
 				</Select.Trigger>
 				<Select.Content>
-					{#each coffeeBagStore.items as bag (bag.id)}
-						<Select.Item value={bag.id} label={formatBagLabel(bag, coffeeBagStore.items)} />
-					{/each}
+					{@const activeBags = coffeeBagStore.items.filter(b => !b.archivedAt)}
+					{@const archivedBags = coffeeBagStore.items.filter(b => b.archivedAt)}
+					{#if activeBags.length > 0}
+						<Select.Group>
+							<Select.GroupHeading>Active</Select.GroupHeading>
+							{#each activeBags as bag (bag.id)}
+								<Select.Item value={bag.id} label={formatBagLabel(bag, coffeeBagStore.items)} />
+							{/each}
+						</Select.Group>
+					{/if}
+					{#if archivedBags.length > 0}
+						<Select.Group>
+							<Select.GroupHeading>Archived</Select.GroupHeading>
+							{#each archivedBags as bag (bag.id)}
+								<Select.Item value={bag.id} label={formatBagLabel(bag, coffeeBagStore.items)} />
+							{/each}
+						</Select.Group>
+					{/if}
 					{#if coffeeBagStore.items.length === 0}
 						<Select.Item value="none" label="No bags available" disabled />
 					{/if}

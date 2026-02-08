@@ -35,6 +35,7 @@ export const coffeeBags = pgTable(
         deviceId: text('device_id').notNull(), // Device that last modified
         createdAt: timestamp('created_at', { mode: 'date' }).notNull(),
         updatedAt: timestamp('updated_at', { mode: 'date' }).notNull(),
+        archivedAt: timestamp('archived_at', { mode: 'date' }),
         deletedAt: timestamp('deleted_at', { mode: 'date' }), // Soft delete for sync
         syncedAt: timestamp('synced_at', { mode: 'date' }), // Last successful sync
     },

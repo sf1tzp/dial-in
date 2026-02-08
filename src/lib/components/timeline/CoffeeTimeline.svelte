@@ -16,9 +16,11 @@
 		onDeleteBag?: (bag: CoffeeBag) => void;
 		onEditBrew?: (brew: CoffeeBrew) => void;
 		onDeleteBrew?: (brew: CoffeeBrew) => void;
+		onArchiveBag?: (bag: CoffeeBag) => void;
+		onUnarchiveBag?: (bag: CoffeeBag) => void;
 	}
 
-	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew }: Props = $props();
+	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew, onArchiveBag, onUnarchiveBag }: Props = $props();
 
 	// Extract all bags for disambiguation
 	const allBags = $derived(
@@ -84,6 +86,8 @@
 									bag={entry.data}
 									{allBags}
 									relativeTime={formatRelativeTime(entry.data.createdAt)}
+									onarchive={onArchiveBag ? () => onArchiveBag(entry.data) : undefined}
+									onunarchive={onUnarchiveBag ? () => onUnarchiveBag(entry.data) : undefined}
 								/>
 							</TimelineEntry>
 						{:else}

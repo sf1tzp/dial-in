@@ -9,10 +9,11 @@
     import { zod4 } from 'sveltekit-superforms/adapters';
     import { coffeeBagSchema, coffeeBrewSchema as coffeeBrewSchema, type CoffeeBagFormData, type CoffeeBrewFormData as CoffeeBrewFormData } from '$lib/schemas/coffee';
     import type { CoffeeBag, CoffeeBrew as CoffeeBrew } from '$lib/storage/interfaces';
-    import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
+    import { coffeeBagStore, coffeeBrewStore, getActiveBags, archiveBag, unarchiveBag, findDuplicateActiveBags } from '$lib/storage';
     import { Button, buttonVariants } from "$lib/components/ui/button";
     import Coffee from "@lucide/svelte/icons/coffee";
     import ClipboardList from "@lucide/svelte/icons/clipboard-list";
+    import Archive from "@lucide/svelte/icons/archive";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
@@ -32,6 +33,14 @@
     let deleteBrewDialogOpen = $state(false);
     let deletingBag = $state<CoffeeBag | null>(null);
     let deletingBrew = $state<CoffeeBrew | null>(null);
+
+    // Archive prompt state
+    let archivePromptOpen = $state(false);
+    let bagsToArchive = $state<CoffeeBag[]>([]);
+
+    // Timeline archived filter
+    let showArchived = $state(false);
+    const hasArchivedBags = $derived(coffeeBagStore.items.some(b => b.archivedAt));
 
     // Create form data for editing
     const editBagFormData = $derived(editingBag ? defaults({
@@ -57,19 +66,31 @@
     }, zod4(coffeeBrewSchema)) : defaults(zod4(coffeeBrewSchema)));
 
     // Timeline entries derived from coffee bags and espresso shots
-    const timelineEntries = $derived([
-        ...coffeeBagStore.items.map((bag) => ({ type: 'coffee-bag' as const, data: bag })),
-        ...coffeeBrewStore.items.map((shot) => ({
-            type: 'coffee-brew' as const,
-            data: shot,
-            coffeeBag: coffeeBagStore.items.find((bag) => bag.id === shot.coffeeBagId),
-        })),
-    ]);
+    const timelineEntries = $derived.by(() => {
+        const bags = showArchived
+            ? coffeeBagStore.items
+            : coffeeBagStore.items.filter(b => !b.archivedAt);
+        const archivedBagIds = new Set(
+            coffeeBagStore.items.filter(b => b.archivedAt).map(b => b.id)
+        );
+        const brews = showArchived
+            ? coffeeBrewStore.items
+            : coffeeBrewStore.items.filter(b => !archivedBagIds.has(b.coffeeBagId));
+        return [
+            ...bags.map((bag) => ({ type: 'coffee-bag' as const, data: bag })),
+            ...brews.map((shot) => ({
+                type: 'coffee-brew' as const,
+                data: shot,
+                coffeeBag: coffeeBagStore.items.find((bag) => bag.id === shot.coffeeBagId),
+            })),
+        ];
+    });
 
     function handleCoffeeBagSubmit(formData: CoffeeBagFormData) {
         const now = new Date();
+        const newId = uuidv7();
         coffeeBagStore.add({
-            id: uuidv7(),
+            id: newId,
             name: formData.name,
             roasterName: formData.roasterName,
             style: formData.style || '',
@@ -77,10 +98,18 @@
             dateOpened: formData.dateOpened || undefined,
             notes: formData.notes || '',
             picture: formData.picture,
+            archivedAt: null,
             createdAt: now,
             updatedAt: now,
         });
         coffeeBagDialogOpen = false;
+
+        // Check for duplicate active bags to offer archiving
+        const duplicates = findDuplicateActiveBags(formData.name, formData.roasterName, newId);
+        if (duplicates.length > 0) {
+            bagsToArchive = duplicates;
+            archivePromptOpen = true;
+        }
     }
 
     function handleCoffeeBrewSubmit(formData: CoffeeBrewFormData) {
@@ -177,6 +206,22 @@
             deletingBrew = null;
         }
     }
+
+    function confirmArchiveOldBags() {
+        for (const bag of bagsToArchive) {
+            archiveBag(bag.id);
+        }
+        archivePromptOpen = false;
+        bagsToArchive = [];
+    }
+
+    function handleArchiveBag(bag: CoffeeBag) {
+        archiveBag(bag.id);
+    }
+
+    function handleUnarchiveBag(bag: CoffeeBag) {
+        unarchiveBag(bag.id);
+    }
 </script>
 
 <div class="mt-32 text-center">
@@ -201,7 +246,7 @@
     </Dialog.Root>
 
     <Dialog.Root bind:open={coffeeBrewDialogOpen}>
-        <Dialog.Trigger class={buttonVariants({ variant: "default" })} disabled={coffeeBagStore.items.length === 0}>
+        <Dialog.Trigger class={buttonVariants({ variant: "default" })} disabled={getActiveBags().length === 0}>
             <Coffee class="size-4"/>
             Start a Brew
         </Dialog.Trigger>
@@ -212,18 +257,31 @@
                     <Coffee class="pl-2 size-8"/>
                 </Dialog.Title>
             </Dialog.Header>
-                <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={coffeeBagStore.items} onSubmit={handleCoffeeBrewSubmit} />
+                <CoffeeBrewForm data={coffeeBrewFormData} coffeeBags={getActiveBags()} onSubmit={handleCoffeeBrewSubmit} />
         </Dialog.Content>
     </Dialog.Root>
 </div>
 
 <div class="mt-14">
+    {#if hasArchivedBags}
+        <div class="flex justify-end px-4 mb-2">
+            <button
+                class="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
+                onclick={() => showArchived = !showArchived}
+            >
+                <Archive class="size-3.5" />
+                {showArchived ? 'Hide archived' : 'Show archived'}
+            </button>
+        </div>
+    {/if}
     <CoffeeTimeline
         entries={timelineEntries}
         onEditBag={handleEditBag}
         onDeleteBag={handleDeleteBag}
         onEditBrew={handleEditBrew}
         onDeleteBrew={handleDeleteBrew}
+        onArchiveBag={handleArchiveBag}
+        onUnarchiveBag={handleUnarchiveBag}
     />
 </div>
 
@@ -252,7 +310,7 @@
             </Dialog.Title>
         </Dialog.Header>
         {#if editingBrew}
-            <CoffeeBrewForm data={editBrewFormData} coffeeBags={coffeeBagStore.items} onSubmit={handleEditBrewSubmit} submitLabel="Update" />
+            <CoffeeBrewForm data={editBrewFormData} coffeeBags={getActiveBags()} onSubmit={handleEditBrewSubmit} submitLabel="Update" />
         {/if}
     </Dialog.Content>
 </Dialog.Root>
@@ -299,6 +357,32 @@
             </Button>
             <Button variant="destructive" onclick={confirmDeleteBrew}>
                 Delete
+            </Button>
+        </Dialog.Footer>
+    </Dialog.Content>
+</Dialog.Root>
+
+<!-- Archive Prompt Dialog -->
+<Dialog.Root bind:open={archivePromptOpen}>
+    <Dialog.Content>
+        <Dialog.Header>
+            <Dialog.Title>Archive Old Bags?</Dialog.Title>
+            <Dialog.Description>
+                You have {bagsToArchive.length} older {bagsToArchive.length === 1 ? 'bag' : 'bags'} with the same name and roaster. Would you like to archive {bagsToArchive.length === 1 ? 'it' : 'them'}?
+            </Dialog.Description>
+        </Dialog.Header>
+        <div class="text-muted-foreground text-sm space-y-1">
+            {#each bagsToArchive as bag (bag.id)}
+                <p>{bag.name} — {bag.roasterName}{bag.dateOpened ? ` (opened ${bag.dateOpened.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})` : ''}</p>
+            {/each}
+        </div>
+        <Dialog.Footer>
+            <Button variant="outline" onclick={() => { archivePromptOpen = false; bagsToArchive = []; }}>
+                Keep Active
+            </Button>
+            <Button onclick={confirmArchiveOldBags}>
+                <Archive class="size-4" />
+                Archive
             </Button>
         </Dialog.Footer>
     </Dialog.Content>
