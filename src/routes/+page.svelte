@@ -263,17 +263,7 @@
 </div>
 
 <div class="mt-14">
-    {#if hasArchivedBags}
-        <div class="flex justify-end px-4 mb-2">
-            <button
-                class="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
-                onclick={() => showArchived = !showArchived}
-            >
-                <Archive class="size-3.5" />
-                {showArchived ? 'Hide archived' : 'Show archived'}
-            </button>
-        </div>
-    {/if}
+
     <CoffeeTimeline
         entries={timelineEntries}
         onEditBag={handleEditBag}
@@ -283,6 +273,17 @@
         onArchiveBag={handleArchiveBag}
         onUnarchiveBag={handleUnarchiveBag}
     />
+    {#if hasArchivedBags}
+        <div class="flex justify-center py-4 mb-2">
+            <button
+                class="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
+                onclick={() => showArchived = !showArchived}
+            >
+                <Archive class="size-3.5" />
+                {showArchived ? 'Hide archived' : 'Show archived'}
+            </button>
+        </div>
+    {/if}
 </div>
 
 <!-- Edit Bag Dialog -->

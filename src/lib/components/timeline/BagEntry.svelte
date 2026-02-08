@@ -58,7 +58,6 @@
 				<p class="text-muted-foreground">Opened on</p>
 				<p>{bag.dateOpened ? formatDate(bag.dateOpened) : 'N/A'}</p>
 			</div>
-		</div>
 		{#if bag.archivedAt && onunarchive}
 			<button
 				class="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs transition-colors"
@@ -76,6 +75,7 @@
 				Archive
 			</button>
 		{/if}
+		</div>
 	</div>
 </div>
 
