@@ -1,0 +1,1 @@
+ALTER TABLE "coffee_bags" ADD COLUMN "archived_at" timestamp;

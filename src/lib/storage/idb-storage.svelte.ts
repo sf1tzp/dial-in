@@ -48,7 +48,7 @@ interface DialInDB extends DBSchema {
 }
 
 const DB_NAME = 'dial-in-db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 // Singleton database instance
 let dbInstance: IDBPDatabase<DialInDB> | null = null;
@@ -101,6 +101,10 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
                     brewStore.createIndex('by-synced', 'syncedAt');
                 }
             }
+
+            // Version 3: archivedAt field added to CoffeeBag
+            // No migration needed here — load() backfills archivedAt ?? null in memory,
+            // and the field is persisted on the next update/sync for each bag.
         },
     });
 
@@ -135,6 +139,9 @@ function createIDBStore<
                             syncedAt: item.syncedAt ?? null,
                             deletedAt: item.deletedAt ?? null,
                             isDirty: item.isDirty ?? true, // Assume dirty if not set
+                            archivedAt:
+                                (item as Record<string, unknown>).archivedAt ??
+                                null,
                         }) as T
                 )
                 .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -489,6 +496,47 @@ function createIDBStore<
 // Create the stores
 export const coffeeBagStore = createIDBStore<CoffeeBag>('coffeeBags');
 export const coffeeBrewStore = createIDBStore<CoffeeBrew>('coffeeBrews');
+
+/**
+ * Get active (non-archived) bags
+ */
+export function getActiveBags(): CoffeeBag[] {
+    return coffeeBagStore.items.filter((b) => !b.archivedAt);
+}
+
+/**
+ * Archive a bag by setting archivedAt
+ */
+export function archiveBag(id: string): Promise<void> {
+    return coffeeBagStore.update(id, {
+        archivedAt: new Date(),
+    } as Partial<CoffeeBag>);
+}
+
+/**
+ * Unarchive a bag by clearing archivedAt
+ */
+export function unarchiveBag(id: string): Promise<void> {
+    return coffeeBagStore.update(id, {
+        archivedAt: null,
+    } as Partial<CoffeeBag>);
+}
+
+/**
+ * Find active bags with the same name and roaster (excluding a given id)
+ */
+export function findDuplicateActiveBags(
+    name: string,
+    roasterName: string,
+    excludeId?: string
+): CoffeeBag[] {
+    return getActiveBags().filter(
+        (b) =>
+            b.name === name &&
+            b.roasterName === roasterName &&
+            b.id !== excludeId
+    );
+}
 
 /**
  * Initialize all stores - call this once at app startup

@@ -64,6 +64,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 dateOpened: bag.dateOpened
                     ? new Date(bag.dateOpened)
                     : undefined,
+                archivedAt: bag.archivedAt
+                    ? new Date(bag.archivedAt)
+                    : undefined,
                 deletedAt: bag.deletedAt ? new Date(bag.deletedAt) : undefined,
                 syncedAt: new Date(),
             }));

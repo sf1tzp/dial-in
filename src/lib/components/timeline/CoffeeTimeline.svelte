@@ -16,9 +16,16 @@
 		onDeleteBag?: (bag: CoffeeBag) => void;
 		onEditBrew?: (brew: CoffeeBrew) => void;
 		onDeleteBrew?: (brew: CoffeeBrew) => void;
+		onArchiveBag?: (bag: CoffeeBag) => void;
+		onUnarchiveBag?: (bag: CoffeeBag) => void;
 	}
 
-	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew }: Props = $props();
+	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew, onArchiveBag, onUnarchiveBag }: Props = $props();
+
+	// Extract all bags for disambiguation
+	const allBags = $derived(
+		entries.filter((e): e is { type: 'coffee-bag'; data: CoffeeBag } => e.type === 'coffee-bag').map((e) => e.data)
+	);
 
 	// Sort entries by createdAt in descending order (newest first)
 	const sortedEntries = $derived(
@@ -77,7 +84,10 @@
 							>
 								<BagEntry
 									bag={entry.data}
+									{allBags}
 									relativeTime={formatRelativeTime(entry.data.createdAt)}
+									onarchive={onArchiveBag ? () => onArchiveBag(entry.data) : undefined}
+									onunarchive={onUnarchiveBag ? () => onUnarchiveBag(entry.data) : undefined}
 								/>
 							</TimelineEntry>
 						{:else}
@@ -88,6 +98,7 @@
 								<BrewEntry
 									coffeeBrew={entry.data}
 									coffeeBag={entry.coffeeBag}
+									{allBags}
 									relativeTime={formatRelativeTime(entry.data.createdAt)}
 								/>
 							</TimelineEntry>
