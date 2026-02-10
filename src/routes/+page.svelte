@@ -16,7 +16,14 @@
     import Archive from "@lucide/svelte/icons/archive";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
-    const coffeeBrewFormData = defaults(zod4(coffeeBrewSchema));
+    const coffeeBrewFormData = $derived.by(() => {
+        const brews = coffeeBrewStore.items;
+        if (brews.length > 0) {
+            const lastBrew = brews.reduce((latest, b) => b.createdAt > latest.createdAt ? b : latest, brews[0]);
+            return defaults({ grindSetting: lastBrew.grindSetting }, zod4(coffeeBrewSchema));
+        }
+        return defaults(zod4(coffeeBrewSchema));
+    });
 
     // Dialog open states
     let coffeeBagDialogOpen = $state(false);
