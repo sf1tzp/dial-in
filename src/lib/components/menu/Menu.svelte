@@ -127,6 +127,11 @@
 				</div>
 				{/if}
 			<Separator/>
+			<div class="flex justify-center gap-3 pt-2 text-sm text-muted-foreground">
+				<a href="/privacy" class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Privacy</a>
+				<span>·</span>
+				<a href="/terms" class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Terms</a>
+			</div>
 			<div class="flex justify-center pt-2">
 				<a href="https://fitz.gg">
 					{@render FitzLogo({ fill: "var(--muted-foreground)", class: "w-28 sm:w-38" })}
