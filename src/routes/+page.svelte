@@ -14,6 +14,7 @@
     import Coffee from "@lucide/svelte/icons/coffee";
     import ClipboardList from "@lucide/svelte/icons/clipboard-list";
     import Archive from "@lucide/svelte/icons/archive";
+    import DurabilityBanner from "$lib/components/durability-banner.svelte";
 
     const coffeeBagFormData = defaults(zod4(coffeeBagSchema));
     const coffeeBrewFormData = $derived.by(() => {
@@ -234,6 +235,8 @@
 <div class="mt-32 text-center">
     <Greeting showWelcomeMessage={coffeeBagStore.items.length === 0} />
 </div>
+
+<DurabilityBanner />
 
 <div class="mt-32 sm:mt-48 flex justify-around">
     <Dialog.Root bind:open={coffeeBagDialogOpen}>
