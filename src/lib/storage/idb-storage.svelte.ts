@@ -509,6 +509,7 @@ export function getActiveBags(): CoffeeBag[] {
  */
 export function archiveBag(id: string): Promise<void> {
     return coffeeBagStore.update(id, {
+        // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not reactive, just a timestamp for storage
         archivedAt: new Date(),
     } as Partial<CoffeeBag>);
 }

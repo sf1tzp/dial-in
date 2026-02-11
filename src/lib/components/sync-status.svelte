@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { syncService } from '$lib/storage';
-	import CloudIcon from '@lucide/svelte/icons/cloud';
 	import CloudOffIcon from '@lucide/svelte/icons/cloud-off';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 	import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';

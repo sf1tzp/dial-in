@@ -78,7 +78,7 @@
 				<span class="sr-only">Toggle Menu</span>
 			</Button>
 			<NavigationMenuList>
-				{#each navItems as item}
+				{#each navItems as item (item.href)}
 					<NavigationMenuItem>
 						<NavigationMenuLink
 							href={item.href}
@@ -108,7 +108,7 @@
 	{#if mobileMenuOpen}
 		<div class="border-t bg-background px-4 py-2">
 			<nav class="flex flex-col space-y-2">
-				{#each navItems as item}
+				{#each navItems as item (item.href)}
 					<Button
 						variant={isCurrentPath(item.href) ? 'secondary' : 'ghost'}
 						class="justify-start"

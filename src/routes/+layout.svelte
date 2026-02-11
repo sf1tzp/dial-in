@@ -7,11 +7,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { authClient } from '$lib/auth-client';
 
-	import CardViewIcon from '@lucide/svelte/icons/smartphone';
+	
 
-	import SyncStatus from '$lib/components/sync-status.svelte';
-
-	import { ModeWatcher } from "mode-watcher";
+import { ModeWatcher } from "mode-watcher";
 
 	let { children } = $props();
 

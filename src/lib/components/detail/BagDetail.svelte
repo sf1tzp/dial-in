@@ -1,12 +1,7 @@
 <script lang="ts">
-	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
-    import CalendarClock from '@lucide/svelte/icons/calendar-clock';
-    import CalendarCheck2 from '@lucide/svelte/icons/calendar-check-2';
-    import ScrollText from '@lucide/svelte/icons/scroll-text';
-	import type { CoffeeBag } from '$lib/storage/interfaces';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-    import Heater from '@lucide/svelte/icons/heater';
+	import CalendarCheck2 from '@lucide/svelte/icons/calendar-check-2';
+    import type { CoffeeBag } from '$lib/storage/interfaces';
+	import Heater from '@lucide/svelte/icons/heater';
     import Archive from '@lucide/svelte/icons/archive';
 
 	interface Props {

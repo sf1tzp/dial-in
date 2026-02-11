@@ -56,7 +56,7 @@
 					aria-invalid={$errors.coffeeBagId ? 'true' : undefined}
 				>
 					<option value="">Select a coffee bag</option>
-					{#each coffeeBags as bag}
+					{#each coffeeBags as bag (bag.id)}
 						<option value={bag.id}>{formatBagLabel(bag, coffeeBags)}</option>
 					{/each}
 				</select>

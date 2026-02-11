@@ -4,7 +4,6 @@
  */
 
 import { browser } from '$app/environment';
-import { authClient } from '$lib/auth-client';
 import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
 

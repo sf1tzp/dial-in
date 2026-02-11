@@ -1,18 +1,11 @@
 <script lang="ts">
-	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
-    import Heater from '@lucide/svelte/icons/heater';
-	import Coffee from '@lucide/svelte/icons/coffee';
-    import ServerCog from '@lucide/svelte/icons/server-cog';
-    import Cog from '@lucide/svelte/icons/cog';
+	import Cog from '@lucide/svelte/icons/cog';
     import Weight from '@lucide/svelte/icons/weight';
     import Timer from '@lucide/svelte/icons/timer';
     import Gauge from '@lucide/svelte/icons/gauge';
-    import ScrollText from '@lucide/svelte/icons/scroll-text';
-	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-
-	interface Props {
+    import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
+	
+interface Props {
 		brew: CoffeeBrew;
 		coffeeBag?: CoffeeBag;
 	}

@@ -1,9 +1,7 @@
 <script lang="ts">
     import CircleUserRound from "@lucide/svelte/icons/circle-user-round";
-    import Upload from "@lucide/svelte/icons/upload";
-
-	import { authClient } from "$lib/auth-client";
-    import { redirect } from "@sveltejs/kit";
+    
+import { authClient } from "$lib/auth-client";
     import { goto } from "$app/navigation";
     import { syncService } from "$lib/storage";
 	const session = authClient.useSession();

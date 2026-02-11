@@ -2,8 +2,6 @@
 	import Coffee from '@lucide/svelte/icons/coffee';
 	import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 	import { getBagDisambiguator } from '$lib/bags';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { BrewDetail } from '$lib/components/detail';
     import Gauge from '@lucide/svelte/icons/gauge';

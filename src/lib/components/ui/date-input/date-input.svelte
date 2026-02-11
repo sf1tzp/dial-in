@@ -39,12 +39,7 @@
     return dateValue.toDate(getLocalTimeZone());
   }
 
-  let calendarValue = $state<DateValue | undefined>(toDateValue(dateValue));
-
-  // Sync external value changes
-  $effect(() => {
-    calendarValue = toDateValue(dateValue);
-  });
+  let calendarValue = $derived<DateValue | undefined>(toDateValue(dateValue));
 
   function handleValueChange(v: DateValue | undefined) {
     calendarValue = v;

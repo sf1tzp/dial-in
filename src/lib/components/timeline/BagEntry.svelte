@@ -1,8 +1,6 @@
 <script lang="ts">
 	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
-	import Flame from '@lucide/svelte/icons/flame';
 	import Calendar from '@lucide/svelte/icons/calendar';
-	import PackageOpen from '@lucide/svelte/icons/package-open';
 	import type { CoffeeBag } from '$lib/storage/interfaces';
 	import { getBagDisambiguator } from '$lib/bags';
 	import * as Dialog from '$lib/components/ui/dialog';

@@ -1,6 +1,9 @@
 import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
 
-export function exportDataLocally(bags: CoffeeBag[], brews: CoffeeBrew[]): void {
+export function exportDataLocally(
+    bags: CoffeeBag[],
+    brews: CoffeeBrew[]
+): void {
     const brewsByBag = new Map<string, CoffeeBrew[]>();
     for (const brew of brews) {
         const list = brewsByBag.get(brew.coffeeBagId) ?? [];
@@ -33,7 +36,9 @@ export function exportDataLocally(bags: CoffeeBag[], brews: CoffeeBrew[]): void 
         })),
     };
 
-    const blob = new Blob([JSON.stringify(exported, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exported, null, 2)], {
+        type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

@@ -13,7 +13,7 @@ import {
     type CoffeeBrewInsert,
     type CoffeeBrewRecord,
 } from './schema';
-import { eq, and, gt, isNull, or } from 'drizzle-orm';
+import { eq, and, gt, isNull } from 'drizzle-orm';
 import { uuidv7 } from 'uuidv7';
 
 // ============================================

@@ -1,10 +1,13 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"workbench.colorTheme": "Chocolate (rainglow)"
-	}
+    "folders": [
+        {
+            "path": ".",
+        },
+        {
+            "path": "../captains-log/processes/policies",
+        },
+    ],
+    "settings": {
+        "workbench.colorTheme": "Chocolate (rainglow)",
+    },
 }

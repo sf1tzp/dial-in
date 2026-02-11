@@ -3,15 +3,7 @@
  * Mirrors the IndexedDB schema with additional sync metadata
  */
 
-import {
-    pgTable,
-    text,
-    timestamp,
-    real,
-    integer,
-    index,
-    foreignKey,
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, real, index } from 'drizzle-orm/pg-core';
 
 /**
  * Coffee Bags table
