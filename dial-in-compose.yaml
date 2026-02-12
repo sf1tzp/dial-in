@@ -3,6 +3,8 @@ services:
         restart: unless-stopped
         container_name: dial-in-server
         image: dial-in:latest
+        environment:
+            - BODY_SIZE_LIMIT=20971520
         networks:
             - caddy_network
         ports:
