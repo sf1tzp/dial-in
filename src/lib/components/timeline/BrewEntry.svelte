@@ -21,6 +21,22 @@
 
 	let detailDialogOpen = $state(false);
 
+	const thumbnailUrl = $derived(
+		coffeeBrew?.picture
+			? typeof coffeeBrew.picture === 'string'
+				? coffeeBrew.picture.replace(/\/full\.webp$/, '/thumbnail.webp')
+				: URL.createObjectURL(coffeeBrew.picture)
+			: null
+	);
+
+	$effect(() => {
+		return () => {
+			if (thumbnailUrl && coffeeBrew?.picture instanceof Blob) {
+				URL.revokeObjectURL(thumbnailUrl);
+			}
+		};
+	});
+
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
 			month: 'short',
@@ -55,7 +71,11 @@
 
 <div class="flex">
 	<div class="my-4 ml-4 mr-4 sm:mx-12">
-		<Coffee class="size-18 text-brew-icon" />
+		{#if thumbnailUrl}
+			<img src={thumbnailUrl} alt="Brew" class="size-18 rounded-md object-cover" />
+		{:else}
+			<Coffee class="size-18 text-brew-icon" />
+		{/if}
 	</div>
 
 	<div

@@ -345,6 +345,81 @@ class SyncService {
     }
 
     /**
+     * Upload a single picture blob to the server
+     * Returns the full-size URL on success, or null on failure
+     */
+    private async uploadPicture(
+        blob: Blob,
+        entityType: 'bags' | 'brews',
+        entityId: string
+    ): Promise<string | null> {
+        try {
+            const formData = new FormData();
+            formData.append('file', blob);
+            formData.append('entityType', entityType);
+            formData.append('entityId', entityId);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                console.error(`Upload failed for ${entityType}/${entityId}: ${response.statusText}`);
+                return null;
+            }
+
+            const result = await response.json();
+            return result.fullUrl;
+        } catch (err) {
+            console.error(`Upload error for ${entityType}/${entityId}:`, err);
+            return null;
+        }
+    }
+
+    /**
+     * Upload pending pictures (Blob → URL) before push
+     * Finds dirty items with Blob pictures, uploads each, and replaces the Blob with the URL.
+     * On failure the Blob stays in place and the item remains dirty for retry next cycle.
+     */
+    private async uploadPendingPictures(): Promise<void> {
+        const dirtyBags = coffeeBagStore.getDirtyItems();
+        const dirtyBrews = coffeeBrewStore.getDirtyItems();
+
+        const uploads: Promise<void>[] = [];
+
+        for (const bag of dirtyBags) {
+            if (bag.picture instanceof Blob) {
+                uploads.push(
+                    this.uploadPicture(bag.picture, 'bags', bag.id).then(async (url) => {
+                        if (url) {
+                            await coffeeBagStore.update(bag.id, { picture: url });
+                        }
+                    })
+                );
+            }
+        }
+
+        for (const brew of dirtyBrews) {
+            if (brew.picture instanceof Blob) {
+                uploads.push(
+                    this.uploadPicture(brew.picture, 'brews', brew.id).then(async (url) => {
+                        if (url) {
+                            await coffeeBrewStore.update(brew.id, { picture: url });
+                        }
+                    })
+                );
+            }
+        }
+
+        if (uploads.length > 0) {
+            console.log(`Uploading ${uploads.length} pending picture(s)...`);
+            await Promise.allSettled(uploads);
+        }
+    }
+
+    /**
      * Push local changes to the server
      * Only pushes items that have been modified since last sync (dirty items)
      * Includes soft-deleted items so deletions are synced
@@ -446,6 +521,9 @@ class SyncService {
             // Pull first to get latest server state
             const pullResults = await this.pull();
             console.log('Pull complete:', pullResults);
+
+            // Upload any pending pictures (Blob → URL) before push
+            await this.uploadPendingPictures();
 
             // Then push local changes
             const pushResults = await this.push();

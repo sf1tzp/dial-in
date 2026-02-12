@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Camera from "@lucide/svelte/icons/camera"
+	import X from "@lucide/svelte/icons/x"
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { coffeeBrewSchema, type CoffeeBrewFormData } from '$lib/schemas/coffee';
@@ -34,6 +35,28 @@
 
 	const { form: formData, errors, enhance } = form;
 
+	// Preview URL for picture (Blob or URL string)
+	let picturePreviewUrl = $derived(
+		$formData.picture
+			? typeof $formData.picture === 'string'
+				? $formData.picture
+				: URL.createObjectURL($formData.picture)
+			: null
+	);
+
+	$effect(() => {
+		const url = picturePreviewUrl;
+		return () => {
+			if (url && $formData.picture instanceof Blob) {
+				URL.revokeObjectURL(url);
+			}
+		};
+	});
+
+	function removePicture() {
+		$formData.picture = undefined;
+	}
+
 	// Preselect the most recently added coffee bag (first in the array)
 	$effect(() => {
 		if (!$formData.coffeeBagId && coffeeBags.length > 0) {
@@ -65,13 +88,30 @@
 
 			<Field.Field class="w-1/3 flex-1 flex-col items-center">
 				<Field.Label for="picture" class="sr-only">Picture</Field.Label>
-				<label
-					for="picture"
-					class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
-				>
-					<Camera class="size-6" />
-					<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
-				</label>
+				{#if picturePreviewUrl}
+					<div class="relative mt-2 size-16">
+						<img
+							src={picturePreviewUrl}
+							alt="Preview"
+							class="size-16 rounded-md object-cover"
+						/>
+						<button
+							type="button"
+							class="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-destructive-foreground"
+							onclick={removePicture}
+						>
+							<X class="size-3" />
+						</button>
+					</div>
+				{:else}
+					<label
+						for="picture"
+						class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
+					>
+						<Camera class="size-6" />
+						<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
+					</label>
+				{/if}
 				<Input
 					id="picture"
 					name="picture"

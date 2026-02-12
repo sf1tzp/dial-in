@@ -10,6 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { DateInput } from '$lib/components/ui/date-input';
 	import CameraIcon from '@lucide/svelte/icons/camera';
+	import X from '@lucide/svelte/icons/x';
     import ChevronRight from '@lucide/svelte/icons/chevron-right';
     import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
@@ -32,6 +33,29 @@
 	});
 
 	const { form: formData, errors, enhance } = form;
+
+	// Preview URL for picture (Blob or URL string)
+	let picturePreviewUrl = $derived(
+		$formData.picture
+			? typeof $formData.picture === 'string'
+				? $formData.picture
+				: URL.createObjectURL($formData.picture)
+			: null
+	);
+
+	// Revoke object URLs on cleanup
+	$effect(() => {
+		const url = picturePreviewUrl;
+		return () => {
+			if (url && $formData.picture instanceof Blob) {
+				URL.revokeObjectURL(url);
+			}
+		};
+	});
+
+	function removePicture() {
+		$formData.picture = undefined;
+	}
 
 	// Default dateOpened to today if not set
 	$effect(() => {
@@ -88,13 +112,30 @@
 
 						<Field.Field class="w-1/3 flex-1 flex-col items-center">
 							<Field.Label for="picture" class="sr-only">Picture</Field.Label>
-							<label
-								for="picture"
-								class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
-							>
-								<CameraIcon class="size-6" />
-								<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
-							</label>
+							{#if picturePreviewUrl}
+								<div class="relative mt-2 size-16">
+									<img
+										src={picturePreviewUrl}
+										alt="Preview"
+										class="size-16 rounded-md object-cover"
+									/>
+									<button
+										type="button"
+										class="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-destructive-foreground"
+										onclick={removePicture}
+									>
+										<X class="size-3" />
+									</button>
+								</div>
+							{:else}
+								<label
+									for="picture"
+									class="mt-4 flex h-16 w-16 cursor-pointer flex-col items-center justify-center"
+								>
+									<CameraIcon class="size-6" />
+									<span class="mt-0.5 text-[10px] text-muted-foreground">Add Picture</span>
+								</label>
+							{/if}
 							<Input
 								id="picture"
 								name="picture"

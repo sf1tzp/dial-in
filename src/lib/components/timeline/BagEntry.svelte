@@ -23,6 +23,22 @@
 
 	let detailDialogOpen = $state(false);
 
+	const thumbnailUrl = $derived(
+		bag.picture
+			? typeof bag.picture === 'string'
+				? bag.picture.replace(/\/full\.webp$/, '/thumbnail.webp')
+				: URL.createObjectURL(bag.picture)
+			: null
+	);
+
+	$effect(() => {
+		return () => {
+			if (thumbnailUrl && bag.picture instanceof Blob) {
+				URL.revokeObjectURL(thumbnailUrl);
+			}
+		};
+	});
+
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
 			month: 'short',
@@ -33,7 +49,11 @@
 
 <div class="flex {bag.archivedAt ? 'opacity-60' : ''}">
 	<div class="my-4 ml-3 mr-5 sm:ml-11 sm:mr-13">
-		<ClipboardList class="size-18 text-bag-icon" />
+		{#if thumbnailUrl}
+			<img src={thumbnailUrl} alt={bag.name} class="size-18 rounded-md object-cover" />
+		{:else}
+			<ClipboardList class="size-18 text-bag-icon" />
+		{/if}
 	</div>
 
 	<div
