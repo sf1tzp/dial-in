@@ -4,13 +4,18 @@ lint:
 format:
     npm run format
 
+secrets-local:
+    sops -d secrets/local.env > .env
+
+edit-secrets HOST:
+    sops secrets/{{HOST}}.env
+
 build HOST:
     #!/usr/bin/env bash
     set -euo pipefail
-    # fixme: find a better way to manage these env at build time
-    cp env/{{HOST}} .env
+    sops -d secrets/{{HOST}}.env > .env
     ~/.local/bin/nerdctl build . -t dial-in:latest
-    # rm .env
+    rm .env
     ~/.local/bin/nerdctl save dial-in:latest -o dial-in-latest.tar
 
 deploy HOST:
@@ -19,7 +24,7 @@ deploy HOST:
     ssh {{HOST}} -C "mkdir -p ~/images"
     ssh {{HOST}} -C "mkdir -p ~/caddyfiles"
     ssh {{HOST}} -C "mkdir -p ~/dial-in"
-    scp env/{{HOST}} {{HOST}}:~/dial-in/.env
+    sops -d secrets/{{HOST}}.env | ssh {{HOST}} "cat > ~/dial-in/.env"
     scp caddyfiles/{{HOST}} {{HOST}}:~/caddyfiles/dial-in.caddy
     scp dial-in-compose.yaml {{HOST}}:~/dial-in-compose.yaml
     scp dial-in-latest.tar {{HOST}}:~/images/dial-in-latest.tar
@@ -36,14 +41,13 @@ bounce HOST:
 generate-migration HOST:
     #!/usr/bin/env bash
     set -euo pipefail
-    cp env/{{HOST}} .env
+    sops -d secrets/{{HOST}}.env > .env
     npm run db:generate
     rm .env
-
 
 apply-migrations HOST:
     #!/usr/bin/env bash
     set -euo pipefail
-    cp env/{{HOST}} .env
+    sops -d secrets/{{HOST}}.env > .env
     npm run db:migrate
     rm .env
