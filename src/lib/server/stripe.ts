@@ -45,17 +45,29 @@ export async function getOrCreateCustomer(
     return customer.id;
 }
 
+export type Plan = 'monthly' | 'yearly';
+
+const priceEnvKey: Record<Plan, string> = {
+    monthly: 'MONTHLY_SUBSCRIPTION_STRIPE_PRICE_ID',
+    yearly: 'YEARLY_SUBSCRIPTION_STRIPE_PRICE_ID',
+};
+
 export async function createCheckoutSession(
     userId: string,
     email: string,
-    origin: string
+    origin: string,
+    plan: Plan = 'monthly'
 ): Promise<Stripe.Checkout.Session> {
     const customerId = await getOrCreateCustomer(userId, email);
+    const priceId = env[priceEnvKey[plan]];
+    if (!priceId) {
+        throw new Error(`Missing env var ${priceEnvKey[plan]}`);
+    }
 
     return getStripe().checkout.sessions.create({
         customer: customerId,
         mode: 'subscription',
-        line_items: [{ price: env.STRIPE_PRICE_ID!, quantity: 1 }],
+        line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${origin}/account?checkout=success`,
         cancel_url: `${origin}/account?checkout=cancel`,
     });

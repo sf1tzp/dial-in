@@ -24,10 +24,14 @@
 		}
 	}
 
-	async function subscribe() {
+	async function subscribe(plan: 'monthly' | 'yearly') {
 		actionLoading = true;
 		try {
-			const res = await fetch('/api/billing/checkout', { method: 'POST' });
+			const res = await fetch('/api/billing/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ plan }),
+			});
 			const data = await res.json();
 			if (data.url) {
 				window.location.href = data.url;
@@ -125,12 +129,20 @@
 				<p class="text-sm text-muted-foreground">
 					Subscribe to access all features.
 				</p>
-				<Button onclick={subscribe} disabled={actionLoading}>
-					{#if actionLoading}
-						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-					{/if}
-					Subscribe — $1/mo
-				</Button>
+				<div class="flex gap-2">
+					<Button onclick={() => subscribe('monthly')} disabled={actionLoading}>
+						{#if actionLoading}
+							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						{/if}
+						$3 / month
+					</Button>
+					<Button onclick={() => subscribe('yearly')} disabled={actionLoading} variant="outline">
+						{#if actionLoading}
+							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						{/if}
+						$25 / year
+					</Button>
+				</div>
 			</div>
 		{/if}
 	</Card.Content>
