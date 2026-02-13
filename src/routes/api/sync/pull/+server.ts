@@ -9,13 +9,19 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getFullSyncData, getIncrementalSyncData } from '$lib/server/db/store';
+import { getSubscription } from '$lib/server/stripe';
 
 /**
- * HEAD request for auth check
+ * HEAD request for auth + subscription check
  */
 export const HEAD: RequestHandler = async ({ locals }) => {
     if (!locals.user) {
         throw error(401, 'Unauthorized');
+    }
+
+    const sub = await getSubscription(locals.user.id);
+    if (sub?.status !== 'active') {
+        throw error(403, 'Active subscription required');
     }
 
     return new Response(null, { status: 200 });
@@ -24,6 +30,11 @@ export const HEAD: RequestHandler = async ({ locals }) => {
 export const GET: RequestHandler = async ({ locals, url }) => {
     if (!locals.user) {
         throw error(401, 'Unauthorized');
+    }
+
+    const sub = await getSubscription(locals.user.id);
+    if (sub?.status !== 'active') {
+        throw error(403, 'Active subscription required');
     }
 
     const userId = locals.user.id;

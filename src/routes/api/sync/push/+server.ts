@@ -14,6 +14,7 @@ import {
     logSyncOperation,
 } from '$lib/server/db/store';
 import type { CoffeeBagInsert, CoffeeBrewInsert } from '$lib/server/db/schema';
+import { getSubscription } from '$lib/server/stripe';
 
 interface SyncPushPayload {
     deviceId: string;
@@ -24,6 +25,11 @@ interface SyncPushPayload {
 export const POST: RequestHandler = async ({ request, locals }) => {
     if (!locals.user) {
         throw error(401, 'Unauthorized');
+    }
+
+    const sub = await getSubscription(locals.user.id);
+    if (sub?.status !== 'active') {
+        throw error(403, 'Active subscription required');
     }
 
     const userId = locals.user.id;

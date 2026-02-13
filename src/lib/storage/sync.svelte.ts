@@ -253,19 +253,21 @@ class SyncService {
     }
 
     /**
-     * Check if user is authenticated
+     * Check if user can sync (authenticated + active subscription)
      */
-    private async isAuthenticated(): Promise<boolean> {
-        if (!browser) return false;
+    private async canSync(): Promise<'yes' | 'not_authenticated' | 'no_subscription'> {
+        if (!browser) return 'not_authenticated';
 
         try {
             const response = await fetch('/api/sync/pull', {
                 method: 'HEAD',
                 credentials: 'include',
             });
-            return response.ok;
+            if (response.ok) return 'yes';
+            if (response.status === 403) return 'no_subscription';
+            return 'not_authenticated';
         } catch {
-            return false;
+            return 'not_authenticated';
         }
     }
 
@@ -498,11 +500,14 @@ class SyncService {
     } | null> {
         if (!browser) return null;
 
-        // Check authentication
-        const authenticated = await this.isAuthenticated();
-        if (!authenticated) {
-            console.log('Sync skipped: not authenticated');
-            this.updateStatus({ lastError: 'Not authenticated' });
+        // Check authentication and subscription
+        const syncCheck = await this.canSync();
+        if (syncCheck !== 'yes') {
+            const reason = syncCheck === 'no_subscription'
+                ? 'Active subscription required'
+                : 'Not authenticated';
+            console.log(`Sync skipped: ${reason}`);
+            this.updateStatus({ lastError: reason });
             return null;
         }
 
