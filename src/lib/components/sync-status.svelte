@@ -4,8 +4,10 @@
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 	import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
 	import CheckCircleIcon from '@lucide/svelte/icons/check-circle';
+	import CloudUploadIcon from '@lucide/svelte/icons/cloud-upload';
 
 	const status = $derived(syncService.status);
+	const needsSubscription = $derived(status.lastError === 'Active subscription required');
 
 	function formatLastSync(date: Date | null): string {
 		if (!date) return 'Never synced';
@@ -36,6 +38,14 @@
 	{#if status.isSyncing}
 		<RefreshCwIcon class="size-4 animate-spin" />
 		<span>Syncing...</span>
+	{:else if needsSubscription}
+		<a
+			href="/account"
+			class="flex items-center gap-2 hover:text-foreground transition-colors"
+		>
+			<CloudUploadIcon class="size-4" />
+			<span>Get Sync</span>
+		</a>
 	{:else if status.lastError}
 		<button
 			onclick={handleManualSync}

@@ -19,5 +19,5 @@ export const POST: RequestHandler = async ({ locals, url, request }) => {
         plan
     );
 
-    return json({ url: session.url });
+    return json({ clientSecret: session.client_secret });
 };

@@ -67,9 +67,9 @@ export async function createCheckoutSession(
     return getStripe().checkout.sessions.create({
         customer: customerId,
         mode: 'subscription',
+        ui_mode: 'embedded',
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${origin}/account?checkout=success`,
-        cancel_url: `${origin}/account?checkout=cancel`,
+        return_url: `${origin}/account?checkout=success`,
     });
 }
 
