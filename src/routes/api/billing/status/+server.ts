@@ -13,5 +13,6 @@ export const GET: RequestHandler = async ({ locals }) => {
         status: subscription?.status ?? 'inactive',
         currentPeriodEnd: subscription?.currentPeriodEnd?.toISOString() ?? null,
         cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
+        subscribedSince: subscription?.createdAt?.toISOString() ?? null,
     });
 };
