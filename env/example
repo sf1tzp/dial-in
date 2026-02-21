@@ -1,3 +1,7 @@
-PUBLIC_BETTER_AUTH_URL=https://auth.example.com
+PUBLIC_BETTER_AUTH_URL=https://dial-in.coffee
 
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dial-in
+
+BETTER_AUTH_SECRET=change-me-to-a-random-32-char-string
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EMAIL_FROM=Dial-in <noreply@dial-in.coffee>

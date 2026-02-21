@@ -9,8 +9,7 @@
     import CloudUpload from '@lucide/svelte/icons/cloud-upload';
     import X from '@lucide/svelte/icons/x';
 
-    import { env } from '$env/dynamic/public';
-    const LOGIN_PAGE = env.PUBLIC_BETTER_AUTH_URL!;
+    const LOGIN_PAGE = '/login';
 
     const session = authClient.useSession();
     const syncStatus = $derived(syncService.status);
