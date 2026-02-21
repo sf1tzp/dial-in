@@ -13,6 +13,7 @@ import {
     batchUpsertCoffeeBrews,
     logSyncOperation,
 } from '$lib/server/db/store';
+import { db } from '$lib/server/db/connection';
 import type { CoffeeBagInsert, CoffeeBrewInsert } from '$lib/server/db/schema';
 import { getSubscription } from '$lib/server/stripe';
 
@@ -49,81 +50,72 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const { deviceId, coffeeBags = [], coffeeBrews = [] } = payload;
 
     try {
-        const results = {
-            coffeeBags: { created: 0, updated: 0, conflicts: 0 },
-            coffeeBrews: { created: 0, updated: 0, conflicts: 0 },
-        };
+        const results = await db.transaction(async (tx) => {
+            const bagResults = { created: 0, updated: 0, conflicts: 0 };
+            const brewResults = { created: 0, updated: 0, conflicts: 0 };
 
-        // Process coffee bags
-        if (coffeeBags.length > 0) {
-            // Add userId to each record
-            const bagsWithUser: CoffeeBagInsert[] = coffeeBags.map((bag) => ({
-                ...bag,
-                userId,
-                deviceId,
-                // Ensure dates are Date objects
-                createdAt: new Date(bag.createdAt),
-                updatedAt: new Date(bag.updatedAt),
-                dateRoasted: bag.dateRoasted
-                    ? new Date(bag.dateRoasted)
-                    : undefined,
-                dateOpened: bag.dateOpened
-                    ? new Date(bag.dateOpened)
-                    : undefined,
-                archivedAt: bag.archivedAt
-                    ? new Date(bag.archivedAt)
-                    : undefined,
-                deletedAt: bag.deletedAt ? new Date(bag.deletedAt) : undefined,
-                syncedAt: new Date(),
-            }));
-
-            results.coffeeBags = await batchUpsertCoffeeBags(bagsWithUser);
-
-            // Log sync operations
-            for (const bag of bagsWithUser) {
-                await logSyncOperation(
+            // Process coffee bags
+            if (coffeeBags.length > 0) {
+                const bagsWithUser: CoffeeBagInsert[] = coffeeBags.map((bag) => ({
+                    ...bag,
                     userId,
                     deviceId,
-                    'push',
-                    'coffeeBag',
-                    bag.id,
-                    'success'
-                );
-            }
-        }
-
-        // Process coffee brews
-        if (coffeeBrews.length > 0) {
-            // Add userId to each record
-            const brewsWithUser: CoffeeBrewInsert[] = coffeeBrews.map(
-                (brew) => ({
-                    ...brew,
-                    userId,
-                    deviceId,
-                    // Ensure dates are Date objects
-                    createdAt: new Date(brew.createdAt),
-                    updatedAt: new Date(brew.updatedAt),
-                    deletedAt: brew.deletedAt
-                        ? new Date(brew.deletedAt)
+                    createdAt: new Date(bag.createdAt),
+                    updatedAt: new Date(bag.updatedAt),
+                    dateRoasted: bag.dateRoasted
+                        ? new Date(bag.dateRoasted)
                         : undefined,
+                    dateOpened: bag.dateOpened
+                        ? new Date(bag.dateOpened)
+                        : undefined,
+                    archivedAt: bag.archivedAt
+                        ? new Date(bag.archivedAt)
+                        : undefined,
+                    deletedAt: bag.deletedAt ? new Date(bag.deletedAt) : undefined,
                     syncedAt: new Date(),
-                })
-            );
+                }));
 
-            results.coffeeBrews = await batchUpsertCoffeeBrews(brewsWithUser);
+                const bagCounts = await batchUpsertCoffeeBags(bagsWithUser, tx);
+                Object.assign(bagResults, bagCounts);
 
-            // Log sync operations
-            for (const brew of brewsWithUser) {
-                await logSyncOperation(
-                    userId,
-                    deviceId,
-                    'push',
-                    'coffeeBrew',
-                    brew.id,
-                    'success'
-                );
+                for (const bag of bagsWithUser) {
+                    await logSyncOperation(
+                        userId, deviceId, 'push', 'coffeeBag', bag.id, 'success', undefined, tx
+                    );
+                }
             }
-        }
+
+            // Process coffee brews
+            if (coffeeBrews.length > 0) {
+                const brewsWithUser: CoffeeBrewInsert[] = coffeeBrews.map(
+                    (brew) => ({
+                        ...brew,
+                        userId,
+                        deviceId,
+                        createdAt: new Date(brew.createdAt),
+                        updatedAt: new Date(brew.updatedAt),
+                        deletedAt: brew.deletedAt
+                            ? new Date(brew.deletedAt)
+                            : undefined,
+                        syncedAt: new Date(),
+                    })
+                );
+
+                const brewCounts = await batchUpsertCoffeeBrews(brewsWithUser, tx);
+                Object.assign(brewResults, brewCounts);
+
+                for (const brew of brewsWithUser) {
+                    await logSyncOperation(
+                        userId, deviceId, 'push', 'coffeeBrew', brew.id, 'success', undefined, tx
+                    );
+                }
+            }
+
+            return {
+                coffeeBags: bagResults,
+                coffeeBrews: brewResults,
+            };
+        });
 
         return json({
             success: true,

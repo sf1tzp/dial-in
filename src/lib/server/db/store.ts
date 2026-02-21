@@ -15,6 +15,10 @@ import {
 } from './schema';
 import { eq, and, gt, isNull } from 'drizzle-orm';
 import { uuidv7 } from 'uuidv7';
+import type * as schema from './schema';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
+type Tx = Parameters<Parameters<NodePgDatabase<typeof schema>['transaction']>[0]>[0];
 
 // ============================================
 // Coffee Bags Operations
@@ -68,18 +72,19 @@ export async function getCoffeeBagById(
  * Upsert a coffee bag (insert or update based on existence)
  * Returns the resulting record and whether it was created or updated
  */
-export async function upsertCoffeeBag(data: CoffeeBagInsert): Promise<{
+export async function upsertCoffeeBag(data: CoffeeBagInsert, tx?: Tx): Promise<{
     record: CoffeeBagRecord;
     operation: 'created' | 'updated' | 'conflict';
 }> {
-    const existing = await db
+    const exec = tx ?? db;
+    const existing = await exec
         .select()
         .from(coffeeBags)
         .where(eq(coffeeBags.id, data.id));
 
     if (existing.length === 0) {
         // Insert new record
-        const result = await db.insert(coffeeBags).values(data).returning();
+        const result = await exec.insert(coffeeBags).values(data).returning();
         return { record: result[0], operation: 'created' };
     }
 
@@ -88,7 +93,7 @@ export async function upsertCoffeeBag(data: CoffeeBagInsert): Promise<{
     // Conflict resolution: Last Write Wins
     // If incoming data is newer, update the record
     if (data.updatedAt > existingRecord.updatedAt) {
-        const result = await db
+        const result = await exec
             .update(coffeeBags)
             .set({
                 ...data,
@@ -183,18 +188,19 @@ export async function getCoffeeBrewsForBag(
 /**
  * Upsert a coffee brew (insert or update based on existence)
  */
-export async function upsertCoffeeBrew(data: CoffeeBrewInsert): Promise<{
+export async function upsertCoffeeBrew(data: CoffeeBrewInsert, tx?: Tx): Promise<{
     record: CoffeeBrewRecord;
     operation: 'created' | 'updated' | 'conflict';
 }> {
-    const existing = await db
+    const exec = tx ?? db;
+    const existing = await exec
         .select()
         .from(coffeeBrews)
         .where(eq(coffeeBrews.id, data.id));
 
     if (existing.length === 0) {
         // Insert new record
-        const result = await db.insert(coffeeBrews).values(data).returning();
+        const result = await exec.insert(coffeeBrews).values(data).returning();
         return { record: result[0], operation: 'created' };
     }
 
@@ -202,7 +208,7 @@ export async function upsertCoffeeBrew(data: CoffeeBrewInsert): Promise<{
 
     // Conflict resolution: Last Write Wins
     if (data.updatedAt > existingRecord.updatedAt) {
-        const result = await db
+        const result = await exec
             .update(coffeeBrews)
             .set({
                 ...data,
@@ -252,9 +258,11 @@ export async function logSyncOperation(
     entityType: 'coffeeBag' | 'coffeeBrew',
     entityId: string,
     status: 'success' | 'conflict' | 'error',
-    details?: string
+    details?: string,
+    tx?: Tx
 ): Promise<void> {
-    await db.insert(syncLog).values({
+    const exec = tx ?? db;
+    await exec.insert(syncLog).values({
         id: uuidv7(),
         userId,
         deviceId,
@@ -271,14 +279,15 @@ export async function logSyncOperation(
  * Batch upsert for efficient sync operations
  */
 export async function batchUpsertCoffeeBags(
-    items: CoffeeBagInsert[]
+    items: CoffeeBagInsert[],
+    tx?: Tx
 ): Promise<{ created: number; updated: number; conflicts: number }> {
     let created = 0;
     let updated = 0;
     let conflicts = 0;
 
     for (const item of items) {
-        const result = await upsertCoffeeBag(item);
+        const result = await upsertCoffeeBag(item, tx);
         switch (result.operation) {
             case 'created':
                 created++;
@@ -299,14 +308,15 @@ export async function batchUpsertCoffeeBags(
  * Batch upsert for coffee brews
  */
 export async function batchUpsertCoffeeBrews(
-    items: CoffeeBrewInsert[]
+    items: CoffeeBrewInsert[],
+    tx?: Tx
 ): Promise<{ created: number; updated: number; conflicts: number }> {
     let created = 0;
     let updated = 0;
     let conflicts = 0;
 
     for (const item of items) {
-        const result = await upsertCoffeeBrew(item);
+        const result = await upsertCoffeeBrew(item, tx);
         switch (result.operation) {
             case 'created':
                 created++;
