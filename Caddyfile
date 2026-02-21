@@ -1,4 +1,4 @@
-dial-in.fitz.gg {
+dial-in.coffee {
     header {
         X-Frame-Options "SAMEORIGIN"
         X-Content-Type-Options "nosniff"
@@ -27,4 +27,3 @@ dial-in.fitz.gg {
         header_up X-Real-IP {remote_host}
     }
 }
-
