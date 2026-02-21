@@ -10,6 +10,29 @@ import type { CoffeeBag, CoffeeBrew, SyncMetadata } from './interfaces';
 // Device ID for tracking which device made changes
 const DEVICE_ID_KEY = 'dial-in-device-id';
 
+// Active user tracking for local data ownership
+const ACTIVE_USER_KEY = 'dial-in-active-user';
+
+/**
+ * Get the active user ID from localStorage
+ */
+export function getActiveUserId(): string | null {
+    if (!browser) return null;
+    return localStorage.getItem(ACTIVE_USER_KEY);
+}
+
+/**
+ * Set the active user ID in localStorage
+ */
+export function setActiveUserId(userId: string | null): void {
+    if (!browser) return;
+    if (userId) {
+        localStorage.setItem(ACTIVE_USER_KEY, userId);
+    } else {
+        localStorage.removeItem(ACTIVE_USER_KEY);
+    }
+}
+
 /**
  * Get or create a unique device ID
  */
@@ -33,6 +56,7 @@ interface DialInDB extends DBSchema {
             'by-created': Date;
             'by-dirty': number; // 1 for dirty, 0 for clean
             'by-synced': Date;
+            'by-user': string;
         };
     };
     coffeeBrews: {
@@ -43,12 +67,13 @@ interface DialInDB extends DBSchema {
             'by-bag': string;
             'by-dirty': number;
             'by-synced': Date;
+            'by-user': string;
         };
     };
 }
 
 const DB_NAME = 'dial-in-db';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 // Singleton database instance
 let dbInstance: IDBPDatabase<DialInDB> | null = null;
@@ -105,6 +130,15 @@ async function getDB(): Promise<IDBPDatabase<DialInDB>> {
             // Version 3: archivedAt field added to CoffeeBag
             // No migration needed here — load() backfills archivedAt ?? null in memory,
             // and the field is persisted on the next update/sync for each bag.
+
+            // Version 4: Add localUserId index for user-scoped data ownership
+            if (oldVersion < 4) {
+                const bagStore = transaction.objectStore('coffeeBags');
+                bagStore.createIndex('by-user', 'localUserId');
+
+                const brewStore = transaction.objectStore('coffeeBrews');
+                brewStore.createIndex('by-user', 'localUserId');
+            }
         },
     });
 
@@ -121,13 +155,28 @@ function createIDBStore<
     let items = $state<T[]>([]);
     let initialized = $state(false);
 
-    // Load initial data from IndexedDB
+    // Load initial data from IndexedDB, filtered by active user
     async function load(): Promise<void> {
         if (!browser) return;
 
         try {
             const db = await getDB();
-            const all = (await db.getAll(storeName)) as unknown as T[];
+            const activeUserId = getActiveUserId();
+
+            // Query by user index when we have a userId; fallback to getAll + filter for null
+            let all: T[];
+            if (activeUserId) {
+                all = (await db.getAllFromIndex(
+                    storeName,
+                    'by-user',
+                    activeUserId
+                )) as unknown as T[];
+            } else {
+                // null userId — IDB indexes may not support null keys, filter in memory
+                const everything = (await db.getAll(storeName)) as unknown as T[];
+                all = everything.filter((item) => item.localUserId == null);
+            }
+
             // Sort by createdAt descending (newest first)
             // Also migrate old items without sync metadata
             items = all
@@ -139,6 +188,7 @@ function createIDBStore<
                             syncedAt: item.syncedAt ?? null,
                             deletedAt: item.deletedAt ?? null,
                             isDirty: item.isDirty ?? true, // Assume dirty if not set
+                            localUserId: item.localUserId ?? null,
                             archivedAt:
                                 (item as Record<string, unknown>).archivedAt ??
                                 null,
@@ -235,6 +285,7 @@ function createIDBStore<
                 syncedAt: item.syncedAt ?? null,
                 deletedAt: item.deletedAt ?? null,
                 isDirty: item.isDirty ?? true,
+                localUserId: item.localUserId ?? getActiveUserId(),
             } as T;
 
             // Update reactive state immediately for responsive UI
@@ -464,6 +515,7 @@ function createIDBStore<
                 ...item,
                 isDirty: false,
                 syncedAt: new Date(),
+                localUserId: getActiveUserId(),
             };
 
             if (existing) {
@@ -487,6 +539,59 @@ function createIDBStore<
                     `Failed to upsert from remote in ${storeName}:`,
                     error
                 );
+                throw error;
+            }
+        },
+
+        /**
+         * Get items with no owner (localUserId === null)
+         */
+        async getOrphanedItems(): Promise<T[]> {
+            if (!browser) return [];
+
+            try {
+                const db = await getDB();
+                // null localUserId items — IDB indexes don't support null keys, filter in memory
+                const everything = (await db.getAll(storeName)) as unknown as T[];
+                return everything.filter((item) => item.localUserId == null && !item.deletedAt);
+            } catch (error) {
+                console.error(`Failed to get orphaned items from ${storeName}:`, error);
+                return [];
+            }
+        },
+
+        /**
+         * Adopt orphaned items by stamping them with the given userId
+         */
+        async adoptItems(userId: string): Promise<void> {
+            if (!browser) return;
+
+            try {
+                const db = await getDB();
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.store;
+
+                // null localUserId items — filter in memory
+                const everything = (await store.getAll()) as unknown as T[];
+                const orphans = everything.filter((item) => item.localUserId == null);
+
+                for (const item of orphans) {
+                    const updated = { ...item, localUserId: userId } as T & CoffeeBag & CoffeeBrew;
+                    await store.put(updated);
+                }
+                await tx.done;
+
+                // Add adopted non-deleted items to in-memory state
+                const adopted = orphans
+                    .filter((item) => !item.deletedAt)
+                    .map((item) => ({ ...item, localUserId: userId }) as T);
+                if (adopted.length > 0) {
+                    items = [...items, ...adopted].sort(
+                        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                    );
+                }
+            } catch (error) {
+                console.error(`Failed to adopt items in ${storeName}:`, error);
                 throw error;
             }
         },
@@ -577,4 +682,12 @@ export async function getBrewsForBagFromDB(
  */
 export async function clearAllData(): Promise<void> {
     await Promise.all([coffeeBagStore.clear(), coffeeBrewStore.clear()]);
+}
+
+/**
+ * Reload both stores from IndexedDB (re-runs load with current active user filter)
+ * Call this after changing the active user to refresh in-memory state
+ */
+export async function reloadStores(): Promise<void> {
+    await Promise.all([coffeeBagStore.load(), coffeeBrewStore.load()]);
 }

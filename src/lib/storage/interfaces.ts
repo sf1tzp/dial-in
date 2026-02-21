@@ -4,6 +4,7 @@ export interface SyncMetadata {
     syncedAt: Date | null;
     deletedAt: Date | null;
     isDirty: boolean; // True if modified since last sync
+    localUserId: string | null; // null = created while signed out
 }
 
 export interface CoffeeBag extends SyncMetadata {

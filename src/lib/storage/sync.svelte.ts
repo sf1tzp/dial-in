@@ -5,11 +5,19 @@
 
 import { browser } from '$app/environment';
 import type { CoffeeBag, CoffeeBrew } from '$lib/storage/interfaces';
-import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
+import { coffeeBagStore, coffeeBrewStore, getActiveUserId } from '$lib/storage';
 
 // Device ID for tracking which device made changes
 const DEVICE_ID_KEY = 'dial-in-device-id';
-const LAST_SYNC_KEY = 'dial-in-last-sync';
+const LAST_SYNC_KEY_PREFIX = 'dial-in-last-sync';
+
+/**
+ * Get the user-scoped last sync localStorage key
+ */
+function getLastSyncKey(): string {
+    const userId = getActiveUserId();
+    return userId ? `${LAST_SYNC_KEY_PREFIX}-${userId}` : LAST_SYNC_KEY_PREFIX;
+}
 
 // Sync status for UI visibility
 export interface SyncStatus {
@@ -40,7 +48,7 @@ function getDeviceId(): string {
 function getLastSyncTime(): number | null {
     if (!browser) return null;
 
-    const stored = localStorage.getItem(LAST_SYNC_KEY);
+    const stored = localStorage.getItem(getLastSyncKey());
     return stored ? parseInt(stored, 10) : null;
 }
 
@@ -49,7 +57,7 @@ function getLastSyncTime(): number | null {
  */
 function setLastSyncTime(timestamp: number): void {
     if (!browser) return;
-    localStorage.setItem(LAST_SYNC_KEY, timestamp.toString());
+    localStorage.setItem(getLastSyncKey(), timestamp.toString());
 }
 
 /**
@@ -132,6 +140,7 @@ function remoteBagToLocal(remote: RemoteCoffeeBag): CoffeeBag {
         syncedAt: remote.syncedAt ? new Date(remote.syncedAt) : null,
         deletedAt: remote.deletedAt ? new Date(remote.deletedAt) : null,
         isDirty: false, // Coming from server, not dirty
+        localUserId: getActiveUserId(),
     };
 }
 
@@ -155,6 +164,7 @@ function remoteBrewToLocal(remote: RemoteCoffeeBrew): CoffeeBrew {
         syncedAt: remote.syncedAt ? new Date(remote.syncedAt) : null,
         deletedAt: remote.deletedAt ? new Date(remote.deletedAt) : null,
         isDirty: false, // Coming from server, not dirty
+        localUserId: getActiveUserId(),
     };
 }
 
@@ -608,13 +618,39 @@ class SyncService {
     };
 
     /**
-     * Clear sync state (useful for logout)
+     * Clear sync state for the current user (useful for logout)
      */
     clearSyncState(): void {
         if (!browser) return;
 
-        localStorage.removeItem(LAST_SYNC_KEY);
+        localStorage.removeItem(getLastSyncKey());
         this.stopAutoSync();
+    }
+
+    /**
+     * Check if any dirty items exist that need syncing
+     */
+    hasDirtyData(): boolean {
+        return (
+            coffeeBagStore.getDirtyItems().length > 0 ||
+            coffeeBrewStore.getDirtyItems().length > 0 ||
+            coffeeBagStore.getDeletedDirtyItems().length > 0 ||
+            coffeeBrewStore.getDeletedDirtyItems().length > 0
+        );
+    }
+
+    /**
+     * Attempt to sync before sign-out. Returns true if sync succeeded or no dirty data.
+     */
+    async forceSyncBeforeSignOut(): Promise<boolean> {
+        if (!this.hasDirtyData()) return true;
+
+        try {
+            await this.syncNow();
+            return true;
+        } catch {
+            return false;
+        }
     }
 }
 

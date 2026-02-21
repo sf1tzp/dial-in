@@ -4,6 +4,7 @@
 	import { Loader2, ExternalLink, Check, Heart } from '@lucide/svelte';
 	import { loadStripe, type StripeEmbeddedCheckout } from '@stripe/stripe-js';
 	import { env } from '$env/dynamic/public';
+	import { page } from '$app/state';
 	import { onDestroy } from 'svelte';
 
 	let loading = $state(true);
@@ -124,7 +125,24 @@
 	}
 
 	$effect(() => {
-		fetchStatus();
+		const isPostCheckout = page.url.searchParams.get('checkout') === 'success';
+
+		if (isPostCheckout) {
+			// Poll for status update — webhook may take a moment to arrive
+			let attempts = 0;
+			const poll = setInterval(async () => {
+				attempts++;
+				await fetchStatus();
+				if (status === 'active' || attempts >= 10) {
+					clearInterval(poll);
+				}
+			}, 2000);
+			// Also fetch immediately
+			fetchStatus();
+			return () => clearInterval(poll);
+		} else {
+			fetchStatus();
+		}
 	});
 
 	onDestroy(() => {
@@ -224,7 +242,7 @@
 					Keep your brews in sync
 				</h1>
 				<p class="text-muted-foreground">
-					Dial-in is free to use on a single device. Subscribe to sync your data across devices, back up to the cloud, and upload photos.
+					Dial-in is free to use on any device. Subscribe to sync your data across devices, back up to the cloud, and upload photos.
 				</p>
 			</div>
 
