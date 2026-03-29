@@ -44,9 +44,9 @@ jobs:
                       --username ${{ gitea.actor }} \
                       --password-stdin
 
-            # - name: Build and push image
-            #   run: |
-            #     IMAGE="${{ env.REGISTRY }}/${{ gitea.repository }}"
-            #     docker build -t "$IMAGE:${{ gitea.sha }}" -t "$IMAGE:latest" .
-            #     docker push "$IMAGE:${{ gitea.sha }}"
-            #     docker push "$IMAGE:latest"
+            - name: Build and push image
+              run: |
+                  IMAGE="${{ env.REGISTRY }}/${{ gitea.repository }}"
+                  docker build -t "$IMAGE:${{ gitea.sha }}" -t "$IMAGE:latest" -f Containerfile .
+                  docker push "$IMAGE:${{ gitea.sha }}"
+                  docker push "$IMAGE:latest"
