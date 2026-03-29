@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { syncService } from '$lib/storage';
 	import CloudOffIcon from '@lucide/svelte/icons/cloud-off';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
@@ -40,7 +41,7 @@
 		<span>Syncing...</span>
 	{:else if needsSubscription}
 		<a
-			href="/account"
+			href={resolve('/account')}
 			class="flex items-center gap-2 hover:text-foreground transition-colors"
 		>
 			<CloudUploadIcon class="size-4" />
