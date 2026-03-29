@@ -1,4 +1,4 @@
-import type { Session, User } from '$lib/auth-client';
+import type { Session } from '$lib/auth-client';
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
@@ -6,8 +6,8 @@ declare global {
     namespace App {
         // interface Error {}
         interface Locals {
-            session: Session | null;
-            user: User | null;
+            session: Session['session'] | null;
+            user: Session['user'] | null;
         }
         // interface PageData {}
         // interface PageState {}

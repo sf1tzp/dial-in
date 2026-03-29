@@ -7,8 +7,7 @@
 
     const session = authClient.useSession();
 
-    import { env } from '$env/dynamic/public';
-    const LOGIN_PAGE = env.PUBLIC_BETTER_AUTH_URL!;
+    const LOGIN_PAGE = '/login';
 
     let signOutDialogOpen = $state(false);
 

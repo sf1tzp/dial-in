@@ -5,6 +5,11 @@ services:
         image: dial-in:latest
         environment:
             - BODY_SIZE_LIMIT=20971520
+            - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-dial-in}
+            - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+            - RESEND_API_KEY=${RESEND_API_KEY}
+            - EMAIL_FROM=${EMAIL_FROM:-Dial-in <noreply@dial-in.coffee>}
+            - PUBLIC_BETTER_AUTH_URL=${PUBLIC_BETTER_AUTH_URL:-https://dial-in.coffee}
         networks:
             - caddy_network
         ports:
