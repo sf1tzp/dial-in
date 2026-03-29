@@ -1,0 +1,46 @@
+# Example Gitea Actions CI workflow
+# Since pull mirrors are read-only, the workflow file must live upstream.
+#
+# Prerequisites:
+#   1. Create a Gitea PAT with write:packages scope
+#      (Settings > Applications > Generate Token)
+#   2. Add it as a repo/org Actions secret named REGISTRY_TOKEN
+#      (repo Settings > Actions > Secrets)
+
+name: CI
+
+on:
+  push:
+    branches: [gitea-workflow]
+
+env:
+  REGISTRY: gitea.zen.lofi
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lint
+        run: |
+          just lint
+
+  build-and-push:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Gitea Container Registry
+        run: |
+          echo "${{ secrets.REGISTRY_TOKEN }}" | \
+            docker login ${{ env.REGISTRY }} \
+              --username ${{ gitea.actor }} \
+              --password-stdin
+
+      # - name: Build and push image
+      #   run: |
+      #     IMAGE="${{ env.REGISTRY }}/${{ gitea.repository }}"
+      #     docker build -t "$IMAGE:${{ gitea.sha }}" -t "$IMAGE:latest" .
+      #     docker push "$IMAGE:${{ gitea.sha }}"
+      #     docker push "$IMAGE:latest"
