@@ -20,7 +20,7 @@
 		onUnarchiveBag?: (bag: CoffeeBag) => void;
 	}
 
-	let { entries, class: className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew, onArchiveBag, onUnarchiveBag }: Props = $props();
+	let { entries, class: _className = '', onEditBag, onDeleteBag, onEditBrew, onDeleteBrew, onArchiveBag, onUnarchiveBag }: Props = $props();
 
 	// Extract all bags for disambiguation
 	const allBags = $derived(

@@ -61,7 +61,7 @@
 
   // Build series configuration for AreaChart
   const chartSeries = $derived(
-    series.map((s, i) => ({
+    series.map((s, _i) => ({
       key: s.key,
       label: s.label,
       color: s.color ?? `var(--color-${s.key})`,

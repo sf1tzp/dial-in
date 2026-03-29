@@ -56,31 +56,42 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
             // Process coffee bags
             if (coffeeBags.length > 0) {
-                const bagsWithUser: CoffeeBagInsert[] = coffeeBags.map((bag) => ({
-                    ...bag,
-                    userId,
-                    deviceId,
-                    createdAt: new Date(bag.createdAt),
-                    updatedAt: new Date(bag.updatedAt),
-                    dateRoasted: bag.dateRoasted
-                        ? new Date(bag.dateRoasted)
-                        : undefined,
-                    dateOpened: bag.dateOpened
-                        ? new Date(bag.dateOpened)
-                        : undefined,
-                    archivedAt: bag.archivedAt
-                        ? new Date(bag.archivedAt)
-                        : undefined,
-                    deletedAt: bag.deletedAt ? new Date(bag.deletedAt) : undefined,
-                    syncedAt: new Date(),
-                }));
+                const bagsWithUser: CoffeeBagInsert[] = coffeeBags.map(
+                    (bag) => ({
+                        ...bag,
+                        userId,
+                        deviceId,
+                        createdAt: new Date(bag.createdAt),
+                        updatedAt: new Date(bag.updatedAt),
+                        dateRoasted: bag.dateRoasted
+                            ? new Date(bag.dateRoasted)
+                            : undefined,
+                        dateOpened: bag.dateOpened
+                            ? new Date(bag.dateOpened)
+                            : undefined,
+                        archivedAt: bag.archivedAt
+                            ? new Date(bag.archivedAt)
+                            : undefined,
+                        deletedAt: bag.deletedAt
+                            ? new Date(bag.deletedAt)
+                            : undefined,
+                        syncedAt: new Date(),
+                    })
+                );
 
                 const bagCounts = await batchUpsertCoffeeBags(bagsWithUser, tx);
                 Object.assign(bagResults, bagCounts);
 
                 for (const bag of bagsWithUser) {
                     await logSyncOperation(
-                        userId, deviceId, 'push', 'coffeeBag', bag.id, 'success', undefined, tx
+                        userId,
+                        deviceId,
+                        'push',
+                        'coffeeBag',
+                        bag.id,
+                        'success',
+                        undefined,
+                        tx
                     );
                 }
             }
@@ -101,12 +112,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                     })
                 );
 
-                const brewCounts = await batchUpsertCoffeeBrews(brewsWithUser, tx);
+                const brewCounts = await batchUpsertCoffeeBrews(
+                    brewsWithUser,
+                    tx
+                );
                 Object.assign(brewResults, brewCounts);
 
                 for (const brew of brewsWithUser) {
                     await logSyncOperation(
-                        userId, deviceId, 'push', 'coffeeBrew', brew.id, 'success', undefined, tx
+                        userId,
+                        deviceId,
+                        'push',
+                        'coffeeBrew',
+                        brew.id,
+                        'success',
+                        undefined,
+                        tx
                     );
                 }
             }

@@ -22,7 +22,7 @@
     "aria-invalid"?: "true" | undefined;
   }
 
-  let { value: dateValue, onchange, placeholder = "Unknown", label, id, "aria-invalid": ariaInvalid }: Props = $props();
+  let { value: dateValue, onchange, placeholder = "Unknown", label: _label, id, "aria-invalid": ariaInvalid }: Props = $props();
 
   // Disallow future dates
   const maxValue = today(getLocalTimeZone());

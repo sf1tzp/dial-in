@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
 	import { DarkModeToggle } from '$lib/components/ui/darkmode-toggle';
 	import { coffeeBagStore, coffeeBrewStore } from '$lib/storage';
@@ -23,7 +24,7 @@
 
 	const session = authClient.useSession();
 
-	function toggleTestData() {
+	function _toggleTestData() {
 		// Toggle each bag: remove if exists, add if not
 		testCoffeeBags.forEach(bag => {
 			if (coffeeBagStore.getById(bag.id)) {
@@ -44,7 +45,7 @@
 	}
 
 	// Check if any test data is currently loaded
-	let testDataLoaded = $derived(
+	let _testDataLoaded = $derived(
 		testCoffeeBags.some(bag => coffeeBagStore.getById(bag.id)) ||
 		testCoffeeBrews.some(brew => coffeeBrewStore.getById(brew.id))
 	);
@@ -114,7 +115,7 @@
 						variant={isCurrentPath(item.href) ? 'secondary' : 'ghost'}
 						class="justify-start"
 						onclick={() => {
-							goto(item.href);
+							goto(resolve(item.href));
 							mobileMenuOpen = false;
 						}}
 					>
@@ -129,9 +130,9 @@
 				{/if}
 			<Separator/>
 			<div class="flex justify-center gap-3 pt-2 text-sm text-muted-foreground">
-				<a href="/privacy" class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Privacy</a>
+				<a href={resolve('/privacy')} class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Privacy</a>
 				<span>·</span>
-				<a href="/terms" class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Terms</a>
+				<a href={resolve('/terms')} class="hover:underline" onclick={() => (mobileMenuOpen = false)}>Terms</a>
 			</div>
 			<div class="flex justify-center pt-2">
 				<a href="https://fitz.gg">

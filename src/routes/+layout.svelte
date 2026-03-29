@@ -2,12 +2,12 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
   	import { Menu } from '$lib/components/menu';
 	import {
 		initializeStores,
 		syncService,
 		setActiveUserId,
-		getActiveUserId,
 		reloadStores,
 		coffeeBagStore,
 		coffeeBrewStore,
@@ -124,9 +124,9 @@ import { ModeWatcher } from "mode-watcher";
 </main>
 
 <footer class="py-4 text-center text-sm text-muted-foreground">
-	<a href="/privacy" class="hover:underline">Privacy</a>
+	<a href={resolve('/privacy')} class="hover:underline">Privacy</a>
 	<span class="mx-1">·</span>
-	<a href="/terms" class="hover:underline">Terms</a>
+	<a href={resolve('/terms')} class="hover:underline">Terms</a>
 </footer>
 
 <div class="fixed bottom-0 left-0 right-0 bg-background grid grid-cols-3 items-center py-4 border-t-2 sm:max-w-lg sm:mx-auto sm:gap-24">

@@ -262,7 +262,7 @@
 						<hr class="border-dashed" />
 
 						<ul class="list-outside space-y-3 text-sm">
-							{#each freeFeatures as item}
+							{#each freeFeatures as item (item)}
 								<li class="flex items-center gap-2">
 									<Check class="size-3" />
 									{item}
@@ -300,7 +300,7 @@
 							<div class="text-sm font-medium">Everything in Free, plus:</div>
 
 							<ul class="mt-4 list-outside space-y-3 text-sm">
-								{#each syncFeatures as item}
+								{#each syncFeatures as item (item)}
 									<li class="flex items-center gap-2">
 										<Check class="size-3" />
 										{item}

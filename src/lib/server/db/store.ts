@@ -18,7 +18,9 @@ import { uuidv7 } from 'uuidv7';
 import type * as schema from './schema';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-type Tx = Parameters<Parameters<NodePgDatabase<typeof schema>['transaction']>[0]>[0];
+type Tx = Parameters<
+    Parameters<NodePgDatabase<typeof schema>['transaction']>[0]
+>[0];
 
 // ============================================
 // Coffee Bags Operations
@@ -72,7 +74,10 @@ export async function getCoffeeBagById(
  * Upsert a coffee bag (insert or update based on existence)
  * Returns the resulting record and whether it was created or updated
  */
-export async function upsertCoffeeBag(data: CoffeeBagInsert, tx?: Tx): Promise<{
+export async function upsertCoffeeBag(
+    data: CoffeeBagInsert,
+    tx?: Tx
+): Promise<{
     record: CoffeeBagRecord;
     operation: 'created' | 'updated' | 'conflict';
 }> {
@@ -188,7 +193,10 @@ export async function getCoffeeBrewsForBag(
 /**
  * Upsert a coffee brew (insert or update based on existence)
  */
-export async function upsertCoffeeBrew(data: CoffeeBrewInsert, tx?: Tx): Promise<{
+export async function upsertCoffeeBrew(
+    data: CoffeeBrewInsert,
+    tx?: Tx
+): Promise<{
     record: CoffeeBrewRecord;
     operation: 'created' | 'updated' | 'conflict';
 }> {

@@ -15,7 +15,7 @@
 		relativeTime: string;
 	}
 
-	let { coffeeBrew, coffeeBag, allBags, relativeTime }: Props = $props();
+	let { coffeeBrew, coffeeBag, allBags, relativeTime: _relativeTime }: Props = $props();
 
 	const disambiguator = $derived(coffeeBag ? getBagDisambiguator(coffeeBag, allBags) : '');
 
@@ -37,7 +37,7 @@
 		};
 	});
 
-	function formatDate(date: Date): string {
+	function _formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
@@ -45,7 +45,7 @@
 		});
 	}
 
-	function formatTime(date: Date): string {
+	function _formatTime(date: Date): string {
 		return date.toLocaleTimeString('en-US', {
 			hour: 'numeric',
 			minute: '2-digit',
