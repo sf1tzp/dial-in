@@ -1,5 +1,5 @@
 lint:
-    npm run lint > lint.log
+    npm run lint &2> lint.log
 
 format:
     npm run format
