@@ -7,7 +7,6 @@
 		initializeStores,
 		syncService,
 		setActiveUserId,
-		getActiveUserId,
 		reloadStores,
 		coffeeBagStore,
 		coffeeBrewStore,

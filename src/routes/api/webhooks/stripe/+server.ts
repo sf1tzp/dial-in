@@ -46,8 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
             const invoice = event.data.object as Stripe.Invoice;
             const sub = invoice.parent?.subscription_details?.subscription;
             if (sub) {
-                const subscriptionId =
-                    typeof sub === 'string' ? sub : sub.id;
+                const subscriptionId = typeof sub === 'string' ? sub : sub.id;
                 const subscription =
                     await stripe().subscriptions.retrieve(subscriptionId);
                 await syncSubscriptionFromStripe(subscription);
@@ -55,14 +54,12 @@ export const POST: RequestHandler = async ({ request }) => {
             break;
         }
         case 'customer.subscription.updated': {
-            const subscription = event.data
-                .object as Stripe.Subscription;
+            const subscription = event.data.object as Stripe.Subscription;
             await syncSubscriptionFromStripe(subscription);
             break;
         }
         case 'customer.subscription.deleted': {
-            const subscription = event.data
-                .object as Stripe.Subscription;
+            const subscription = event.data.object as Stripe.Subscription;
             await markSubscriptionCanceled(subscription.id);
             break;
         }

@@ -265,7 +265,9 @@ class SyncService {
     /**
      * Check if user can sync (authenticated + active subscription)
      */
-    private async canSync(): Promise<'yes' | 'not_authenticated' | 'no_subscription'> {
+    private async canSync(): Promise<
+        'yes' | 'not_authenticated' | 'no_subscription'
+    > {
         if (!browser) return 'not_authenticated';
 
         try {
@@ -378,7 +380,9 @@ class SyncService {
             });
 
             if (!response.ok) {
-                console.error(`Upload failed for ${entityType}/${entityId}: ${response.statusText}`);
+                console.error(
+                    `Upload failed for ${entityType}/${entityId}: ${response.statusText}`
+                );
                 return null;
             }
 
@@ -404,11 +408,15 @@ class SyncService {
         for (const bag of dirtyBags) {
             if (bag.picture instanceof Blob) {
                 uploads.push(
-                    this.uploadPicture(bag.picture, 'bags', bag.id).then(async (url) => {
-                        if (url) {
-                            await coffeeBagStore.update(bag.id, { picture: url });
+                    this.uploadPicture(bag.picture, 'bags', bag.id).then(
+                        async (url) => {
+                            if (url) {
+                                await coffeeBagStore.update(bag.id, {
+                                    picture: url,
+                                });
+                            }
                         }
-                    })
+                    )
                 );
             }
         }
@@ -416,11 +424,15 @@ class SyncService {
         for (const brew of dirtyBrews) {
             if (brew.picture instanceof Blob) {
                 uploads.push(
-                    this.uploadPicture(brew.picture, 'brews', brew.id).then(async (url) => {
-                        if (url) {
-                            await coffeeBrewStore.update(brew.id, { picture: url });
+                    this.uploadPicture(brew.picture, 'brews', brew.id).then(
+                        async (url) => {
+                            if (url) {
+                                await coffeeBrewStore.update(brew.id, {
+                                    picture: url,
+                                });
+                            }
                         }
-                    })
+                    )
                 );
             }
         }
@@ -513,9 +525,10 @@ class SyncService {
         // Check authentication and subscription
         const syncCheck = await this.canSync();
         if (syncCheck !== 'yes') {
-            const reason = syncCheck === 'no_subscription'
-                ? 'Active subscription required'
-                : 'Not authenticated';
+            const reason =
+                syncCheck === 'no_subscription'
+                    ? 'Active subscription required'
+                    : 'Not authenticated';
             console.log(`Sync skipped: ${reason}`);
             this.updateStatus({ lastError: reason });
             return null;

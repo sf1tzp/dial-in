@@ -173,7 +173,9 @@ function createIDBStore<
                 )) as unknown as T[];
             } else {
                 // null userId — IDB indexes may not support null keys, filter in memory
-                const everything = (await db.getAll(storeName)) as unknown as T[];
+                const everything = (await db.getAll(
+                    storeName
+                )) as unknown as T[];
                 all = everything.filter((item) => item.localUserId == null);
             }
 
@@ -552,10 +554,17 @@ function createIDBStore<
             try {
                 const db = await getDB();
                 // null localUserId items — IDB indexes don't support null keys, filter in memory
-                const everything = (await db.getAll(storeName)) as unknown as T[];
-                return everything.filter((item) => item.localUserId == null && !item.deletedAt);
+                const everything = (await db.getAll(
+                    storeName
+                )) as unknown as T[];
+                return everything.filter(
+                    (item) => item.localUserId == null && !item.deletedAt
+                );
             } catch (error) {
-                console.error(`Failed to get orphaned items from ${storeName}:`, error);
+                console.error(
+                    `Failed to get orphaned items from ${storeName}:`,
+                    error
+                );
                 return [];
             }
         },
@@ -573,10 +582,14 @@ function createIDBStore<
 
                 // null localUserId items — filter in memory
                 const everything = (await store.getAll()) as unknown as T[];
-                const orphans = everything.filter((item) => item.localUserId == null);
+                const orphans = everything.filter(
+                    (item) => item.localUserId == null
+                );
 
                 for (const item of orphans) {
-                    const updated = { ...item, localUserId: userId } as T & CoffeeBag & CoffeeBrew;
+                    const updated = { ...item, localUserId: userId } as T &
+                        CoffeeBag &
+                        CoffeeBrew;
                     await store.put(updated);
                 }
                 await tx.done;
