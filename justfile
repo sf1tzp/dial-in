@@ -42,6 +42,8 @@ generate-migration HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     sops -d secrets/{{HOST}}.env > .env
+    source .env
+    export DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-dial-in}"
     npm run db:generate
     rm .env
 
@@ -49,5 +51,7 @@ apply-migrations HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     sops -d secrets/{{HOST}}.env > .env
+    source .env
+    export DATABASE_URL="postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-dial-in}"
     npm run db:migrate
     rm .env
