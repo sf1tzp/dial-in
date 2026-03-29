@@ -24,7 +24,7 @@
 
 	const session = authClient.useSession();
 
-	function toggleTestData() {
+	function _toggleTestData() {
 		// Toggle each bag: remove if exists, add if not
 		testCoffeeBags.forEach(bag => {
 			if (coffeeBagStore.getById(bag.id)) {
@@ -45,7 +45,7 @@
 	}
 
 	// Check if any test data is currently loaded
-	let testDataLoaded = $derived(
+	let _testDataLoaded = $derived(
 		testCoffeeBags.some(bag => coffeeBagStore.getById(bag.id)) ||
 		testCoffeeBrews.some(brew => coffeeBrewStore.getById(brew.id))
 	);
