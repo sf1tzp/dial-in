@@ -25,7 +25,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - uses: extractions/setup-just@v2
+      - uses: extractions/setup-just@v3
+        with:
+          github-token: ${{ secrets.CONNECTION_PAT }}
       - name: Run lint
         run: just lint
 
