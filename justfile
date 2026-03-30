@@ -10,12 +10,10 @@ secrets-local:
 edit-secrets HOST:
     sops secrets/{{HOST}}.env
 
-build HOST:
+build:
     #!/usr/bin/env bash
     set -euo pipefail
-    sops -d secrets/{{HOST}}.env > .env
     ~/.local/bin/nerdctl build . -t dial-in:latest
-    rm .env
     ~/.local/bin/nerdctl save dial-in:latest -o dial-in-latest.tar
 
 deploy HOST:
