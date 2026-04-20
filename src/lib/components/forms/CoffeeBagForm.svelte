@@ -65,13 +65,13 @@
 	});
 
 	let api = $state<CarouselAPI>();
-	let currentSlide = $state(0);
+	let _currentSlide = $state(0);
 
 	$effect(() => {
 		if (api) {
-			currentSlide = api.selectedScrollSnap();
+			_currentSlide = api.selectedScrollSnap();
 			api.on('select', () => {
-				currentSlide = api!.selectedScrollSnap();
+				_currentSlide = api!.selectedScrollSnap();
 			});
 		}
 	});

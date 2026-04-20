@@ -1,34 +1,34 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1769820787393,
-      "tag": "0000_wooden_black_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1769827558418,
-      "tag": "0001_soft_whistler",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770527596480,
-      "tag": "0002_lyrical_zodiak",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1770942667530,
-      "tag": "0003_mighty_thor_girl",
-      "breakpoints": true
-    }
-  ]
+    "version": "7",
+    "dialect": "postgresql",
+    "entries": [
+        {
+            "idx": 0,
+            "version": "7",
+            "when": 1769820787393,
+            "tag": "0000_wooden_black_queen",
+            "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "7",
+            "when": 1769827558418,
+            "tag": "0001_soft_whistler",
+            "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "7",
+            "when": 1770527596480,
+            "tag": "0002_lyrical_zodiak",
+            "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1770942667530,
+            "tag": "0003_mighty_thor_girl",
+            "breakpoints": true
+        }
+    ]
 }

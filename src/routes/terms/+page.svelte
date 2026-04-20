@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card';
 </script>
 
@@ -67,7 +68,7 @@
 				<li><strong>You own your data.</strong> The coffee/brew data you enter belongs to you.</li>
 				<li>We need a license to host and display your data back to you — you grant us a limited license to store, process, and display your content solely to provide the Service.</li>
 				<li>You can export your data at any time via the in-app export feature.</li>
-				<li>You can request deletion of your account and data per our <a href="/privacy" class="underline">Privacy Policy</a>.</li>
+				<li>You can request deletion of your account and data per our <a href={resolve('/privacy')} class="underline">Privacy Policy</a>.</li>
 			</ul>
 		</div>
 
@@ -96,7 +97,7 @@
 			<ul class="list-disc list-inside space-y-1">
 				<li>You can delete your account at any time.</li>
 				<li>We may suspend or terminate your account if you violate these terms, with notice where practical.</li>
-				<li>Upon termination, your right to use the Service ends. We will retain or delete your data per our <a href="/privacy" class="underline">Privacy Policy</a>.</li>
+				<li>Upon termination, your right to use the Service ends. We will retain or delete your data per our <a href={resolve('/privacy')} class="underline">Privacy Policy</a>.</li>
 			</ul>
 		</div>
 

@@ -3,7 +3,15 @@
  * Mirrors the IndexedDB schema with additional sync metadata
  */
 
-import { pgTable, text, timestamp, real, index, boolean, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+    pgTable,
+    text,
+    timestamp,
+    real,
+    index,
+    boolean,
+    uniqueIndex,
+} from 'drizzle-orm/pg-core';
 
 /**
  * Coffee Bags table
@@ -112,14 +120,20 @@ export const subscriptions = pgTable(
         stripeSubscriptionId: text('stripe_subscription_id'),
         status: text('status').notNull().default('inactive'), // 'active' | 'past_due' | 'canceled' | 'inactive'
         currentPeriodEnd: timestamp('current_period_end', { mode: 'date' }),
-        cancelAtPeriodEnd: boolean('cancel_at_period_end').notNull().default(false),
+        cancelAtPeriodEnd: boolean('cancel_at_period_end')
+            .notNull()
+            .default(false),
         createdAt: timestamp('created_at', { mode: 'date' }).notNull(),
         updatedAt: timestamp('updated_at', { mode: 'date' }).notNull(),
     },
     (table) => [
         uniqueIndex('subscriptions_user_id_idx').on(table.userId),
-        index('subscriptions_stripe_customer_id_idx').on(table.stripeCustomerId),
-        index('subscriptions_stripe_subscription_id_idx').on(table.stripeSubscriptionId),
+        index('subscriptions_stripe_customer_id_idx').on(
+            table.stripeCustomerId
+        ),
+        index('subscriptions_stripe_subscription_id_idx').on(
+            table.stripeSubscriptionId
+        ),
     ]
 );
 

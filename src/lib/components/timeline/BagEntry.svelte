@@ -17,7 +17,7 @@
 		onunarchive?: () => void;
 	}
 
-	let { bag, allBags, relativeTime, onarchive, onunarchive }: Props = $props();
+	let { bag, allBags, relativeTime: _relativeTime, onarchive, onunarchive }: Props = $props();
 
 	const disambiguator = $derived(getBagDisambiguator(bag, allBags));
 

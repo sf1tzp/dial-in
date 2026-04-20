@@ -1,13 +1,13 @@
 {
     "folders": [
         {
-            "path": "."
+            "path": ".",
         },
     ],
     "settings": {
         "workbench.preferredDarkColorTheme": "Chocolate (rainglow)",
-		"workbench.preferredLightColorTheme": "Chocolate Light (rainglow)",
-		"window.autoDetectColorScheme": true,
+        "workbench.preferredLightColorTheme": "Chocolate Light (rainglow)",
+        "window.autoDetectColorScheme": true,
         "workbench.colorTheme": "Chocolate (rainglow)",
     },
 }

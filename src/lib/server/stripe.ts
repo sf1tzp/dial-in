@@ -101,15 +101,17 @@ export async function syncSubscriptionFromStripe(
             ? stripeSubscription.customer
             : stripeSubscription.customer.id;
 
-    const status = stripeSubscription.status === 'active'
-        ? 'active'
-        : stripeSubscription.status === 'past_due'
-          ? 'past_due'
-          : stripeSubscription.status === 'canceled'
-            ? 'canceled'
-            : 'inactive';
+    const status =
+        stripeSubscription.status === 'active'
+            ? 'active'
+            : stripeSubscription.status === 'past_due'
+              ? 'past_due'
+              : stripeSubscription.status === 'canceled'
+                ? 'canceled'
+                : 'inactive';
 
-    const periodEndSeconds = stripeSubscription.items.data[0]?.current_period_end;
+    const periodEndSeconds =
+        stripeSubscription.items.data[0]?.current_period_end;
     const currentPeriodEnd = periodEndSeconds
         ? new Date(periodEndSeconds * 1000)
         : null;
@@ -126,9 +128,7 @@ export async function syncSubscriptionFromStripe(
         .where(eq(subscriptions.stripeCustomerId, customerId));
 }
 
-export async function markSubscriptionCanceled(
-    stripeSubscriptionId: string
-) {
+export async function markSubscriptionCanceled(stripeSubscriptionId: string) {
     await db
         .update(subscriptions)
         .set({

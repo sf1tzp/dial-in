@@ -2,6 +2,7 @@
     import CircleUserRound from "@lucide/svelte/icons/circle-user-round";
     import { authClient } from "$lib/auth-client";
     import { goto } from "$app/navigation";
+    import { resolve } from "$app/paths";
     import { syncService, setActiveUserId, reloadStores } from "$lib/storage";
     import SignOutDialog from "./sign-out-dialog.svelte";
 
@@ -23,7 +24,7 @@
         await authClient.signOut();
         await reloadStores();
         signOutDialogOpen = false;
-        goto("/");
+        goto(resolve("/"));
     }
 </script>
 
@@ -39,7 +40,7 @@
         oncancel={() => { signOutDialogOpen = false; }}
     />
 {:else}
-    <a href={LOGIN_PAGE}>
+    <a href={LOGIN_PAGE} rel="external">
         <CircleUserRound class="size-8 text-muted-foreground"/>
     </a>
 {/if}
