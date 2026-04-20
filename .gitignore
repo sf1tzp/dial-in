@@ -9,6 +9,7 @@ node_modules
 /build
 *.tar
 _old/
+lint.log
 
 # OS
 .DS_Store
