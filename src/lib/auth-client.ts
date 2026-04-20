@@ -5,21 +5,12 @@ import {
     inferAdditionalFields,
 } from 'better-auth/client/plugins';
 
-import { env as publicEnv } from '$env/dynamic/public';
-const PUBLIC_BETTER_AUTH_URL =
-    publicEnv.PUBLIC_BETTER_AUTH_URL || 'auth.staging.lofi';
-
 export const authClient = createAuthClient({
-    baseURL: PUBLIC_BETTER_AUTH_URL,
-    fetchOptions: {
-        credentials: 'include', // Required for cross-origin cookies
-    },
     plugins: [
         adminClient(),
         magicLinkClient(),
         inferAdditionalFields({
             user: { role: { type: 'string' } },
-            // add other fields as needed
         }),
     ],
 });
