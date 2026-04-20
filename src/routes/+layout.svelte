@@ -15,8 +15,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { authClient } from '$lib/auth-client';
 	import AdoptDataDialog from '$lib/components/adopt-data-dialog.svelte';
+	import { env } from '$env/dynamic/public';
 
-import { ModeWatcher } from "mode-watcher";
+	import { ModeWatcher } from "mode-watcher";
 
 	let { children } = $props();
 
@@ -107,6 +108,12 @@ import { ModeWatcher } from "mode-watcher";
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+		<script
+		defer
+		src={env.PUBLIC_UMAMI_SCRIPT_URL}
+		data-website-id={env.PUBLIC_UMAMI_WEBSITE_ID}
+		data-performance="true"
+	></script>
 </svelte:head>
 
 <ModeWatcher />
