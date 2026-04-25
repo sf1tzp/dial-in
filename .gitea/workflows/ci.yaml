@@ -1,17 +1,15 @@
-# Example Gitea Actions CI workflow
-# Since pull mirrors are read-only, the workflow file must live upstream.
+# Gitea Actions CI workflow.
+# Pull mirrors are read-only, so the workflow file lives upstream.
 #
-# Prerequisites:
-#   1. Create a Gitea PAT with write:packages scope
-#      (Settings > Applications > Generate Token)
-#   2. Add it as a repo/org Actions secret named REGISTRY_TOKEN
-#      (repo Settings > Actions > Secrets)
+# Required Actions secrets (repo-level):
+#   - SOPS_AGE_KEY (only)
+# Org-level secrets (REGISTRY_TOKEN, CONNECTION_PAT) are inherited.
+# SSH keys for prod deploys come from the runner image's volume mount.
 
 name: CI
 
 on:
     push:
-        branches: [gitea-workflow]
 
 env:
     REGISTRY: gitea.zen.lofi
@@ -34,19 +32,40 @@ jobs:
     build-and-push:
         needs: lint
         runs-on: ubuntu-latest
+        env:
+            IMAGE: ${{ env.REGISTRY }}/${{ gitea.repository }}
         steps:
             - uses: actions/checkout@v4
 
-            - name: Login to Gitea Container Registry
+            - name: Log in to Gitea registry
               run: |
                   echo "${{ secrets.REGISTRY_TOKEN }}" | \
-                    docker login ${{ env.REGISTRY }} \
-                      --username ${{ gitea.actor }} \
+                    docker login "${{ env.REGISTRY }}" \
+                      --username "${{ gitea.actor }}" \
                       --password-stdin
 
-            - name: Build and push image
+            - name: Build and push
+              env:
+                  GITEA_SHA: ${{ gitea.sha }}
               run: |
-                  IMAGE="${{ env.REGISTRY }}/${{ gitea.repository }}"
-                  docker build -t "$IMAGE:${{ gitea.sha }}" -t "$IMAGE:latest" -f Containerfile .
-                  docker push "$IMAGE:${{ gitea.sha }}"
-                  docker push "$IMAGE:latest"
+                  set -euo pipefail
+                  SHORT="${GITEA_SHA:0:7}"
+                  docker build -t "$IMAGE:$SHORT" -f Containerfile .
+                  docker push "$IMAGE:$SHORT"
+
+    deploy-prod:
+        needs: build-and-push
+        if: gitea.ref == 'refs/heads/main'
+        runs-on: ubuntu-deploy
+        env:
+            HOST: web2.streetfortress.cloud
+        steps:
+            - uses: actions/checkout@v4
+            - name: Deploy to prod
+              env:
+                  GITEA_SHA: ${{ gitea.sha }}
+                  SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+              run: |
+                  set -euo pipefail
+                  SHORT="${GITEA_SHA:0:7}"
+                  just deploy-prod "$HOST" "$SHORT"

@@ -30,6 +30,18 @@ deploy HOST:
     ssh {{HOST}} -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml down"
     ssh {{HOST}} -C "~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml up -d --env-file ~/dial-in/.env"
 
+deploy-prod HOST TAG:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    IMAGE="gitea.zen.lofi/sf1tzp/dial-in:{{TAG}}"
+    ssh {{HOST}} -C "mkdir -p ~/caddyfiles ~/dial-in"
+    scp caddyfiles/{{HOST}} {{HOST}}:~/caddyfiles/dial-in.caddy
+    sops -d secrets/{{HOST}}.env | ssh {{HOST}} "cat > ~/dial-in/.env"
+    scp dial-in-compose.yaml {{HOST}}:~/dial-in-compose.yaml
+    ssh {{HOST}} -C "~/.local/bin/nerdctl pull $IMAGE"
+    ssh {{HOST}} -C "DIAL_IN_IMAGE=$IMAGE ~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml --env-file ~/dial-in/.env down"
+    ssh {{HOST}} -C "DIAL_IN_IMAGE=$IMAGE ~/.local/bin/nerdctl compose -f ~/dial-in-compose.yaml --env-file ~/dial-in/.env up -d"
+
 bounce HOST:
     #!/usr/bin/env bash
     set -euo pipefail
