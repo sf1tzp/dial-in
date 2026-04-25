@@ -1,0 +1,16 @@
+.git
+.gitea
+.github
+.claude
+.svelte-kit
+build
+node_modules
+*.tar
+auth-service-latest.tar
+.env
+.env.*
+secrets
+caddyfiles
+.sops.yaml
+.DS_Store
+README.md
