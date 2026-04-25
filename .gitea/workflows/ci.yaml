@@ -56,7 +56,7 @@ jobs:
         needs:
           - lint
           - build-and-push
-        if: gitea.ref == 'refs/heads/fix-ci'
+        # if: gitea.ref == 'refs/heads/fix-ci'
         runs-on: ubuntu-deploy
         env:
             HOST: web2.streetfortress.cloud
