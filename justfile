@@ -33,7 +33,7 @@ deploy HOST:
 deploy-prod HOST TAG:
     #!/usr/bin/env bash
     set -euo pipefail
-    IMAGE="gitea.zen.lofi/sf1tzp/dial-in:{{TAG}}"
+    IMAGE="gitea.zen.lofi/sfi/dial-in:{{TAG}}"
     ssh {{HOST}} -C "mkdir -p ~/caddyfiles ~/dial-in"
     scp caddyfiles/{{HOST}} {{HOST}}:~/caddyfiles/dial-in.caddy
     sops -d secrets/{{HOST}}.env | ssh {{HOST}} "cat > ~/dial-in/.env"
