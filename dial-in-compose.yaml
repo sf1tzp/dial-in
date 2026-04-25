@@ -2,7 +2,7 @@ services:
     dial-in:
         restart: unless-stopped
         container_name: dial-in-server
-        image: dial-in:latest
+        image: ${DIAL_IN_IMAGE:-dial-in:latest}
         environment:
             - BODY_SIZE_LIMIT=20971520
         networks:
